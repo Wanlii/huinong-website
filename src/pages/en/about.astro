@@ -1,0 +1,198 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const stats = [
+  { num: '300', label: 'Mu Planting Base' },
+  { num: '80+', label: 'Professional Staff' },
+  { num: '500+', label: 'Varieties in Stock' },
+  { num: '40+', label: 'Export Countries' },
+];
+
+const team = [
+  { name: 'Founder / GM', role: '30 years in industry', desc: 'Strategy & base management', emoji: '👨‍🌾' },
+  { name: 'Export Manager', role: '10+ years in trade', desc: 'Europe & Central Asia markets', emoji: '👩‍💼' },
+  { name: 'Quality Manager', role: 'Phytosanitary expert', desc: 'Compliance & QC', emoji: '👨‍🔬' },
+];
+
+const milestones = [
+  { year: '1990s', text: 'Started with a few mu of nursery, focused on domestic market' },
+  { year: '2005', text: 'Expanded base to 100 mu, scaled up bonsai cultivation' },
+  { year: '2012', text: 'First export shipment to Southeast Asia' },
+  { year: '2016', text: 'Obtained export registration, entered EU market' },
+  { year: '2020', text: 'Base expanded to 300 mu, annual exports exceeded 10M USD' },
+  { year: '2026', text: 'Covering 40+ countries, regional leading exporter' },
+];
+
+const commitments = [
+  { icon: '🌱', title: 'Source Control', desc: 'Every plant comes from our own base' },
+  { icon: '📜', title: 'Compliance First', desc: 'All export flows follow international regulations' },
+  { icon: '🤝', title: 'Long-term Win-win', desc: 'Not one-time deals, but long-term partnerships' },
+  { icon: '📢', title: 'Transparent Info', desc: 'Specs, prices, lead times told as-is' },
+];
+---
+<Layout title="About Us - Huinong" lang="en" description="Huinong - 30 years of bonsai and ornamental plants export, 300-mu own farm.">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>About Us</h1>
+      <p class="hero-sub">30 years in bonsai & ornamental plants · 300-mu source base · serving 40+ countries</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="about-teaser">
+        <div>
+          <div class="about-img">🏞️</div>
+          <div class="about-badge"><div class="num">300</div><div class="label">Mu Planting Base</div></div>
+        </div>
+        <div class="about-text">
+          <h2>Our Story</h2>
+          <p>In the early 1990s, our founder started with just a few mu of nursery. 30 years on, we went from domestic-only to global exports, from a single variety to 500+, from the local market to 40+ countries in Europe, Central Asia, and Southeast Asia.</p>
+          <p>Today, Huinong operates a 300-mu planting base, a professional export team, and a sound logistics system. But we hold to one principle: source-controlled quality, compliance for the long run.</p>
+          <ul class="about-features">
+            <li>Own base, source-controlled quality</li>
+            <li>Professional team, 30 years deep</li>
+            <li>Compliant exports, EU certified</li>
+            <li>Continuous innovation, expanding varieties</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>Core Metrics</h2><p>The numbers behind the strength</p></div>
+      <div class="stats-grid">
+        {stats.map(s => (
+          <div class="stat-item">
+            <div class="stat-num">{s.num}</div>
+            <div class="stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header"><h2>Core Team</h2><p>Professionals doing professional work</p></div>
+      <div class="team-grid">
+        {team.map(t => (
+          <div class="team-card">
+            <div class="team-avatar">{t.emoji}</div>
+            <h4>{t.name}</h4>
+            <div class="role">{t.role}</div>
+            <p>{t.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>Milestones</h2><p>30 years of growth</p></div>
+      <div class="timeline">
+        {milestones.map(m => (
+          <div class="timeline-item">
+            <h4>{m.year}</h4>
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header"><h2>Our Commitments</h2><p>Peace of mind on every order</p></div>
+      <div class="commit-grid">
+        {commitments.map(c => (
+          <div class="commit-card">
+            <div class="commit-icon">{c.icon}</div>
+            <h4>{c.title}</h4>
+            <p>{c.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>Want to know more?</h2>
+      <p>Contact us, or browse our product catalog</p>
+      <a href="/en/contact" class="btn-white">📩 Contact Us</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.about-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.about-img {
+  width: 100%; height: 380px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 80px;
+}
+.about-badge {
+  display: inline-block; background: var(--green); color: var(--white);
+  padding: 16px 24px; border-radius: 8px; margin-top: 16px;
+}
+.about-badge .num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 32px; font-weight: 700; line-height: 1; }
+.about-badge .label { font-size: 12px; opacity: 0.9; }
+.about-text h2 { font-size: 32px; margin-bottom: 16px; }
+.about-text p { font-size: 15px; color: var(--text-light); margin-bottom: 20px; }
+.about-features { list-style: none; margin-bottom: 24px; }
+.about-features li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
+.about-features li::before { content: "✓"; color: var(--green); font-weight: 700; font-size: 16px; }
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  background: var(--green-dark); padding: 32px; border-radius: 8px; color: var(--white);
+}
+.stat-item { text-align: center; }
+.stat-num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+.stat-label { font-size: 14px; opacity: 0.85; }
+
+.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.team-card { background: var(--white); border-radius: 8px; padding: 24px; text-align: center; box-shadow: var(--shadow); }
+.team-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--cream-dark); margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 40px;
+}
+.team-card h4 { font-size: 16px; margin-bottom: 4px; }
+.team-card .role { font-size: 13px; color: var(--green); margin-bottom: 8px; font-weight: 600; }
+.team-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+.timeline { max-width: 700px; margin: 0 auto; position: relative; padding-left: 32px; }
+.timeline::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--green-light); }
+.timeline-item { position: relative; margin-bottom: 28px; }
+.timeline-item::before {
+  content: ""; position: absolute; left: -28px; top: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--green); border: 3px solid var(--cream);
+}
+.timeline-item h4 { font-size: 16px; margin-bottom: 4px; color: var(--green); }
+.timeline-item p { font-size: 14px; color: var(--text-light); }
+
+.commit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.commit-card {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 8px; padding: 28px 20px; text-align: center;
+  transition: border-color .2s;
+}
+.commit-card:hover { border-color: var(--green-light); }
+.commit-icon { font-size: 36px; margin-bottom: 14px; }
+.commit-card h4 { font-size: 15px; margin-bottom: 8px; }
+.commit-card p { font-size: 13px; color: var(--text-light); }
+
+@media (max-width: 900px) {
+  .about-teaser { grid-template-columns: 1fr; gap: 32px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .team-grid { grid-template-columns: 1fr; }
+  .commit-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>

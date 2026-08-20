@@ -1,0 +1,235 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const trustItems = [
+  { num: '30+', label: '年种植经验' },
+  { num: '500+', label: '在售品种' },
+  { num: '40+', label: '出口国家' },
+  { num: '100%', label: '合规出口' },
+];
+
+const categories = [
+  { name: '观赏苗木', desc: '乔木 · 灌木 · 地被 · 300+ 品种 · 适合大宗采购', emoji: '🌳', href: '/products?cat=ornamental' },
+  { name: '盆栽', desc: '松柏 · 杂木 · 观花 · 200+ 品种 · 适合精品批发', emoji: '🪴', href: '/products?cat=potted' },
+];
+
+const featured = [
+  { name: '紫薇', latin: 'Lagerstroemia indica', spec: '高 60-120cm', emoji: '🌸', slug: 'ziwei' },
+  { name: '红枫', latin: 'Acer palmatum', spec: '高 50-100cm', emoji: '🍁', slug: 'hongfeng' },
+  { name: '黑松', latin: 'Pinus thunbergii', spec: '高 30-60cm', emoji: '🌲', slug: 'heisong' },
+  { name: '棕榈', latin: 'Trachycarpus fortunei', spec: '高 80-150cm', emoji: '🌴', slug: 'zonglv' },
+  { name: '榕树', latin: 'Ficus microcarpa', spec: '高 40-80cm', emoji: '🌳', slug: 'rongshu' },
+  { name: '玉兰', latin: 'Magnolia denudata', spec: '高 100-200cm', emoji: '🌷', slug: 'yulan' },
+];
+---
+<Layout title="汇农天下 - 盆栽与观赏苗木出口商" lang="zh">
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>从源头到世界</h1>
+      <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 30 年种植经验 · 源头直供</p>
+      <a href="/contact" class="btn-green hero-cta">立即询盘 →</a>
+    </div>
+  </section>
+
+  <!-- 2. Trust bar -->
+  <section class="trust-bar">
+    <div class="container trust-inner">
+      {trustItems.map(item => (
+        <div class="trust-item">
+          <div class="trust-num">{item.num}</div>
+          <div class="trust-label">{item.label}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 3. 2 大类产品卡片 -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>产品分类</h2>
+        <p>两大主营品类，满足不同采购需求</p>
+      </div>
+      <div class="cat-grid">
+        {categories.map(cat => (
+          <a href={cat.href} class="cat-card">
+            <div class="cat-img">{cat.emoji}</div>
+            <div class="cat-body">
+              <h3>{cat.name}</h3>
+              <p>{cat.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 精选产品（横向滚动 B1） -->
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header">
+        <h2>精选产品</h2>
+        <p>主打品种展示，点击查看详情</p>
+      </div>
+      <div class="featured-wrapper">
+        <button class="scroll-btn scroll-prev" aria-label="上一个">‹</button>
+        <div class="featured-track" id="featured-track">
+          {featured.map(item => (
+            <a href={`/products/${item.slug}`} class="product-card">
+              <div class="product-img">{item.emoji}</div>
+              <div class="product-info">
+                <div class="product-name">{item.name}</div>
+                <div class="product-latin">{item.latin}</div>
+                <div class="product-specs"><span>{item.spec}</span></div>
+              </div>
+            </a>
+          ))}
+        </div>
+        <button class="scroll-btn scroll-next" aria-label="下一个">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CTA strip -->
+  <section class="cta-strip">
+    <div class="container">
+      <h2>需要采购？立即询盘</h2>
+      <p>告诉我们您的需求，我们将在 12 小时内回复</p>
+      <a href="/contact" class="btn-white">📩 Request a Quote</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.hero {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3A5F3A 0%, #2A4A2A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  color: var(--white); max-width: 800px; padding: 0 24px;
+}
+.hero h1 { font-size: 44px; line-height: 1.2; margin-bottom: 16px; }
+.hero-sub { font-size: 17px; opacity: 0.9; margin-bottom: 32px; line-height: 1.6; }
+.hero-cta { font-size: 16px; padding: 14px 32px; }
+
+.trust-bar { background: var(--green-dark); padding: 28px 0; }
+.trust-inner {
+  display: flex; justify-content: space-around; align-items: center;
+  flex-wrap: wrap; gap: 32px;
+}
+.trust-item { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.9); }
+.trust-num {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 28px; font-weight: 700; color: var(--white); line-height: 1;
+}
+.trust-label { font-size: 13px; opacity: 0.8; line-height: 1.3; }
+
+.cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+.cat-card {
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow); transition: box-shadow .3s;
+}
+.cat-card:hover { box-shadow: var(--shadow-lg); }
+.cat-img {
+  width: 100%; height: 240px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 60px; color: var(--white);
+}
+.cat-body { padding: 24px; }
+.cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); }
+
+/* 精选产品 - 横向滚动 (B1) */
+.featured-wrapper { position: relative; margin: 0 -8px; }
+.featured-track {
+  display: flex; gap: 20px; overflow-x: auto;
+  scroll-behavior: smooth; padding: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.featured-track::-webkit-scrollbar { display: none; }
+.product-card {
+  flex: 0 0 calc(25% - 15px); min-width: 240px;
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+  scroll-snap-align: start;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.product-img {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px;
+}
+.product-info { padding: 18px; }
+.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.product-latin {
+  font-size: 12px; color: var(--text-light);
+  font-style: italic; margin-bottom: 10px;
+}
+.product-specs {
+  display: flex; gap: 12px; font-size: 12px; color: var(--text-light);
+  border-top: 1px solid var(--cream-dark); padding-top: 10px;
+}
+.scroll-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--white); border: 1px solid var(--cream-dark);
+  box-shadow: var(--shadow);
+  cursor: pointer; font-size: 24px; line-height: 1;
+  color: var(--green); z-index: 5;
+  transition: all .2s;
+}
+.scroll-btn:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+.scroll-prev { left: -8px; }
+.scroll-next { right: -8px; }
+
+.products-bg { background: var(--cream-dark); }
+
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+
+@media (max-width: 900px) {
+  .hero h1 { font-size: 30px; }
+  .hero-sub { font-size: 15px; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
+  .scroll-btn { display: none; }
+  .trust-num { font-size: 22px; }
+  .cta-strip h2 { font-size: 22px; }
+}
+</style>
+
+<script>
+  // 横向滚动按钮 (B1)
+  document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('featured-track');
+    const prev = document.querySelector('.scroll-prev');
+    const next = document.querySelector('.scroll-next');
+    if (!track || !prev || !next) return;
+    const step = () => {
+      const card = track.querySelector('.product-card');
+      return card ? card.offsetWidth + 20 : 260;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+  });
+</script>

@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const stats = [
+  { num: '300', label: '亩种植基地' },
+  { num: '80+', label: '专业员工' },
+  { num: '500+', label: '在售品种' },
+  { num: '40+', label: '出口国家' },
+];
+
+const team = [
+  { name: '创始人 / 总经理', role: '30 年行业经验', desc: '负责公司战略与基地管理', emoji: '👨‍🌾' },
+  { name: '出口业务负责人', role: '10+ 年外贸经验', desc: '负责欧洲与中亚市场', emoji: '👩‍💼' },
+  { name: '质量管理负责人', role: '植物检疫专业', desc: '负责出口合规与品控', emoji: '👨‍🔬' },
+];
+
+const milestones = [
+  { year: '1990 年代', text: '从几亩苗圃起步，专注本土市场' },
+  { year: '2005 年', text: '扩建基地至 100 亩，开始盆景规模化种植' },
+  { year: '2012 年', text: '首次出口，发往东南亚市场' },
+  { year: '2016 年', text: '获得出口企业备案，进入欧盟市场' },
+  { year: '2020 年', text: '基地扩至 300 亩，年出口额破千万' },
+  { year: '2026 年', text: '覆盖 40+ 国家，成为区域领先出口商' },
+];
+
+const commitments = [
+  { icon: '🌱', title: '源头把控', desc: '每一株苗都来自自有基地' },
+  { icon: '📜', title: '合规第一', desc: '所有出口流程符合国际法规' },
+  { icon: '🤝', title: '长期共赢', desc: '不赚一次性钱，做长期伙伴' },
+  { icon: '📢', title: '信息透明', desc: '规格、价格、周期如实告知' },
+];
+---
+<Layout title="关于我们 - 汇农天下" lang="zh" description="汇农天下 - 30 年盆栽与观赏苗木出口经验，300 亩自有基地。">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>关于我们</h1>
+      <p class="hero-sub">30 年专注盆栽与观赏苗木 · 300 亩源头基地 · 服务 40+ 国家</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="about-teaser">
+        <div>
+          <div class="about-img">🏞️</div>
+          <div class="about-badge"><div class="num">300</div><div class="label">亩种植基地</div></div>
+        </div>
+        <div class="about-text">
+          <h2>我们的故事</h2>
+          <p>1990 年代初，创始人从几亩苗圃起家。30 年过去，从内销到出口，从单一品种到 500+ 品种，从国内市场到欧洲、中亚、东南亚 40+ 国家。</p>
+          <p>今天，汇农天下拥有 300 亩种植基地，专业的出口团队，完善的物流体系。但我们始终坚持一件事：源头把控品质，合规才能长久。</p>
+          <ul class="about-features">
+            <li>自有基地，从源头控制品质</li>
+            <li>专业团队，30 年行业深耕</li>
+            <li>合规出口，欧盟认证资质</li>
+            <li>持续创新，品种不断丰富</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>核心数据</h2><p>数字背后的实力</p></div>
+      <div class="stats-grid">
+        {stats.map(s => (
+          <div class="stat-item">
+            <div class="stat-num">{s.num}</div>
+            <div class="stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header"><h2>核心团队</h2><p>专业的人做专业的事</p></div>
+      <div class="team-grid">
+        {team.map(t => (
+          <div class="team-card">
+            <div class="team-avatar">{t.emoji}</div>
+            <h4>{t.name}</h4>
+            <div class="role">{t.role}</div>
+            <p>{t.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>发展历程</h2><p>30 年里程碑</p></div>
+      <div class="timeline">
+        {milestones.map(m => (
+          <div class="timeline-item">
+            <h4>{m.year}</h4>
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header"><h2>我们的承诺</h2><p>让每一单合作都放心</p></div>
+      <div class="commit-grid">
+        {commitments.map(c => (
+          <div class="commit-card">
+            <div class="commit-icon">{c.icon}</div>
+            <h4>{c.title}</h4>
+            <p>{c.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>想了解更多？</h2>
+      <p>欢迎联系我们，或先浏览产品目录</p>
+      <a href="/contact" class="btn-white">📩 联系我们</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.about-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.about-img {
+  width: 100%; height: 380px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 80px;
+}
+.about-badge {
+  display: inline-block; background: var(--green); color: var(--white);
+  padding: 16px 24px; border-radius: 8px; margin-top: 16px;
+}
+.about-badge .num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 32px; font-weight: 700; line-height: 1; }
+.about-badge .label { font-size: 12px; opacity: 0.9; }
+.about-text h2 { font-size: 32px; margin-bottom: 16px; }
+.about-text p { font-size: 15px; color: var(--text-light); margin-bottom: 20px; }
+.about-features { list-style: none; margin-bottom: 24px; }
+.about-features li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
+.about-features li::before { content: "✓"; color: var(--green); font-weight: 700; font-size: 16px; }
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  background: var(--green-dark); padding: 32px; border-radius: 8px; color: var(--white);
+}
+.stat-item { text-align: center; }
+.stat-num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+.stat-label { font-size: 14px; opacity: 0.85; }
+
+.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.team-card {
+  background: var(--white); border-radius: 8px; padding: 24px;
+  text-align: center; box-shadow: var(--shadow);
+}
+.team-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--cream-dark); margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 40px;
+}
+.team-card h4 { font-size: 16px; margin-bottom: 4px; }
+.team-card .role { font-size: 13px; color: var(--green); margin-bottom: 8px; font-weight: 600; }
+.team-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+.timeline { max-width: 700px; margin: 0 auto; position: relative; padding-left: 32px; }
+.timeline::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--green-light); }
+.timeline-item { position: relative; margin-bottom: 28px; }
+.timeline-item::before {
+  content: ""; position: absolute; left: -28px; top: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--green); border: 3px solid var(--cream);
+}
+.timeline-item h4 { font-size: 16px; margin-bottom: 4px; color: var(--green); }
+.timeline-item p { font-size: 14px; color: var(--text-light); }
+
+.commit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.commit-card {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 8px; padding: 28px 20px; text-align: center;
+  transition: border-color .2s;
+}
+.commit-card:hover { border-color: var(--green-light); }
+.commit-icon { font-size: 36px; margin-bottom: 14px; }
+.commit-card h4 { font-size: 15px; margin-bottom: 8px; }
+.commit-card p { font-size: 13px; color: var(--text-light); }
+
+@media (max-width: 900px) {
+  .about-teaser { grid-template-columns: 1fr; gap: 32px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .team-grid { grid-template-columns: 1fr; }
+  .commit-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>

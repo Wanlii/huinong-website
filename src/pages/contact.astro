@@ -1,0 +1,238 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const channels = [
+  { icon: '📧', title: 'Email', content: 'export@huinongplants.com（外贸专用）' },
+  { icon: '💬', title: 'WhatsApp / WeChat', content: '+86 xxx xxxx xxxx（推荐）' },
+  { icon: '📞', title: 'Phone', content: '+86 xxx-xxxxxxxx（座机）' },
+  { icon: '📍', title: '公司地址', content: '安徽省合肥市 XX 区 XX 路 88 号' },
+];
+
+const countries = [
+  'Germany', 'France', 'Netherlands', 'Spain', 'Italy', 'Poland',
+  'Turkey', 'Saudi Arabia', 'UAE', 'Israel', 'Qatar', 'Kuwait',
+  'Kazakhstan', 'Uzbekistan', 'Kyrgyzstan', 'Other'
+];
+---
+<Layout title="联系我们 - 汇农天下" lang="zh" description="联系汇农天下：邮箱、WhatsApp、电话、地址。12 小时内回复。">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>联系我们</h1>
+      <p class="hero-sub">12 小时内回复 · 全程无忧对接</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+        <div>
+          <h2 style="font-size: 24px; margin-bottom: 12px;">多渠道联系</h2>
+          <p style="font-size: 14px; color: var(--text-light); margin-bottom: 20px;">选择最适合您的方式，我们 12 小时内回复</p>
+
+          {channels.map(c => (
+            <div class="contact-card">
+              <div class="icon">{c.icon}</div>
+              <div>
+                <h4>{c.title}</h4>
+                <p>{c.content}</p>
+              </div>
+            </div>
+          ))}
+
+          <div class="time-note">
+            <strong>工作时间：</strong>周一至周六 09:00-18:00 (GMT+8)<br>
+            <strong>欧洲时差：</strong>北京 09:00 = 柏林 03:00；建议您留言或发邮件，12 小时内必回
+          </div>
+        </div>
+
+        <div class="form-wrap">
+          <h2>📩 询盘表单</h2>
+          <p>告诉我们您的需求，我们将在 12 小时内回复</p>
+
+          <form id="inquiry-form" action="#" method="POST">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>公司名 *</label>
+                <input type="text" name="company" placeholder="Your company name" required>
+              </div>
+              <div class="form-group">
+                <label>国家 *</label>
+                <select name="country" required>
+                  <option value="">请选择</option>
+                  {countries.map(c => <option value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>姓名 *</label>
+                <input type="text" name="name" placeholder="First Last" required>
+              </div>
+              <div class="form-group">
+                <label>邮箱 *</label>
+                <input type="email" name="email" placeholder="you@company.com" required>
+              </div>
+              <div class="form-group">
+                <label>电话</label>
+                <input type="tel" name="phone" placeholder="+xx xxx xxx xxxx">
+              </div>
+              <div class="form-group">
+                <label>感兴趣品类</label>
+                <select name="category">
+                  <option value="">请选择</option>
+                  <option value="potted">盆栽（Bonsai）</option>
+                  <option value="ornamental">观赏苗木</option>
+                  <option value="undecided">未决定，需要建议</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label>留言内容 *</label>
+                <textarea name="message" placeholder="请描述您的需求：产品、规格、数量、目的港等" required></textarea>
+              </div>
+              <div class="form-group full">
+                <button type="submit" class="btn-green" style="width: 100%; padding: 14px;">📩 提交询盘</button>
+              </div>
+            </div>
+            <p style="font-size: 12px; color: var(--text-light); text-align: center; margin-top: 12px;">提交即表示您同意我们处理您提交的信息</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>公司位置</h2><p>欢迎预约参观基地</p></div>
+      <div class="map-box">📍 <span style="margin-left: 12px;">Google Maps 嵌入区（正式版显示基地实景地图）</span></div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: start; }
+.contact-card {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 8px; padding: 18px; margin-bottom: 12px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.contact-card .icon { font-size: 24px; flex-shrink: 0; }
+.contact-card h4 { font-size: 14px; margin-bottom: 4px; }
+.contact-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+.time-note {
+  background: var(--cream-dark); padding: 12px 16px;
+  border-radius: 6px; font-size: 13px; color: var(--text-light);
+  margin: 16px 0;
+}
+
+.form-wrap { background: var(--white); padding: 28px; border-radius: 12px; box-shadow: var(--shadow); }
+.form-wrap h2 { font-size: 22px; margin-bottom: 6px; }
+.form-wrap > p { font-size: 14px; color: var(--text-light); margin-bottom: 22px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 600px; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 11px 14px; border: 1px solid #ddd;
+  border-radius: 4px; font-size: 14px; font-family: inherit;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline: none; border-color: var(--green);
+}
+.form-group textarea { min-height: 110px; resize: vertical; }
+
+.map-box {
+  width: 100%; height: 320px;
+  background: linear-gradient(135deg, #e8e2d4 0%, #d4cab8 100%);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-light); font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('inquiry-form');
+    if (!form) return;
+
+    // 实时清除错误样式
+    form.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('input', () => { el.style.borderColor = ''; });
+      el.addEventListener('change', () => { el.style.borderColor = ''; });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // 1. 必填项校验
+      const required = form.querySelectorAll('[required]');
+      let valid = true;
+      let firstInvalid: HTMLElement | null = null;
+
+      required.forEach(field => {
+        const el = field as HTMLElement;
+        if (!el.value.trim()) {
+          valid = false;
+          el.style.borderColor = '#c0392b';
+          if (!firstInvalid) firstInvalid = el;
+        } else {
+          el.style.borderColor = '';
+        }
+      });
+
+      // 2. 邮箱格式校验
+      const email = form.querySelector('input[type="email"]') as HTMLInputElement | null;
+      if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        valid = false;
+        email.style.borderColor = '#c0392b';
+        if (!firstInvalid) firstInvalid = email;
+        alert('请输入有效的邮箱地址');
+      }
+
+      if (!valid) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      // 3. 提交到 Cloudflare Pages Function (/api/inquiry)
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+      if (!submitBtn) return;
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = '提交中...';
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(form);
+        const data: Record<string, string> = {};
+        formData.forEach((v, k) => { if (typeof v === 'string') data[k] = v; });
+        data.lang = window.location.pathname.startsWith('/en') ? 'en' : 'zh';
+
+        const res = await fetch('/api/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          submitBtn.textContent = '✓ 已提交！我们将尽快联系您';
+          form.reset();
+          setTimeout(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }, 4000);
+        } else {
+          const err = await res.text();
+          alert('提交失败：' + err);
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        alert('网络错误：' + (err as Error).message);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script>

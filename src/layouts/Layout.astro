@@ -1,0 +1,54 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  lang?: 'zh' | 'en';
+  description?: string;
+  ogImage?: string;
+}
+const { title, lang = 'zh', description, ogImage } = Astro.props;
+const isZh = lang === 'zh';
+const defaultDesc = isZh
+  ? '汇农天下 - 优质盆栽与观赏苗木出口商，源头直供，欧盟认证。'
+  : 'Huinong - Premium bonsai and ornamental plants exporter. Source factory, EU certified.';
+const desc = description || defaultDesc;
+const ogImg = ogImage || 'https://huinongplants.com/og-default.svg';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const siteName = isZh ? '汇农天下' : 'Huinong';
+---
+<!doctype html>
+<html lang={isZh ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={desc} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImg} />
+    <meta property="og:locale" content={isZh ? 'zh_CN' : 'en_US'} />
+    <meta property="og:site_name" content={siteName} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImg} />
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header lang={lang} />
+    <slot />
+    <Footer lang={lang} />
+  </body>
+</html>

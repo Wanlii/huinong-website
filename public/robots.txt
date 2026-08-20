@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://huinongplants.com/sitemap-index.xml

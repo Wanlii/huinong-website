@@ -1,0 +1,106 @@
+---
+const { lang = 'zh' } = Astro.props;
+const isZh = lang === 'zh';
+
+const t = isZh
+  ? {
+      brand: '汇农天下',
+      brandDesc: '优质盆栽与观赏苗木出口商，源头直供，欧盟认证。',
+      products: '产品',
+      company: '公司',
+      service: '服务',
+      productBonsai: '盆栽系列',
+      productOrnamental: '观赏苗木',
+      about: '关于我们',
+      certifications: '资质认证',
+      contact: '联系我们',
+      copyright: '© 2026 汇农天下',
+      compliance: 'EU 2016/2031 & EU 2019/2072 合规',
+    }
+  : {
+      brand: 'Huinong',
+      brandDesc: 'Premium bonsai and ornamental plants exporter. Source factory, EU certified.',
+      products: 'Products',
+      company: 'Company',
+      service: 'Service',
+      productBonsai: 'Bonsai Series',
+      productOrnamental: 'Ornamental Plants',
+      about: 'About Us',
+      certifications: 'Certifications',
+      contact: 'Contact',
+      copyright: '© 2026 Huinong',
+      compliance: 'EU 2016/2031 & EU 2019/2072 Compliant',
+    };
+
+const basePath = isZh ? '' : '/en';
+---
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>{t.brand}</h3>
+        <p>{t.brandDesc}</p>
+      </div>
+      <div class="footer-col">
+        <h4>{t.products}</h4>
+        <a href={`${basePath}/products`}>{t.productBonsai}</a>
+        <a href={`${basePath}/products`}>{t.productOrnamental}</a>
+      </div>
+      <div class="footer-col">
+        <h4>{t.company}</h4>
+        <a href={`${basePath}/about`}>{t.about}</a>
+        <a href={`${basePath}/certifications`}>{t.certifications}</a>
+      </div>
+      <div class="footer-col">
+        <h4>{t.service}</h4>
+        <a href={`${basePath}/contact`}>{t.contact}</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>{t.copyright}</span>
+      <span>{t.compliance}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+.footer {
+  background: var(--green-dark);
+  color: rgba(255,255,255,0.8);
+  padding: 56px 0 28px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.footer-brand h3 {
+  color: var(--white); font-size: 22px; margin-bottom: 12px;
+}
+.footer-brand p {
+  font-size: 14px; line-height: 1.7; opacity: 0.7;
+}
+.footer-col h4 {
+  color: var(--white); font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600; margin-bottom: 14px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.footer-col a {
+  display: block; font-size: 13px; margin-bottom: 8px;
+  opacity: 0.7; transition: opacity .2s;
+}
+.footer-col a:hover { opacity: 1; }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 20px;
+  display: flex; justify-content: space-between;
+  font-size: 12px; opacity: 0.6;
+}
+
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-bottom { flex-direction: column; gap: 8px; }
+}
+</style>

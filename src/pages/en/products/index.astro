@@ -1,0 +1,184 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const categories = [
+  { id: 'all', name: 'All Products', active: true },
+  { id: 'potted', name: 'Potted Plants' },
+  { id: 'ornamental', name: 'Ornamental Plants' },
+];
+
+const products = [
+  { name: 'Crape Myrtle', latin: 'Lagerstroemia indica', spec: 'H 60-120cm', emoji: '🌸', cat: 'ornamental', slug: 'crape-myrtle' },
+  { name: 'Japanese Maple', latin: 'Acer palmatum', spec: 'H 50-100cm', emoji: '🍁', cat: 'ornamental', slug: 'japanese-maple' },
+  { name: 'Yulan Magnolia', latin: 'Magnolia denudata', spec: 'H 100-200cm', emoji: '🌷', cat: 'ornamental', slug: 'yulan-magnolia' },
+  { name: 'Windmill Palm', latin: 'Trachycarpus fortunei', spec: 'H 80-150cm', emoji: '🌴', cat: 'ornamental', slug: 'windmill-palm' },
+  { name: 'Sweet Osmanthus', latin: 'Osmanthus fragrans', spec: 'H 80-150cm', emoji: '🌼', cat: 'ornamental', slug: 'sweet-osmanthus' },
+  { name: 'Lilac', latin: 'Syringa oblata', spec: 'H 50-100cm', emoji: '🌿', cat: 'ornamental', slug: 'lilac' },
+  { name: 'China Rose', latin: 'Rosa chinensis', spec: 'H 30-80cm', emoji: '🌹', cat: 'ornamental', slug: 'china-rose' },
+  { name: 'Black Pine', latin: 'Pinus thunbergii', spec: 'H 30-60cm', emoji: '🌲', cat: 'potted', slug: 'black-pine' },
+  { name: 'Ficus', latin: 'Ficus microcarpa', spec: 'H 40-80cm', emoji: '🌳', cat: 'potted', slug: 'ficus-microcarpa' },
+  { name: 'Buddhist Pine', latin: 'Podocarpus macrophyllus', spec: 'H 40-80cm', emoji: '🌿', cat: 'potted', slug: 'buddhist-pine' },
+  { name: 'Azalea', latin: 'Rhododendron simsii', spec: 'H 20-50cm', emoji: '🌺', cat: 'potted', slug: 'azalea' },
+  { name: 'Pistacia', latin: 'Pistacia weinmannifolia', spec: 'H 30-60cm', emoji: '🍀', cat: 'potted', slug: 'pistacia' },
+];
+
+const sorted = [...products].sort((a, b) => {
+  if (a.cat === 'ornamental' && b.cat !== 'ornamental') return -1;
+  if (a.cat !== 'ornamental' && b.cat === 'ornamental') return 1;
+  return 0;
+});
+---
+<Layout title="Products - Huinong" lang="en" description="Huinong product catalog - ornamental plants & potted plants, 500+ varieties.">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>Products</h1>
+      <p class="hero-sub">500+ varieties in stock · continuously updated · custom orders welcome</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-bottom: 0;">
+    <div class="container">
+      <div class="cat-filter" id="cat-filter">
+        {categories.map(c => (
+          <button class={`cat-filter-btn ${c.active ? 'active' : ''}`} data-cat={c.id}>{c.name}</button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="toolbar">
+        <span class="count">Showing <span id="visible-count">{sorted.length}</span> / {products.length} products</span>
+        <select class="sort-select" id="sort-select">
+          <option value="default">Sort by category</option>
+          <option value="name">Sort by name</option>
+        </select>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        {sorted.map(p => (
+          <a href={`/en/products/${p.slug}`} class="product-card" data-cat={p.cat}>
+            <div class="product-img">{p.emoji}</div>
+            <div class="product-info">
+              <div class="product-name">{p.name}</div>
+              <div class="product-latin">{p.latin}</div>
+              <div class="product-specs"><span>{p.spec}</span></div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="pagination">
+        <button>Previous</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>…</button>
+        <button>Next</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>Can't find what you need?</h2>
+      <p>Tell us your requirements, we'll help you find it</p>
+      <a href="/en/contact" class="btn-white">📩 Request a Quote</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.cat-filter { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.cat-filter-btn {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  padding: 8px 18px; border-radius: 20px;
+  cursor: pointer; font-size: 14px;
+  transition: all .2s;
+}
+.cat-filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.toolbar .count { color: var(--text-light); font-size: 14px; }
+.sort-select { padding: 8px 12px; border-radius: 4px; border: 1px solid #ddd; font-size: 14px; }
+
+.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.product-card {
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.product-img {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  display: flex; align-items: center; justify-content: center; font-size: 50px;
+}
+.product-info { padding: 18px; }
+.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.product-latin { font-size: 12px; color: var(--text-light); font-style: italic; margin-bottom: 10px; }
+.product-specs {
+  display: flex; gap: 12px; font-size: 12px; color: var(--text-light);
+  border-top: 1px solid var(--cream-dark); padding-top: 10px;
+}
+
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 48px; }
+.pagination button {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 14px;
+}
+.pagination button.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .product-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.cat-filter-btn');
+    const cards = document.querySelectorAll('.product-card');
+    const visibleCount = document.getElementById('visible-count');
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
+    const grid = document.getElementById('product-grid');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = (btn as HTMLElement).dataset.cat;
+        let n = 0;
+        cards.forEach(c => {
+          const match = cat === 'all' || (c as HTMLElement).dataset.cat === cat;
+          (c as HTMLElement).style.display = match ? '' : 'none';
+          if (match) n++;
+        });
+        if (visibleCount) visibleCount.textContent = String(n);
+      });
+    });
+
+    sortSelect?.addEventListener('change', () => {
+      const v = sortSelect.value;
+      if (!grid) return;
+      const list = Array.from(cards) as HTMLElement[];
+      if (v === 'name') {
+        list.sort((a, b) => {
+          const an = a.querySelector('.product-name')?.textContent || '';
+          const bn = b.querySelector('.product-name')?.textContent || '';
+          return an.localeCompare(bn);
+        });
+      } else {
+        list.sort((a, b) => {
+          const ac = a.dataset.cat === 'ornamental' ? -1 : 1;
+          const bc = b.dataset.cat === 'ornamental' ? -1 : 1;
+          return ac - bc;
+        });
+      }
+      list.forEach(c => grid.appendChild(c));
+    });
+  });
+</script>

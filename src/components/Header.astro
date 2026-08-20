@@ -1,0 +1,85 @@
+---
+const { lang = 'zh' } = Astro.props;
+const isZh = lang === 'zh';
+
+const navItems = isZh
+  ? [
+      { href: '/', label: '首页' },
+      { href: '/about', label: '关于我们' },
+      { href: '/products', label: '产品目录' },
+      { href: '/certifications', label: '资质合规' },
+      { href: '/contact', label: '联系我们' },
+    ]
+  : [
+      { href: '/en/', label: 'Home' },
+      { href: '/en/about', label: 'About Us' },
+      { href: '/en/products', label: 'Products' },
+      { href: '/en/certifications', label: 'Certifications' },
+      { href: '/en/contact', label: 'Contact' },
+    ];
+
+const homeHref = isZh ? '/' : '/en/';
+const otherLangHref = isZh ? '/en/' : '/';
+const otherLangLabel = isZh ? 'EN' : '中文';
+const ctaLabel = isZh ? '立即询盘' : 'Request a Quote';
+const ctaHref = isZh ? '/contact' : '/en/contact';
+const logoHtml = isZh ? '汇农<span>天下</span>' : 'Huinong';
+---
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href={homeHref} class="logo" set:html={logoHtml}></a>
+    <div class="nav-links">
+      {navItems.map(item => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+      <a href={otherLangHref} class="lang-switch">{otherLangLabel}</a>
+      <a href={ctaHref} class="nav-cta">{ctaLabel}</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--cream-dark);
+}
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 72px;
+}
+.logo {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 24px; font-weight: 700; color: var(--green);
+  letter-spacing: -0.5px;
+}
+.logo :global(span) { color: var(--wood); }
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-links a {
+  font-size: 14px; font-weight: 500; color: var(--text);
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--green); }
+.lang-switch {
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid var(--cream-dark);
+  border-radius: 4px;
+  color: var(--text-light);
+}
+.nav-cta {
+  background: var(--green);
+  color: var(--white) !important;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: 600 !important;
+  transition: background .2s;
+}
+.nav-cta:hover { background: var(--green-dark); }
+
+@media (max-width: 900px) {
+  .nav-links a:not(.lang-switch):not(.nav-cta) { display: none; }
+  .nav-inner { height: 60px; }
+  .logo { font-size: 20px; }
+}
+</style>

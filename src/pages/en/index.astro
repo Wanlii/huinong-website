@@ -1,0 +1,233 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const trustItems = [
+  { num: '30+', label: 'Years of Experience' },
+  { num: '500+', label: 'Varieties in Stock' },
+  { num: '40+', label: 'Export Countries' },
+  { num: '100%', label: 'Compliant Export' },
+];
+
+const categories = [
+  { name: 'Ornamental Plants', desc: 'Trees · Shrubs · Ground covers · 300+ varieties · bulk procurement', emoji: '🌳', href: '/en/products?cat=ornamental' },
+  { name: 'Potted Plants (Bonsai)', desc: 'Conifers · Hardwoods · Flowering · 200+ varieties · wholesale', emoji: '🪴', href: '/en/products?cat=potted' },
+];
+
+const featured = [
+  { name: 'Crape Myrtle', latin: 'Lagerstroemia indica', spec: 'H 60-120cm', emoji: '🌸', slug: 'crape-myrtle' },
+  { name: 'Japanese Maple', latin: 'Acer palmatum', spec: 'H 50-100cm', emoji: '🍁', slug: 'japanese-maple' },
+  { name: 'Black Pine', latin: 'Pinus thunbergii', spec: 'H 30-60cm', emoji: '🌲', slug: 'black-pine' },
+  { name: 'Windmill Palm', latin: 'Trachycarpus fortunei', spec: 'H 80-150cm', emoji: '🌴', slug: 'windmill-palm' },
+  { name: 'Ficus', latin: 'Ficus microcarpa', spec: 'H 40-80cm', emoji: '🌳', slug: 'ficus-microcarpa' },
+  { name: 'Yulan Magnolia', latin: 'Magnolia denudata', spec: 'H 100-200cm', emoji: '🌷', slug: 'yulan-magnolia' },
+];
+---
+<Layout title="Huinong - Bonsai & Ornamental Plants Exporter" lang="en">
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>From Source to the World</h1>
+      <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 30 years of growing experience · source factory</p>
+      <a href="/en/contact" class="btn-green hero-cta">Request a Quote →</a>
+    </div>
+  </section>
+
+  <!-- 2. Trust bar -->
+  <section class="trust-bar">
+    <div class="container trust-inner">
+      {trustItems.map(item => (
+        <div class="trust-item">
+          <div class="trust-num">{item.num}</div>
+          <div class="trust-label">{item.label}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 3. 2 大类产品卡片 -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Product Categories</h2>
+        <p>Two main categories to meet different procurement needs</p>
+      </div>
+      <div class="cat-grid">
+        {categories.map(cat => (
+          <a href={cat.href} class="cat-card">
+            <div class="cat-img">{cat.emoji}</div>
+            <div class="cat-body">
+              <h3>{cat.name}</h3>
+              <p>{cat.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 精选产品（横向滚动 B1） -->
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header">
+        <h2>Featured Products</h2>
+        <p>Featured varieties, click to view details</p>
+      </div>
+      <div class="featured-wrapper">
+        <button class="scroll-btn scroll-prev" aria-label="Previous">‹</button>
+        <div class="featured-track" id="featured-track">
+          {featured.map(item => (
+            <a href={`/en/products/${item.slug}`} class="product-card">
+              <div class="product-img">{item.emoji}</div>
+              <div class="product-info">
+                <div class="product-name">{item.name}</div>
+                <div class="product-latin">{item.latin}</div>
+                <div class="product-specs"><span>{item.spec}</span></div>
+              </div>
+            </a>
+          ))}
+        </div>
+        <button class="scroll-btn scroll-next" aria-label="Next">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CTA strip -->
+  <section class="cta-strip">
+    <div class="container">
+      <h2>Need to procure? Request a quote</h2>
+      <p>Tell us your needs, we'll reply within 12 hours</p>
+      <a href="/en/contact" class="btn-white">📩 Request a Quote</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.hero {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3A5F3A 0%, #2A4A2A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  color: var(--white); max-width: 800px; padding: 0 24px;
+}
+.hero h1 { font-size: 44px; line-height: 1.2; margin-bottom: 16px; }
+.hero-sub { font-size: 17px; opacity: 0.9; margin-bottom: 32px; line-height: 1.6; }
+.hero-cta { font-size: 16px; padding: 14px 32px; }
+
+.trust-bar { background: var(--green-dark); padding: 28px 0; }
+.trust-inner {
+  display: flex; justify-content: space-around; align-items: center;
+  flex-wrap: wrap; gap: 32px;
+}
+.trust-item { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.9); }
+.trust-num {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 28px; font-weight: 700; color: var(--white); line-height: 1;
+}
+.trust-label { font-size: 13px; opacity: 0.8; line-height: 1.3; }
+
+.cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+.cat-card {
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow); transition: box-shadow .3s;
+}
+.cat-card:hover { box-shadow: var(--shadow-lg); }
+.cat-img {
+  width: 100%; height: 240px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 60px; color: var(--white);
+}
+.cat-body { padding: 24px; }
+.cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); }
+
+.featured-wrapper { position: relative; margin: 0 -8px; }
+.featured-track {
+  display: flex; gap: 20px; overflow-x: auto;
+  scroll-behavior: smooth; padding: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.featured-track::-webkit-scrollbar { display: none; }
+.product-card {
+  flex: 0 0 calc(25% - 15px); min-width: 240px;
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+  scroll-snap-align: start;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.product-img {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px;
+}
+.product-info { padding: 18px; }
+.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.product-latin {
+  font-size: 12px; color: var(--text-light);
+  font-style: italic; margin-bottom: 10px;
+}
+.product-specs {
+  display: flex; gap: 12px; font-size: 12px; color: var(--text-light);
+  border-top: 1px solid var(--cream-dark); padding-top: 10px;
+}
+.scroll-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--white); border: 1px solid var(--cream-dark);
+  box-shadow: var(--shadow);
+  cursor: pointer; font-size: 24px; line-height: 1;
+  color: var(--green); z-index: 5;
+  transition: all .2s;
+}
+.scroll-btn:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+.scroll-prev { left: -8px; }
+.scroll-next { right: -8px; }
+
+.products-bg { background: var(--cream-dark); }
+
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+
+@media (max-width: 900px) {
+  .hero h1 { font-size: 30px; }
+  .hero-sub { font-size: 15px; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
+  .scroll-btn { display: none; }
+  .trust-num { font-size: 22px; }
+  .cta-strip h2 { font-size: 22px; }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('featured-track');
+    const prev = document.querySelector('.scroll-prev');
+    const next = document.querySelector('.scroll-next');
+    if (!track || !prev || !next) return;
+    const step = () => {
+      const card = track.querySelector('.product-card');
+      return card ? card.offsetWidth + 20 : 260;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+  });
+</script>

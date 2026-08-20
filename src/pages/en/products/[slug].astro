@@ -1,0 +1,366 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const productData = {
+  'crape-myrtle': { name: 'Crape Myrtle', latin: 'Lagerstroemia indica', enName: 'Crape Myrtle', emoji: '🌸', fob: '$8 - $25', hs: '0602.90', season: 'Oct - Apr', moq: '500 plants', lead: '15-30 days', category: 'Ornamental Plants' },
+  'japanese-maple': { name: 'Japanese Maple', latin: 'Acer palmatum', enName: 'Japanese Maple', emoji: '🍁', category: 'Ornamental Plants' },
+  'black-pine': { name: 'Black Pine', latin: 'Pinus thunbergii', enName: 'Black Pine', emoji: '🌲', category: 'Potted Plants' },
+  'windmill-palm': { name: 'Windmill Palm', latin: 'Trachycarpus fortunei', enName: 'Windmill Palm', emoji: '🌴', category: 'Ornamental Plants' },
+  'ficus-microcarpa': { name: 'Ficus', latin: 'Ficus microcarpa', enName: 'Ficus', emoji: '🌳', category: 'Potted Plants' },
+  'yulan-magnolia': { name: 'Yulan Magnolia', latin: 'Magnolia denudata', enName: 'Yulan Magnolia', emoji: '🌷', category: 'Ornamental Plants' },
+};
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'crape-myrtle' } },
+    { params: { slug: 'japanese-maple' } },
+    { params: { slug: 'black-pine' } },
+    { params: { slug: 'windmill-palm' } },
+    { params: { slug: 'ficus-microcarpa' } },
+    { params: { slug: 'yulan-magnolia' } },
+  ];
+}
+
+const { slug } = Astro.params;
+const product = productData[slug as keyof typeof productData];
+const isComplete = slug === 'crape-myrtle';
+
+const specs = [
+  { h: '60-80cm', c: '40-60cm', d: '2-3cm', y: '3-4 yrs' },
+  { h: '80-100cm', c: '50-80cm', d: '3-4cm', y: '4-5 yrs' },
+  { h: '100-120cm', c: '60-100cm', d: '4-5cm', y: '5-7 yrs' },
+  { h: '120-150cm', c: '80-120cm', d: '5-7cm', y: '7-10 yrs' },
+];
+
+const faqs = [
+  { q: `What climate is ${product.name} suitable for?`, a: 'Strong cold tolerance, can withstand -15°C. Suitable for temperate to subtropical climates; most of Europe can grow it outdoors.' },
+  { q: 'Shipping & container loading?', a: `20'GP holds approx 1500-2000 plants (bare root), 40'HC approx 3500-5000. Autumn/winter digging recommended.` },
+  { q: 'Is a CITES permit required?', a: `${product.name} is not a CITES-protected species. Standard Phytosanitary Certificate is sufficient.` },
+  { q: 'Do you provide fumigation treatment?', a: 'Yes, fumigation treatment available on request with official certificate.' },
+];
+
+const gallery = [
+  { emoji: '🌸', image: '' },
+  { emoji: '🌿', image: '' },
+  { emoji: '📦', image: '' },
+  { emoji: '🏭', image: '' },
+];
+---
+<Layout
+  title={isComplete ? `${product.name} - Product Details - Huinong` : `${product.name} - Huinong`}
+  lang="en"
+  description={isComplete
+    ? `${product.name} (${product.latin}) - FOB from ${product.fob}/plant, HS Code ${product.hs}.`
+    : `${product.name} (${product.latin}) - ${product.enName}, premium quality from Huinong.`}
+>
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/en/">Home</a> › <a href="/en/products">Products</a> › <span>{product.name}</span>
+    </div>
+  </div>
+
+  {isComplete ? (
+    <>
+      <section class="section">
+        <div class="container">
+          <div class="pd-grid">
+            <div class="pd-gallery">
+              <div class="pd-thumbs">
+                {gallery.map((g, i) => (
+                  <div
+                    class={`pd-thumb ${i === 0 ? 'active' : ''}`}
+                    data-index={i}
+                    data-emoji={g.emoji}
+                    data-image={g.image}
+                  >
+                    {g.image ? <img src={g.image} alt={`${product.name} ${i+1}`} /> : g.emoji}
+                  </div>
+                ))}
+              </div>
+              <div class="pd-main" id="pd-main">{gallery[0].emoji}</div>
+            </div>
+
+            <div class="pd-info">
+              <h1>{product.name}</h1>
+              <p class="latin">{product.latin} · {product.enName}</p>
+
+              <div class="price-box">
+                <div class="label">FOB from</div>
+                <div class="price">{product.fob} / plant</div>
+                <div class="note">Price varies by spec / quantity / season</div>
+              </div>
+
+              <div class="meta-grid">
+                <div class="meta-item"><div class="k">HS Code</div><div class="v">{product.hs}</div></div>
+                <div class="meta-item"><div class="k">Supply Season</div><div class="v">{product.season}</div></div>
+                <div class="meta-item"><div class="k">MOQ</div><div class="v">{product.moq}</div></div>
+                <div class="meta-item"><div class="k">Lead Time</div><div class="v">{product.lead}</div></div>
+              </div>
+
+              <h3 class="pd-h3">Main Specifications</h3>
+              <table class="spec-table">
+                <tr><th>Height</th><th>Crown</th><th>Trunk Dia.</th><th>Age</th></tr>
+                {specs.map(s => (
+                  <tr><td>{s.h}</td><td>{s.c}</td><td>{s.d}</td><td>{s.y}</td></tr>
+                ))}
+              </table>
+
+              <div class="pd-actions">
+                <a href={`/en/contact?product=${product.name}`} class="btn-green" style="flex: 1; text-align: center;">📩 Inquire This Product</a>
+                <a href="#" class="btn-outline">💬 WhatsApp</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pd-faq">
+            <div class="section-header"><h2 style="font-size: 24px;">Care & FAQ</h2><p>Read before you order</p></div>
+            <div class="faq-list">
+              {faqs.map((f, i) => (
+                <div class="faq-item" data-faq={i}>
+                  <div class="faq-q"><span>{f.q}</span><span class="faq-icon">+</span></div>
+                  <div class="faq-a">{f.a}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-strip">
+        <div class="container">
+          <h2>Want to order {product.name}?</h2>
+          <p>Tell us your specs, quantity, destination port</p>
+          <a href={`/en/contact?product=${product.name}`} class="btn-white">📩 Inquire {product.name}</a>
+        </div>
+      </section>
+
+      <div class="lightbox" id="lightbox" aria-hidden="true">
+        <button class="lightbox-close" aria-label="Close">×</button>
+        <button class="lightbox-prev" aria-label="Previous">‹</button>
+        <button class="lightbox-next" aria-label="Next">›</button>
+        <div class="lightbox-content" id="lb-content"></div>
+        <div class="lightbox-counter" id="lb-counter"></div>
+      </div>
+    </>
+  ) : (
+    <section class="section">
+      <div class="container">
+        <div class="placeholder-product">
+          <div class="placeholder-emoji">{product.emoji}</div>
+          <h1>{product.name}</h1>
+          <p class="latin">{product.latin} · {product.enName}</p>
+          <span class="placeholder-cat">Category: {product.category}</span>
+          <div class="placeholder-msg">
+            <p>This product detail page is being finalized.</p>
+            <p>Real data (images / specs / HS Code / pricing / FAQ) will be added after Aug 26.</p>
+            <p style="margin-top: 24px;">If you're interested in this product, please <a href="/en/contact" class="btn-green">Request a Quote</a> or browse the <a href="/en/products">Product Catalog</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+</Layout>
+
+<style>
+.breadcrumb { padding: 16px 0; font-size: 13px; color: var(--text-light); background: var(--cream-dark); }
+.breadcrumb a { color: var(--text-light); }
+.breadcrumb a:hover { color: var(--green); }
+.breadcrumb span { color: var(--text); }
+
+.pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.pd-gallery { display: grid; grid-template-columns: 1fr 4fr; gap: 12px; }
+.pd-thumbs { display: flex; flex-direction: column; gap: 8px; }
+.pd-thumb {
+  width: 100%; height: 80px; background: var(--cream-dark);
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; overflow: hidden;
+  transition: border-color .2s;
+  border: 2px solid transparent;
+}
+.pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pd-thumb.active { border-color: var(--green); }
+.pd-main {
+  width: 100%; height: 380px;
+  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 100px; cursor: zoom-in;
+  overflow: hidden;
+  user-select: none;
+}
+.pd-main img { width: 100%; height: 100%; object-fit: cover; }
+.pd-info h1 { font-size: 30px; margin-bottom: 6px; }
+.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin-bottom: 20px; }
+.price-box { background: var(--cream-dark); padding: 16px 20px; border-radius: 6px; margin-bottom: 16px; }
+.price-box .label { font-size: 12px; color: var(--text-light); }
+.price-box .price { font-size: 22px; font-weight: 700; color: var(--green); margin: 4px 0; }
+.price-box .note { font-size: 12px; color: var(--text-light); }
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.meta-item { padding: 12px; background: var(--cream); border-radius: 6px; }
+.meta-item .k { font-size: 11px; color: var(--text-light); }
+.meta-item .v { font-size: 14px; font-weight: 600; margin-top: 2px; }
+.pd-h3 { font-size: 17px; margin: 24px 0 10px; }
+.spec-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+.spec-table th { background: var(--green); color: var(--white); padding: 10px; text-align: left; font-size: 13px; }
+.spec-table td { padding: 10px; border-bottom: 1px solid var(--cream-dark); font-size: 13px; }
+.pd-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+.pd-faq { max-width: 900px; margin: 56px auto 0; }
+.faq-item { border-bottom: 1px solid var(--cream-dark); padding: 14px 0; }
+.faq-q {
+  font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 15px;
+}
+.faq-q .faq-icon { font-size: 22px; color: var(--green); font-weight: 400; transition: transform .2s; }
+.faq-item.open .faq-q .faq-icon { transform: rotate(45deg); }
+.faq-a { padding-top: 10px; color: var(--text-light); font-size: 14px; line-height: 1.7; display: none; }
+.faq-item.open .faq-a { display: block; }
+
+.placeholder-product { text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0; }
+.placeholder-emoji {
+  font-size: 100px; margin: 0 auto 20px;
+  width: 200px; height: 200px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.placeholder-product h1 { font-size: 36px; margin-bottom: 8px; color: var(--green); }
+.placeholder-cat {
+  display: inline-block; background: var(--green);
+  color: var(--white); padding: 4px 12px;
+  border-radius: 12px; font-size: 13px;
+  margin: 12px 0 24px;
+}
+.placeholder-msg { font-size: 15px; color: var(--text-light); line-height: 1.8; }
+.placeholder-msg p { margin-bottom: 8px; }
+
+/* Lightbox */
+.lightbox {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  align-items: center; justify-content: center;
+  padding: 40px;
+}
+.lightbox.open { display: flex; }
+.lightbox-content {
+  max-width: 90%; max-height: 85vh;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 200px;
+  user-select: none;
+}
+.lightbox-content img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+.lightbox-close, .lightbox-prev, .lightbox-next {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  color: white; border: none;
+  font-size: 32px; line-height: 1;
+  cursor: pointer;
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+.lightbox-close { top: 20px; right: 20px; }
+.lightbox-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: 20px; top: 50%; transform: translateY(-50%); }
+.lightbox-counter {
+  position: absolute; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  color: white; font-size: 14px; opacity: 0.7;
+}
+
+@media (max-width: 900px) {
+  .pd-grid { grid-template-columns: 1fr; }
+  .pd-gallery { grid-template-columns: 1fr; }
+  .pd-thumbs { flex-direction: row; }
+  .meta-grid { grid-template-columns: 1fr; }
+  .lightbox-content { font-size: 120px; }
+  .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
+}
+</style>
+
+{isComplete && (
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const q = item.querySelector('.faq-q');
+        q?.addEventListener('click', () => item.classList.toggle('open'));
+      });
+    });
+
+    (() => {
+      const thumbs = Array.from(document.querySelectorAll('.pd-thumb')) as HTMLElement[];
+      const main = document.getElementById('pd-main') as HTMLElement | null;
+      const lightbox = document.getElementById('lightbox');
+      const lbContent = document.getElementById('lb-content');
+      const lbCounter = document.getElementById('lb-counter');
+      if (!thumbs.length || !main || !lightbox || !lbContent) return;
+
+      const items = thumbs.map(t => ({
+        emoji: t.dataset.emoji || '',
+        image: t.dataset.image || '',
+      }));
+      let currentIndex = 0;
+
+      function renderItem(idx: number, container: HTMLElement, isMain = false) {
+        const item = items[idx];
+        if (item.image) {
+          container.innerHTML = `<img src="${item.image}" alt="" />`;
+          container.style.fontSize = '';
+        } else {
+          container.textContent = item.emoji;
+          container.style.fontSize = isMain ? '100px' : '200px';
+        }
+      }
+
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => {
+          thumbs.forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          currentIndex = i;
+          renderItem(i, main!, true);
+        });
+      });
+
+      main.addEventListener('click', openLightbox);
+
+      function openLightbox() {
+        renderItem(currentIndex, lbContent!);
+        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${items.length}`;
+        lightbox!.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox!.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      function navigate(dir: number) {
+        currentIndex = (currentIndex + dir + items.length) % items.length;
+        renderItem(currentIndex, lbContent!);
+        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${items.length}`;
+        thumbs.forEach(t => t.classList.remove('active'));
+        thumbs[currentIndex]?.classList.add('active');
+        if (main) renderItem(currentIndex, main, true);
+      }
+
+      lightbox.querySelector('.lightbox-close')?.addEventListener('click', closeLightbox);
+      lightbox.querySelector('.lightbox-prev')?.addEventListener('click', () => navigate(-1));
+      lightbox.querySelector('.lightbox-next')?.addEventListener('click', () => navigate(1));
+      lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox!.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigate(-1);
+        if (e.key === 'ArrowRight') navigate(1);
+      });
+    })();
+  </script>
+)}
