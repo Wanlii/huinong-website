@@ -2,67 +2,72 @@
 import Layout from '../../layouts/Layout.astro';
 
 const stats = [
-  { num: '300', label: 'Mu Planting Base' },
-  { num: '80+', label: 'Professional Staff' },
-  { num: '500+', label: 'Varieties in Stock' },
+  { num: '860+', label: 'Hectares of Base' },
+  { num: '600K+', label: 'Plants in Stock' },
   { num: '40+', label: 'Export Countries' },
+  { num: '20+', label: 'Years in Industry' },
 ];
 
 const team = [
-  { name: 'Founder / GM', role: '30 years in industry', desc: 'Strategy & base management', emoji: '👨‍🌾' },
-  { name: 'Export Manager', role: '10+ years in trade', desc: 'Europe & Central Asia markets', emoji: '👩‍💼' },
-  { name: 'Quality Manager', role: 'Phytosanitary expert', desc: 'Compliance & QC', emoji: '👨‍🔬' },
+  { name: 'Founder / GM', role: '20+ years experience', desc: 'Strategy and base management', emoji: '👨‍🌾' },
+  { name: 'Export Director', role: '10+ years in trade', desc: 'European and Central Asian markets', emoji: '👩‍💼' },
+  { name: 'QA Manager', role: 'Phytosanitary expert', desc: 'Compliance and quality control', emoji: '👨‍🔬' },
 ];
 
 const milestones = [
-  { year: '1990s', text: 'Started with a few mu of nursery, focused on domestic market' },
-  { year: '2005', text: 'Expanded base to 100 mu, scaled up bonsai cultivation' },
-  { year: '2012', text: 'First export shipment to Southeast Asia' },
+  { year: '2003', text: 'Founded in Xinyi, Jiangsu, leveraging the local flower & tree production region' },
+  { year: '2008', text: 'Expanded base, started large-scale shaped plant production' },
+  { year: '2012', text: 'First export, entered Southeast Asian markets' },
   { year: '2016', text: 'Obtained export registration, entered EU market' },
-  { year: '2020', text: 'Base expanded to 300 mu, annual exports exceeded 10M USD' },
-  { year: '2026', text: 'Covering 40+ countries, regional leading exporter' },
+  { year: '2020', text: 'Base expanded to 860 hectares, annual exports exceeded 10M' },
+  { year: '2026', text: 'Serving 40+ countries, ~30,000 plants exported annually' },
 ];
 
 const commitments = [
-  { icon: '🌱', title: 'Source Control', desc: 'Every plant comes from our own base' },
-  { icon: '📜', title: 'Compliance First', desc: 'All export flows follow international regulations' },
-  { icon: '🤝', title: 'Long-term Win-win', desc: 'Not one-time deals, but long-term partnerships' },
-  { icon: '📢', title: 'Transparent Info', desc: 'Specs, prices, lead times told as-is' },
+  { icon: '🌱', title: 'Source Control', desc: 'Every plant from our own 860 ha base' },
+  { icon: '📜', title: 'Compliance First', desc: 'EU 2016/2031 & 2019/2072 fully compliant' },
+  { icon: '🤝', title: 'Long-term Win', desc: 'Not a one-time deal, a lasting partnership' },
+  { icon: '📢', title: 'Transparency', desc: 'Specs, pricing, and timelines disclosed honestly' },
 ];
 ---
-<Layout title="About Us - Huinong" lang="en" description="Huinong - 30 years of bonsai and ornamental plants export, 300-mu own farm.">
+<Layout title="About Us - Huinong" lang="en" description="Huinong - Founded 2003, Xinyi Jiangsu. 860 hectares of self-owned base. Premium ornamental plants and bonsai exporter.">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>About Us</h1>
-      <p class="hero-sub">30 years in bonsai & ornamental plants · 300-mu source base · serving 40+ countries</p>
+      <p class="hero-sub">From Seedlings to Bonsai, From China to the World</p>
     </div>
   </section>
 
+  <!-- Company Introduction -->
   <section class="section">
     <div class="container">
-      <div class="about-teaser">
-        <div>
-          <div class="about-img">🏞️</div>
-          <div class="about-badge"><div class="num">300</div><div class="label">Mu Planting Base</div></div>
-        </div>
-        <div class="about-text">
-          <h2>Our Story</h2>
-          <p>In the early 1990s, our founder started with just a few mu of nursery. 30 years on, we went from domestic-only to global exports, from a single variety to 500+, from the local market to 40+ countries in Europe, Central Asia, and Southeast Asia.</p>
-          <p>Today, Huinong operates a 300-mu planting base, a professional export team, and a sound logistics system. But we hold to one principle: source-controlled quality, compliance for the long run.</p>
-          <ul class="about-features">
-            <li>Own base, source-controlled quality</li>
-            <li>Professional team, 30 years deep</li>
-            <li>Compliant exports, EU certified</li>
-            <li>Continuous innovation, expanding varieties</li>
+      <div class="intro-grid">
+        <div class="intro-text">
+          <div class="kicker">About Us</div>
+          <h2>From Source to the World</h2>
+          <p class="lead">Huinong was founded in <strong>2003</strong>, headquartered in Xinyi City, Jiangsu Province — at the heart of China's largest flower and tree production region.</p>
+          <p>With its favorable climate, fertile soil, and flat terrain, the region hosts over 10,000 horticultural enterprises and spans 400,000+ hectares of cultivation area — making it China's largest and most complete horticultural industry cluster.</p>
+          <p>Leveraging these regional resources, Huinong has grown over 20+ years into one of China's leading ornamental horticulture production and service companies:</p>
+          <ul class="intro-list">
+            <li><strong>860+ hectares</strong> of self-owned base</li>
+            <li><strong>600,000+ plants</strong> in stock</li>
+            <li><strong>~30,000 plants</strong> exported annually</li>
+            <li>Specialties: Chinese-style shaped plants / international-standard ornamentals / small potted plants</li>
           </ul>
+          <p class="quote">"We don't just sell plants — we aim to be a trusted long-term partner for horticultural buyers worldwide."</p>
+        </div>
+        <div class="intro-imgs">
+          <img src="/assets/images/company/nursery/main.jpg" alt="Huinong nursery" />
+          <img src="/assets/images/company/factory/main.jpg" alt="Huinong factory" />
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Stats -->
   <section class="section products-bg">
     <div class="container">
-      <div class="section-header"><h2>Core Metrics</h2><p>The numbers behind the strength</p></div>
+      <div class="section-header"><h2>Key Figures</h2><p>The numbers behind our strength</p></div>
       <div class="stats-grid">
         {stats.map(s => (
           <div class="stat-item">
@@ -74,6 +79,7 @@ const commitments = [
     </div>
   </section>
 
+  <!-- Team -->
   <section class="section">
     <div class="container">
       <div class="section-header"><h2>Core Team</h2><p>Professionals doing professional work</p></div>
@@ -90,9 +96,10 @@ const commitments = [
     </div>
   </section>
 
+  <!-- Milestones -->
   <section class="section products-bg">
     <div class="container">
-      <div class="section-header"><h2>Milestones</h2><p>30 years of growth</p></div>
+      <div class="section-header"><h2>Milestones</h2><p>From 2003 to 2026</p></div>
       <div class="timeline">
         {milestones.map(m => (
           <div class="timeline-item">
@@ -104,9 +111,10 @@ const commitments = [
     </div>
   </section>
 
+  <!-- Commitments -->
   <section class="section">
     <div class="container">
-      <div class="section-header"><h2>Our Commitments</h2><p>Peace of mind on every order</p></div>
+      <div class="section-header"><h2>Our Commitments</h2><p>Making every deal worry-free</p></div>
       <div class="commit-grid">
         {commitments.map(c => (
           <div class="commit-card">
@@ -122,31 +130,38 @@ const commitments = [
   <section class="cta-strip">
     <div class="container">
       <h2>Want to know more?</h2>
-      <p>Contact us, or browse our product catalog</p>
+      <p>Get in touch, or browse our product catalog first</p>
       <a href="/en/contact" class="btn-white">📩 Contact Us</a>
     </div>
   </section>
 </Layout>
 
 <style>
-.about-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-.about-img {
-  width: 100%; height: 380px;
-  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center; font-size: 80px;
+.intro-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: center; }
+.intro-text .kicker {
+  display: inline-block; font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--green); font-weight: 600;
+  margin-bottom: 12px;
 }
-.about-badge {
-  display: inline-block; background: var(--green); color: var(--white);
-  padding: 16px 24px; border-radius: 8px; margin-top: 16px;
+.intro-text h2 { font-size: 36px; color: var(--green-dark); margin-bottom: 20px; }
+.intro-text .lead { font-size: 17px; color: var(--text); margin-bottom: 16px; line-height: 1.7; }
+.intro-text p { font-size: 15px; color: var(--text-light); line-height: 1.8; margin-bottom: 14px; }
+.intro-list { list-style: none; margin: 20px 0; padding: 0; }
+.intro-list li {
+  padding: 8px 0; border-bottom: 1px solid var(--cream-dark);
+  font-size: 14px; color: var(--text);
 }
-.about-badge .num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 32px; font-weight: 700; line-height: 1; }
-.about-badge .label { font-size: 12px; opacity: 0.9; }
-.about-text h2 { font-size: 32px; margin-bottom: 16px; }
-.about-text p { font-size: 15px; color: var(--text-light); margin-bottom: 20px; }
-.about-features { list-style: none; margin-bottom: 24px; }
-.about-features li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
-.about-features li::before { content: "✓"; color: var(--green); font-weight: 700; font-size: 16px; }
+.intro-list li:last-child { border-bottom: none; }
+.intro-text .quote {
+  font-style: italic; color: var(--green); font-size: 15px;
+  padding: 16px 20px; background: var(--cream); border-left: 3px solid var(--green);
+  border-radius: 4px; margin-top: 20px;
+}
+.intro-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.intro-imgs img {
+  width: 100%; height: 220px; object-fit: cover; border-radius: 8px;
+  box-shadow: var(--shadow);
+}
 
 .stats-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
@@ -157,7 +172,10 @@ const commitments = [
 .stat-label { font-size: 14px; opacity: 0.85; }
 
 .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.team-card { background: var(--white); border-radius: 8px; padding: 24px; text-align: center; box-shadow: var(--shadow); }
+.team-card {
+  background: var(--white); border-radius: 8px; padding: 24px;
+  text-align: center; box-shadow: var(--shadow);
+}
 .team-avatar {
   width: 80px; height: 80px; border-radius: 50%;
   background: var(--cream-dark); margin: 0 auto 12px;
@@ -189,10 +207,30 @@ const commitments = [
 .commit-card h4 { font-size: 15px; margin-bottom: 8px; }
 .commit-card p { font-size: 13px; color: var(--text-light); }
 
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+
+.section { padding: 72px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
+.section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
+.products-bg { background: var(--cream-dark); }
+
 @media (max-width: 900px) {
-  .about-teaser { grid-template-columns: 1fr; gap: 32px; }
+  .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+  .intro-imgs { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .team-grid { grid-template-columns: 1fr; }
   .commit-grid { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 48px 0; }
+  .section-header h2 { font-size: 24px; }
 }
 </style>
