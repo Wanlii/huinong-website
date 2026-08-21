@@ -1,38 +1,26 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { getAllProducts } from '../../../lib/products';
+
+const products = getAllProducts();
 
 const categories = [
   { id: 'all', name: 'All Products', active: true },
-  { id: 'potted', name: 'Potted Plants' },
+  { id: 'potted', name: 'Potted (Bonsai)' },
   { id: 'ornamental', name: 'Ornamental Plants' },
 ];
 
-const products = [
-  { name: 'Crape Myrtle', latin: 'Lagerstroemia indica', spec: 'H 60-120cm', emoji: '🌸', cat: 'ornamental', slug: 'crape-myrtle' },
-  { name: 'Japanese Maple', latin: 'Acer palmatum', spec: 'H 50-100cm', emoji: '🍁', cat: 'ornamental', slug: 'japanese-maple' },
-  { name: 'Yulan Magnolia', latin: 'Magnolia denudata', spec: 'H 100-200cm', emoji: '🌷', cat: 'ornamental', slug: 'yulan-magnolia' },
-  { name: 'Windmill Palm', latin: 'Trachycarpus fortunei', spec: 'H 80-150cm', emoji: '🌴', cat: 'ornamental', slug: 'windmill-palm' },
-  { name: 'Sweet Osmanthus', latin: 'Osmanthus fragrans', spec: 'H 80-150cm', emoji: '🌼', cat: 'ornamental', slug: 'sweet-osmanthus' },
-  { name: 'Lilac', latin: 'Syringa oblata', spec: 'H 50-100cm', emoji: '🌿', cat: 'ornamental', slug: 'lilac' },
-  { name: 'China Rose', latin: 'Rosa chinensis', spec: 'H 30-80cm', emoji: '🌹', cat: 'ornamental', slug: 'china-rose' },
-  { name: 'Black Pine', latin: 'Pinus thunbergii', spec: 'H 30-60cm', emoji: '🌲', cat: 'potted', slug: 'black-pine' },
-  { name: 'Ficus', latin: 'Ficus microcarpa', spec: 'H 40-80cm', emoji: '🌳', cat: 'potted', slug: 'ficus-microcarpa' },
-  { name: 'Buddhist Pine', latin: 'Podocarpus macrophyllus', spec: 'H 40-80cm', emoji: '🌿', cat: 'potted', slug: 'buddhist-pine' },
-  { name: 'Azalea', latin: 'Rhododendron simsii', spec: 'H 20-50cm', emoji: '🌺', cat: 'potted', slug: 'azalea' },
-  { name: 'Pistacia', latin: 'Pistacia weinmannifolia', spec: 'H 30-60cm', emoji: '🍀', cat: 'potted', slug: 'pistacia' },
-];
-
 const sorted = [...products].sort((a, b) => {
-  if (a.cat === 'ornamental' && b.cat !== 'ornamental') return -1;
-  if (a.cat !== 'ornamental' && b.cat === 'ornamental') return 1;
-  return 0;
+  if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
+  if (a.category !== 'ornamental' && b.category === 'ornamental') return 1;
+  return a.order - b.order;
 });
 ---
-<Layout title="Products - Huinong" lang="en" description="Huinong product catalog - ornamental plants & potted plants, 500+ varieties.">
+<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai, 500+ varieties in stock.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>Products</h1>
-      <p class="hero-sub">500+ varieties in stock · continuously updated · custom orders welcome</p>
+      <h1>Product Catalog</h1>
+      <p class="hero-sub">{products.length}+ varieties in stock · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
@@ -58,12 +46,14 @@ const sorted = [...products].sort((a, b) => {
 
       <div class="product-grid" id="product-grid">
         {sorted.map(p => (
-          <a href={`/en/products/${p.slug}`} class="product-card" data-cat={p.cat}>
-            <div class="product-img">{p.emoji}</div>
+          <a href={`/en/products/${p.id}`} class="product-card" data-cat={p.category}>
+            <div class="product-img">
+              {p.mainImage ? <img src={p.mainImage} alt={p.enName} loading="lazy" /> : p.emoji}
+            </div>
             <div class="product-info">
-              <div class="product-name">{p.name}</div>
+              <div class="product-name">{p.enName}</div>
               <div class="product-latin">{p.latin}</div>
-              <div class="product-specs"><span>{p.spec}</span></div>
+              <div class="product-specs"><span>H {p.height}</span></div>
             </div>
           </a>
         ))}
@@ -83,7 +73,7 @@ const sorted = [...products].sort((a, b) => {
   <section class="cta-strip">
     <div class="container">
       <h2>Can't find what you need?</h2>
-      <p>Tell us your requirements, we'll help you find it</p>
+      <p>Tell us your requirements and we'll source it for you</p>
       <a href="/en/contact" class="btn-white">📩 Request a Quote</a>
     </div>
   </section>
@@ -113,8 +103,10 @@ const sorted = [...products].sort((a, b) => {
 .product-img {
   width: 100%; height: 180px;
   background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-  display: flex; align-items: center; justify-content: center; font-size: 50px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; overflow: hidden;
 }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
 .product-info { padding: 18px; }
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin { font-size: 12px; color: var(--text-light); font-style: italic; margin-bottom: 10px; }
@@ -169,7 +161,7 @@ const sorted = [...products].sort((a, b) => {
         list.sort((a, b) => {
           const an = a.querySelector('.product-name')?.textContent || '';
           const bn = b.querySelector('.product-name')?.textContent || '';
-          return an.localeCompare(bn);
+          return an.localeCompare(bn, 'en');
         });
       } else {
         list.sort((a, b) => {

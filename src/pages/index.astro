@@ -1,30 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getFeaturedProducts, getAllProducts } from '../lib/products';
+import fs from 'fs';
+import path from 'path';
+
+const featured = getFeaturedProducts();
+const totalProducts = getAllProducts().length;
+const ornamentalCount = getAllProducts().filter(p => p.category === 'ornamental').length;
+const pottedCount = getAllProducts().filter(p => p.category === 'potted').length;
 
 const trustItems = [
   { num: '30+', label: '年种植经验' },
-  { num: '500+', label: '在售品种' },
+  { num: totalProducts + '+', label: '在线品种' },
   { num: '40+', label: '出口国家' },
   { num: '100%', label: '合规出口' },
 ];
 
-const categories = [
-  { name: '观赏苗木', desc: '乔木 · 灌木 · 地被 · 300+ 品种 · 适合大宗采购', emoji: '🌳', href: '/products?cat=ornamental' },
-  { name: '盆栽', desc: '松柏 · 杂木 · 观花 · 200+ 品种 · 适合精品批发', emoji: '🪴', href: '/products?cat=potted' },
-];
+// 检测 hero 图是否存在
+const heroJpg = '/assets/images/hero/main.jpg';
+const heroWebp = '/assets/images/hero/main.webp';
+const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
-const featured = [
-  { name: '紫薇', latin: 'Lagerstroemia indica', spec: '高 60-120cm', emoji: '🌸', slug: 'ziwei' },
-  { name: '红枫', latin: 'Acer palmatum', spec: '高 50-100cm', emoji: '🍁', slug: 'hongfeng' },
-  { name: '黑松', latin: 'Pinus thunbergii', spec: '高 30-60cm', emoji: '🌲', slug: 'heisong' },
-  { name: '棕榈', latin: 'Trachycarpus fortunei', spec: '高 80-150cm', emoji: '🌴', slug: 'zonglv' },
-  { name: '榕树', latin: 'Ficus microcarpa', spec: '高 40-80cm', emoji: '🌳', slug: 'rongshu' },
-  { name: '玉兰', latin: 'Magnolia denudata', spec: '高 100-200cm', emoji: '🌷', slug: 'yulan' },
+const categories = [
+  { name: '观赏苗木', desc: `乔木 · 灌木 · 地被 · ${ornamentalCount}+ 品种 · 适合大宗采购`, emoji: '🌳', href: '/products?cat=ornamental' },
+  { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, emoji: '🪴', href: '/products?cat=potted' },
 ];
 ---
 <Layout title="汇农天下 - 盆栽与观赏苗木出口商" lang="zh">
   <!-- 1. Hero -->
-  <section class="hero">
+  <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
+    {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>从源头到世界</h1>
       <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 30 年种植经验 · 源头直供</p>
@@ -76,12 +81,14 @@ const featured = [
         <button class="scroll-btn scroll-prev" aria-label="上一个">‹</button>
         <div class="featured-track" id="featured-track">
           {featured.map(item => (
-            <a href={`/products/${item.slug}`} class="product-card">
-              <div class="product-img">{item.emoji}</div>
+            <a href={`/products/${item.id}`} class="product-card">
+              <div class="product-img">
+                {item.mainImage ? <img src={item.mainImage} alt={item.zhName} loading="lazy" /> : item.emoji}
+              </div>
               <div class="product-info">
-                <div class="product-name">{item.name}</div>
+                <div class="product-name">{item.zhName}</div>
                 <div class="product-latin">{item.latin}</div>
-                <div class="product-specs"><span>{item.spec}</span></div>
+                <div class="product-specs"><span>高 {item.height}</span></div>
               </div>
             </a>
           ))}
@@ -111,6 +118,14 @@ const featured = [
   align-items: center;
   justify-content: center;
 }
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.55;
+}
 .hero-content {
   position: relative; z-index: 2; text-align: center;
   color: var(--white); max-width: 800px; padding: 0 24px;
@@ -118,6 +133,12 @@ const featured = [
 .hero h1 { font-size: 44px; line-height: 1.2; margin-bottom: 16px; }
 .hero-sub { font-size: 17px; opacity: 0.9; margin-bottom: 32px; line-height: 1.6; }
 .hero-cta { font-size: 16px; padding: 14px 32px; }
+
+@media (max-width: 900px) {
+  .hero { height: 360px; }
+  .hero h1 { font-size: 30px; }
+  .hero-sub { font-size: 15px; }
+}
 
 .trust-bar { background: var(--green-dark); padding: 28px 0; }
 .trust-inner {
@@ -131,23 +152,48 @@ const featured = [
 }
 .trust-label { font-size: 13px; opacity: 0.8; line-height: 1.3; }
 
+@media (max-width: 900px) {
+  .trust-num { font-size: 22px; }
+}
+
+.section { padding: 72px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
+.section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
+.products-bg { background: var(--cream-dark); }
+
+@media (max-width: 900px) {
+  .section { padding: 48px 0; }
+  .section-header h2 { font-size: 24px; }
+}
+
 .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
 .cat-card {
-  background: var(--white); border-radius: 8px; overflow: hidden;
-  box-shadow: var(--shadow); transition: box-shadow .3s;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow .3s;
 }
 .cat-card:hover { box-shadow: var(--shadow-lg); }
 .cat-img {
-  width: 100%; height: 240px;
+  width: 100%;
+  height: 240px;
   background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 60px; color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  color: var(--white);
 }
 .cat-body { padding: 24px; }
 .cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
 .cat-body p { font-size: 14px; color: var(--text-light); }
 
-/* 精选产品 - 横向滚动 (B1) */
+@media (max-width: 900px) {
+  .cat-grid { grid-template-columns: 1fr; }
+}
+
 .featured-wrapper { position: relative; margin: 0 -8px; }
 .featured-track {
   display: flex; gap: 20px; overflow-x: auto;
@@ -169,8 +215,9 @@ const featured = [
   width: 100%; height: 180px;
   background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
   display: flex; align-items: center; justify-content: center;
-  font-size: 50px;
+  font-size: 50px; overflow: hidden;
 }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
 .product-info { padding: 18px; }
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin {
@@ -194,8 +241,6 @@ const featured = [
 .scroll-prev { left: -8px; }
 .scroll-next { right: -8px; }
 
-.products-bg { background: var(--cream-dark); }
-
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
 .cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
@@ -208,12 +253,8 @@ const featured = [
 .btn-white:hover { transform: scale(1.03); }
 
 @media (max-width: 900px) {
-  .hero h1 { font-size: 30px; }
-  .hero-sub { font-size: 15px; }
-  .cat-grid { grid-template-columns: 1fr; }
   .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
   .scroll-btn { display: none; }
-  .trust-num { font-size: 22px; }
   .cta-strip h2 { font-size: 22px; }
 }
 </style>

@@ -1,30 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getFeaturedProducts, getAllProducts } from '../../lib/products';
+import fs from 'fs';
+import path from 'path';
+
+const featured = getFeaturedProducts();
+const totalProducts = getAllProducts().length;
+const ornamentalCount = getAllProducts().filter(p => p.category === 'ornamental').length;
+const pottedCount = getAllProducts().filter(p => p.category === 'potted').length;
 
 const trustItems = [
   { num: '30+', label: 'Years of Experience' },
-  { num: '500+', label: 'Varieties in Stock' },
+  { num: totalProducts + '+', label: 'Varieties Online' },
   { num: '40+', label: 'Export Countries' },
   { num: '100%', label: 'Compliant Export' },
 ];
 
-const categories = [
-  { name: 'Ornamental Plants', desc: 'Trees · Shrubs · Ground covers · 300+ varieties · bulk procurement', emoji: '🌳', href: '/en/products?cat=ornamental' },
-  { name: 'Potted Plants (Bonsai)', desc: 'Conifers · Hardwoods · Flowering · 200+ varieties · wholesale', emoji: '🪴', href: '/en/products?cat=potted' },
-];
+const heroJpg = '/assets/images/hero/main.jpg';
+const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
-const featured = [
-  { name: 'Crape Myrtle', latin: 'Lagerstroemia indica', spec: 'H 60-120cm', emoji: '🌸', slug: 'crape-myrtle' },
-  { name: 'Japanese Maple', latin: 'Acer palmatum', spec: 'H 50-100cm', emoji: '🍁', slug: 'japanese-maple' },
-  { name: 'Black Pine', latin: 'Pinus thunbergii', spec: 'H 30-60cm', emoji: '🌲', slug: 'black-pine' },
-  { name: 'Windmill Palm', latin: 'Trachycarpus fortunei', spec: 'H 80-150cm', emoji: '🌴', slug: 'windmill-palm' },
-  { name: 'Ficus', latin: 'Ficus microcarpa', spec: 'H 40-80cm', emoji: '🌳', slug: 'ficus-microcarpa' },
-  { name: 'Yulan Magnolia', latin: 'Magnolia denudata', spec: 'H 100-200cm', emoji: '🌷', slug: 'yulan-magnolia' },
+const categories = [
+  { name: 'Ornamental Plants', desc: `Trees · Shrubs · Ground covers · ${ornamentalCount}+ varieties · bulk procurement`, emoji: '🌳', href: '/en/products?cat=ornamental' },
+  { name: 'Potted Plants (Bonsai)', desc: `Conifers · Hardwoods · Flowering · ${pottedCount}+ varieties · wholesale`, emoji: '🪴', href: '/en/products?cat=potted' },
 ];
 ---
 <Layout title="Huinong - Bonsai & Ornamental Plants Exporter" lang="en">
   <!-- 1. Hero -->
-  <section class="hero">
+  <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
+    {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>From Source to the World</h1>
       <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 30 years of growing experience · source factory</p>
@@ -49,7 +52,7 @@ const featured = [
     <div class="container">
       <div class="section-header">
         <h2>Product Categories</h2>
-        <p>Two main categories to meet different procurement needs</p>
+        <p>Two main categories for different procurement needs</p>
       </div>
       <div class="cat-grid">
         {categories.map(cat => (
@@ -70,18 +73,20 @@ const featured = [
     <div class="container">
       <div class="section-header">
         <h2>Featured Products</h2>
-        <p>Featured varieties, click to view details</p>
+        <p>Main varieties, click for details</p>
       </div>
       <div class="featured-wrapper">
         <button class="scroll-btn scroll-prev" aria-label="Previous">‹</button>
         <div class="featured-track" id="featured-track">
           {featured.map(item => (
-            <a href={`/en/products/${item.slug}`} class="product-card">
-              <div class="product-img">{item.emoji}</div>
+            <a href={`/en/products/${item.id}`} class="product-card">
+              <div class="product-img">
+                {item.mainImage ? <img src={item.mainImage} alt={item.enName} loading="lazy" /> : item.emoji}
+              </div>
               <div class="product-info">
-                <div class="product-name">{item.name}</div>
+                <div class="product-name">{item.enName}</div>
                 <div class="product-latin">{item.latin}</div>
-                <div class="product-specs"><span>{item.spec}</span></div>
+                <div class="product-specs"><span>H {item.height}</span></div>
               </div>
             </a>
           ))}
@@ -94,8 +99,8 @@ const featured = [
   <!-- 5. CTA strip -->
   <section class="cta-strip">
     <div class="container">
-      <h2>Need to procure? Request a quote</h2>
-      <p>Tell us your needs, we'll reply within 12 hours</p>
+      <h2>Looking to source plants?</h2>
+      <p>Tell us your requirements, we'll reply within 12 hours</p>
       <a href="/en/contact" class="btn-white">📩 Request a Quote</a>
     </div>
   </section>
@@ -111,6 +116,14 @@ const featured = [
   align-items: center;
   justify-content: center;
 }
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.55;
+}
 .hero-content {
   position: relative; z-index: 2; text-align: center;
   color: var(--white); max-width: 800px; padding: 0 24px;
@@ -118,6 +131,12 @@ const featured = [
 .hero h1 { font-size: 44px; line-height: 1.2; margin-bottom: 16px; }
 .hero-sub { font-size: 17px; opacity: 0.9; margin-bottom: 32px; line-height: 1.6; }
 .hero-cta { font-size: 16px; padding: 14px 32px; }
+
+@media (max-width: 900px) {
+  .hero { height: 360px; }
+  .hero h1 { font-size: 30px; }
+  .hero-sub { font-size: 15px; }
+}
 
 .trust-bar { background: var(--green-dark); padding: 28px 0; }
 .trust-inner {
@@ -131,21 +150,47 @@ const featured = [
 }
 .trust-label { font-size: 13px; opacity: 0.8; line-height: 1.3; }
 
+@media (max-width: 900px) {
+  .trust-num { font-size: 22px; }
+}
+
+.section { padding: 72px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
+.section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
+.products-bg { background: var(--cream-dark); }
+
+@media (max-width: 900px) {
+  .section { padding: 48px 0; }
+  .section-header h2 { font-size: 24px; }
+}
+
 .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
 .cat-card {
-  background: var(--white); border-radius: 8px; overflow: hidden;
-  box-shadow: var(--shadow); transition: box-shadow .3s;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow .3s;
 }
 .cat-card:hover { box-shadow: var(--shadow-lg); }
 .cat-img {
-  width: 100%; height: 240px;
+  width: 100%;
+  height: 240px;
   background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 60px; color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  color: var(--white);
 }
 .cat-body { padding: 24px; }
 .cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
 .cat-body p { font-size: 14px; color: var(--text-light); }
+
+@media (max-width: 900px) {
+  .cat-grid { grid-template-columns: 1fr; }
+}
 
 .featured-wrapper { position: relative; margin: 0 -8px; }
 .featured-track {
@@ -168,8 +213,9 @@ const featured = [
   width: 100%; height: 180px;
   background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
   display: flex; align-items: center; justify-content: center;
-  font-size: 50px;
+  font-size: 50px; overflow: hidden;
 }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
 .product-info { padding: 18px; }
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin {
@@ -193,8 +239,6 @@ const featured = [
 .scroll-prev { left: -8px; }
 .scroll-next { right: -8px; }
 
-.products-bg { background: var(--cream-dark); }
-
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
 .cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
@@ -207,12 +251,8 @@ const featured = [
 .btn-white:hover { transform: scale(1.03); }
 
 @media (max-width: 900px) {
-  .hero h1 { font-size: 30px; }
-  .hero-sub { font-size: 15px; }
-  .cat-grid { grid-template-columns: 1fr; }
   .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
   .scroll-btn { display: none; }
-  .trust-num { font-size: 22px; }
   .cta-strip h2 { font-size: 22px; }
 }
 </style>

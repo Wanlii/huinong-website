@@ -1,29 +1,17 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-
-const productData = {
-  'ziwei': { name: '紫薇', latin: 'Lagerstroemia indica', enName: 'Crape Myrtle', emoji: '🌸', fob: '$8 - $25', hs: '0602.90', season: '10月 - 次年 4 月', moq: '500 株', lead: '15-30 天', category: '观赏苗木' },
-  'hongfeng': { name: '红枫', latin: 'Acer palmatum', enName: 'Japanese Maple', emoji: '🍁', category: '观赏苗木' },
-  'heisong': { name: '黑松', latin: 'Pinus thunbergii', enName: 'Black Pine', emoji: '🌲', category: '盆栽' },
-  'zonglv': { name: '棕榈', latin: 'Trachycarpus fortunei', enName: 'Windmill Palm', emoji: '🌴', category: '观赏苗木' },
-  'rongshu': { name: '榕树', latin: 'Ficus microcarpa', enName: 'Ficus', emoji: '🌳', category: '盆栽' },
-  'yulan': { name: '玉兰', latin: 'Magnolia denudata', enName: 'Yulan Magnolia', emoji: '🌷', category: '观赏苗木' },
-};
+import { getAllProducts } from '../../lib/products';
 
 export function getStaticPaths() {
-  return [
-    { params: { slug: 'ziwei' } },
-    { params: { slug: 'hongfeng' } },
-    { params: { slug: 'heisong' } },
-    { params: { slug: 'zonglv' } },
-    { params: { slug: 'rongshu' } },
-    { params: { slug: 'yulan' } },
-  ];
+  return getAllProducts().map(p => ({ params: { slug: p.id } }));
 }
 
 const { slug } = Astro.params;
-const product = productData[slug as keyof typeof productData];
-const isComplete = slug === 'ziwei';
+const product = getAllProducts().find(p => p.id === slug)!;
+const hasImages = product.gallery.length > 0;
+const isComplete = hasImages;
+
+const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
 
 const specs = [
   { h: '60-80cm', c: '40-60cm', d: '2-3cm', y: '3-4 年' },
@@ -33,30 +21,22 @@ const specs = [
 ];
 
 const faqs = [
-  { q: `${product.name} 适合什么气候？`, a: '耐寒性强，可耐 -15°C 低温，适合温带至亚热带气候，欧洲大部分地区均可露天种植。' },
+  { q: `${product.zhName} 适合什么气候？`, a: '耐寒性强，可耐 -15°C 低温，适合温带至亚热带气候，欧洲大部分地区均可露天种植。' },
   { q: '运输方式与装柜量？', a: `20'GP 约 1500-2000 株（裸根），40'HC 约 3500-5000 株。建议秋冬季节起苗运输。` },
-  { q: '是否需要 CITES 许可？', a: `${product.name} 不属于 CITES 保护物种，无需额外许可，常规植物检疫证即可。` },
+  { q: '是否需要 CITES 许可？', a: `${product.zhName} 不属于 CITES 保护物种，无需额外许可，常规植物检疫证即可。` },
   { q: '是否提供检疫处理？', a: '可按客户要求提供熏蒸处理，并出具相应证明文件。' },
-];
-
-// 紫薇的 4 张图（占位 emoji，8/26 后用真实图 URL 替换）
-const gallery = [
-  { emoji: '🌸', image: '' },
-  { emoji: '🌿', image: '' },
-  { emoji: '📦', image: '' },
-  { emoji: '🏭', image: '' },
 ];
 ---
 <Layout
-  title={isComplete ? `${product.name} - 产品详情 - 汇农天下` : `${product.name} - 汇农天下`}
+  title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
   lang="zh"
   description={isComplete
-    ? `${product.name}（${product.latin}）- ${product.enName}，FOB 起价 ${product.fob}/株，HS Code ${product.hs}。`
-    : `${product.name}（${product.latin}）- ${product.enName}，汇农天下优质产品。`}
+    ? `${product.zhName}（${product.latin}）- ${product.enName}，FOB 起价询盘，HS Code 0602.90。`
+    : `${product.zhName}（${product.latin}）- ${product.enName}，汇农天下优质产品。`}
 >
   <div class="breadcrumb">
     <div class="container">
-      <a href="/">首页</a> › <a href="/products">产品目录</a> › <span>{product.name}</span>
+      <a href="/">首页</a> › <a href="/products">产品目录</a> › <span>{product.zhName}</span>
     </div>
   </div>
 
@@ -67,36 +47,36 @@ const gallery = [
           <div class="pd-grid">
             <div class="pd-gallery">
               <div class="pd-thumbs">
-                {gallery.map((g, i) => (
+                {product.gallery.map((img, i) => (
                   <div
                     class={`pd-thumb ${i === 0 ? 'active' : ''}`}
                     data-index={i}
-                    data-emoji={g.emoji}
-                    data-image={g.image}
+                    data-image={img}
                   >
-                    {g.image ? <img src={g.image} alt={`${product.name} ${i+1}`} /> : g.emoji}
+                    <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
                   </div>
                 ))}
               </div>
-              <div class="pd-main" id="pd-main">{gallery[0].emoji}</div>
+              <div class="pd-main" id="pd-main">
+                <img src={product.mainImage} alt={product.zhName} />
+              </div>
             </div>
 
             <div class="pd-info">
-              <h1>{product.name}</h1>
+              <h1>{product.zhName}</h1>
               <p class="latin">{product.latin} · {product.enName}</p>
 
-              <div class="price-box">
-                <div class="label">FOB 起价</div>
-                <div class="price">{product.fob} / 株</div>
-                <div class="note">价格根据规格 / 数量 / 季节调整</div>
-              </div>
+              <div class="short-desc">{product.shortDesc}</div>
 
               <div class="meta-grid">
-                <div class="meta-item"><div class="k">HS Code</div><div class="v">{product.hs}</div></div>
-                <div class="meta-item"><div class="k">供货季节</div><div class="v">{product.season}</div></div>
+                <div class="meta-item"><div class="k">分类</div><div class="v">{categoryName}</div></div>
+                <div class="meta-item"><div class="k">高度</div><div class="v">{product.height}</div></div>
+                <div class="meta-item"><div class="k">盆器</div><div class="v">{product.pot}</div></div>
                 <div class="meta-item"><div class="k">MOQ</div><div class="v">{product.moq}</div></div>
-                <div class="meta-item"><div class="k">备货周期</div><div class="v">{product.lead}</div></div>
               </div>
+
+              <h3 class="pd-h3">产品介绍</h3>
+              <div class="long-desc">{product.longDesc}</div>
 
               <h3 class="pd-h3">主要规格</h3>
               <table class="spec-table">
@@ -107,7 +87,7 @@ const gallery = [
               </table>
 
               <div class="pd-actions">
-                <a href={`/contact?product=${product.name}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
+                <a href={`/contact?product=${product.zhName}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
                 <a href="#" class="btn-outline">💬 WhatsApp</a>
               </div>
             </div>
@@ -129,9 +109,9 @@ const gallery = [
 
       <section class="cta-strip">
         <div class="container">
-          <h2>想采购 {product.name}？</h2>
+          <h2>想采购 {product.zhName}？</h2>
           <p>告诉我们您的规格、数量、目的港</p>
-          <a href={`/contact?product=${product.name}`} class="btn-white">📩 Inquire {product.name}</a>
+          <a href={`/contact?product=${product.zhName}`} class="btn-white">📩 Inquire {product.zhName}</a>
         </div>
       </section>
 
@@ -149,12 +129,13 @@ const gallery = [
       <div class="container">
         <div class="placeholder-product">
           <div class="placeholder-emoji">{product.emoji}</div>
-          <h1>{product.name}</h1>
+          <h1>{product.zhName}</h1>
           <p class="latin">{product.latin} · {product.enName}</p>
-          <span class="placeholder-cat">分类：{product.category}</span>
+          <span class="placeholder-cat">分类：{categoryName}</span>
+          <div class="short-desc" style="margin: 20px 0;">{product.shortDesc}</div>
           <div class="placeholder-msg">
-            <p>该产品详情页正在完善中。</p>
-            <p>8/26 后将替换为真实资料（图片 / 规格 / HS Code / 价格 / FAQ）。</p>
+            <p>{product.longDesc}</p>
+            <p style="margin-top: 24px;">实物图片与详细规格资料正在完善中。</p>
             <p style="margin-top: 24px;">如果您对该产品有采购意向，欢迎 <a href="/contact" class="btn-green">立即询盘</a> 或浏览 <a href="/products">产品目录</a>。</p>
           </div>
         </div>
@@ -176,7 +157,7 @@ const gallery = [
   width: 100%; height: 80px; background: var(--cream-dark);
   border-radius: 6px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; overflow: hidden;
+  overflow: hidden;
   transition: border-color .2s;
   border: 2px solid transparent;
 }
@@ -184,20 +165,18 @@ const gallery = [
 .pd-thumb.active { border-color: var(--green); }
 .pd-main {
   width: 100%; height: 380px;
-  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  background: var(--cream-dark);
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 100px; cursor: zoom-in;
+  cursor: zoom-in;
   overflow: hidden;
   user-select: none;
 }
 .pd-main img { width: 100%; height: 100%; object-fit: cover; }
 .pd-info h1 { font-size: 30px; margin-bottom: 6px; }
-.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin-bottom: 20px; }
-.price-box { background: var(--cream-dark); padding: 16px 20px; border-radius: 6px; margin-bottom: 16px; }
-.price-box .label { font-size: 12px; color: var(--text-light); }
-.price-box .price { font-size: 22px; font-weight: 700; color: var(--green); margin: 4px 0; }
-.price-box .note { font-size: 12px; color: var(--text-light); }
+.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin-bottom: 16px; }
+.short-desc { font-size: 15px; color: var(--text); line-height: 1.7; padding: 12px 16px; background: var(--cream-dark); border-radius: 6px; margin-bottom: 16px; }
+.long-desc { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 16px; }
 .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 .meta-item { padding: 12px; background: var(--cream); border-radius: 6px; }
 .meta-item .k { font-size: 11px; color: var(--text-light); }
@@ -251,7 +230,6 @@ const gallery = [
 .lightbox-content {
   max-width: 90%; max-height: 85vh;
   display: flex; align-items: center; justify-content: center;
-  font-size: 200px;
   user-select: none;
 }
 .lightbox-content img { max-width: 100%; max-height: 85vh; object-fit: contain; }
@@ -282,22 +260,13 @@ const gallery = [
   .pd-gallery { grid-template-columns: 1fr; }
   .pd-thumbs { flex-direction: row; }
   .meta-grid { grid-template-columns: 1fr; }
-  .lightbox-content { font-size: 120px; }
   .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
 }
 </style>
 
 {isComplete && (
-  <script>
-    // FAQ 折叠
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.faq-item').forEach(item => {
-        const q = item.querySelector('.faq-q');
-        q?.addEventListener('click', () => item.classList.toggle('open'));
-      });
-    });
-
-    // 缩略图切换 + Lightbox
+  <script define:vars={{ gallery: product.gallery }}>
+    // Lightbox + 缩略图切换
     (() => {
       const thumbs = Array.from(document.querySelectorAll('.pd-thumb')) as HTMLElement[];
       const main = document.getElementById('pd-main') as HTMLElement | null;
@@ -306,39 +275,29 @@ const gallery = [
       const lbCounter = document.getElementById('lb-counter');
       if (!thumbs.length || !main || !lightbox || !lbContent) return;
 
-      const items = thumbs.map(t => ({
-        emoji: t.dataset.emoji || '',
-        image: t.dataset.image || '',
-      }));
       let currentIndex = 0;
 
-      function renderItem(idx: number, container: HTMLElement, isMain = false) {
-        const item = items[idx];
-        if (item.image) {
-          container.innerHTML = `<img src="${item.image}" alt="" />`;
-          container.style.fontSize = '';
-        } else {
-          container.textContent = item.emoji;
-          container.style.fontSize = isMain ? '100px' : '200px';
+      function renderItem(idx: number, container: HTMLElement) {
+        const img = gallery[idx];
+        if (img) {
+          container.innerHTML = `<img src="${img}" alt="" />`;
         }
       }
 
-      // 缩略图点击切换主图
       thumbs.forEach((thumb, i) => {
         thumb.addEventListener('click', () => {
           thumbs.forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
           currentIndex = i;
-          renderItem(i, main!, true);
+          renderItem(i, main!);
         });
       });
 
-      // 主图点击 → 打开 lightbox
       main.addEventListener('click', openLightbox);
 
       function openLightbox() {
         renderItem(currentIndex, lbContent!);
-        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${items.length}`;
+        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
         lightbox!.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
@@ -349,13 +308,12 @@ const gallery = [
       }
 
       function navigate(dir: number) {
-        currentIndex = (currentIndex + dir + items.length) % items.length;
+        currentIndex = (currentIndex + dir + gallery.length) % gallery.length;
         renderItem(currentIndex, lbContent!);
-        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${items.length}`;
-        // 同步主图与缩略图
+        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
         thumbs.forEach(t => t.classList.remove('active'));
         thumbs[currentIndex]?.classList.add('active');
-        if (main) renderItem(currentIndex, main, true);
+        if (main) renderItem(currentIndex, main);
       }
 
       lightbox.querySelector('.lightbox-close')?.addEventListener('click', closeLightbox);
@@ -367,6 +325,12 @@ const gallery = [
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') navigate(-1);
         if (e.key === 'ArrowRight') navigate(1);
+      });
+
+      // FAQ 折叠
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const q = item.querySelector('.faq-q');
+        q?.addEventListener('click', () => item.classList.toggle('open'));
       });
     })();
   </script>

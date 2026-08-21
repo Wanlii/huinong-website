@@ -19,3 +19,6 @@ pnpm-debug.log*
 
 # Astro
 .astro/
+
+# 素材文件夹（不上传到 git）
+素材/

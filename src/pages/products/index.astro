@@ -1,5 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getAllProducts } from '../../lib/products';
+
+const products = getAllProducts();
+const ornamentalCount = products.filter(p => p.category === 'ornamental').length;
+const pottedCount = products.filter(p => p.category === 'potted').length;
 
 const categories = [
   { id: 'all', name: '全部产品', active: true },
@@ -7,33 +12,18 @@ const categories = [
   { id: 'ornamental', name: '观赏苗木' },
 ];
 
-const products = [
-  { name: '紫薇', latin: 'Lagerstroemia indica', spec: '高 60-120cm', emoji: '🌸', cat: 'ornamental', slug: 'ziwei' },
-  { name: '红枫', latin: 'Acer palmatum', spec: '高 50-100cm', emoji: '🍁', cat: 'ornamental', slug: 'hongfeng' },
-  { name: '玉兰', latin: 'Magnolia denudata', spec: '高 100-200cm', emoji: '🌷', cat: 'ornamental', slug: 'yulan' },
-  { name: '棕榈', latin: 'Trachycarpus fortunei', spec: '高 80-150cm', emoji: '🌴', cat: 'ornamental', slug: 'zonglv' },
-  { name: '桂花', latin: 'Osmanthus fragrans', spec: '高 80-150cm', emoji: '🌼', cat: 'ornamental', slug: 'guihua' },
-  { name: '丁香', latin: 'Syringa oblata', spec: '高 50-100cm', emoji: '🌿', cat: 'ornamental', slug: 'dingxiang' },
-  { name: '月季', latin: 'Rosa chinensis', spec: '高 30-80cm', emoji: '🌹', cat: 'ornamental', slug: 'yueji' },
-  { name: '黑松', latin: 'Pinus thunbergii', spec: '高 30-60cm', emoji: '🌲', cat: 'potted', slug: 'heisong' },
-  { name: '榕树', latin: 'Ficus microcarpa', spec: '高 40-80cm', emoji: '🌳', cat: 'potted', slug: 'rongshu' },
-  { name: '罗汉松', latin: 'Podocarpus macrophyllus', spec: '高 40-80cm', emoji: '🌿', cat: 'potted', slug: 'luohansong' },
-  { name: '杜鹃', latin: 'Rhododendron simsii', spec: '高 20-50cm', emoji: '🌺', cat: 'potted', slug: 'dujuan' },
-  { name: '清香木', latin: 'Pistacia weinmannifolia', spec: '高 30-60cm', emoji: '🍀', cat: 'potted', slug: 'qingxiangmu' },
-];
-
-// 默认全部 + 观赏苗木排前
+// 排序：观赏苗木排前，然后按 CSV 排序
 const sorted = [...products].sort((a, b) => {
-  if (a.cat === 'ornamental' && b.cat !== 'ornamental') return -1;
-  if (a.cat !== 'ornamental' && b.cat === 'ornamental') return 1;
-  return 0;
+  if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
+  if (a.category !== 'ornamental' && b.category === 'ornamental') return 1;
+  return a.order - b.order;
 });
 ---
 <Layout title="产品目录 - 汇农天下" lang="zh" description="汇农天下产品目录 - 观赏苗木、盆栽两大类，500+ 在售品种。">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>产品目录</h1>
-      <p class="hero-sub">500+ 在售品种 · 持续更新 · 支持定制</p>
+      <p class="hero-sub">{products.length}+ 在售品种 · 持续更新 · 支持定制</p>
     </div>
   </section>
 
@@ -59,12 +49,14 @@ const sorted = [...products].sort((a, b) => {
 
       <div class="product-grid" id="product-grid">
         {sorted.map(p => (
-          <a href={`/products/${p.slug}`} class="product-card" data-cat={p.cat}>
-            <div class="product-img">{p.emoji}</div>
+          <a href={`/products/${p.id}`} class="product-card" data-cat={p.category}>
+            <div class="product-img">
+              {p.mainImage ? <img src={p.mainImage} alt={p.zhName} loading="lazy" /> : p.emoji}
+            </div>
             <div class="product-info">
-              <div class="product-name">{p.name}</div>
+              <div class="product-name">{p.zhName}</div>
               <div class="product-latin">{p.latin}</div>
-              <div class="product-specs"><span>{p.spec}</span></div>
+              <div class="product-specs"><span>高 {p.height}</span></div>
             </div>
           </a>
         ))}
@@ -114,8 +106,10 @@ const sorted = [...products].sort((a, b) => {
 .product-img {
   width: 100%; height: 180px;
   background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-  display: flex; align-items: center; justify-content: center; font-size: 50px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; overflow: hidden;
 }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
 .product-info { padding: 18px; }
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin { font-size: 12px; color: var(--text-light); font-style: italic; margin-bottom: 10px; }
