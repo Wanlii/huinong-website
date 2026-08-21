@@ -263,20 +263,23 @@ const faqs = [
 </style>
 
 {isComplete && (
-  <script define:vars={{ gallery: product.gallery }}>
+  <script>
     (() => {
-      const thumbs = Array.from(document.querySelectorAll('.pd-thumb')) as HTMLElement[];
-      const main = document.getElementById('pd-main') as HTMLElement | null;
+      const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
+      const main = document.getElementById('pd-main');
       const lightbox = document.getElementById('lightbox');
       const lbContent = document.getElementById('lb-content');
       const lbCounter = document.getElementById('lb-counter');
       if (!thumbs.length || !main || !lightbox || !lbContent) return;
 
+      const items = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
       let currentIndex = 0;
 
-      function renderItem(idx: number, container: HTMLElement) {
-        const img = gallery[idx];
-        if (img) container.innerHTML = `<img src="${img}" alt="" />`;
+      function renderItem(idx, container) {
+        const it = items[idx];
+        if (it && it.img) {
+          container.innerHTML = '<img src="' + it.img + '" alt="" />';
+        }
       }
 
       thumbs.forEach((thumb, i) => {
@@ -284,39 +287,43 @@ const faqs = [
           thumbs.forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
           currentIndex = i;
-          renderItem(i, main!);
+          renderItem(i, main);
         });
       });
 
-      main.addEventListener('click', openLightbox);
-
       function openLightbox() {
-        renderItem(currentIndex, lbContent!);
-        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
-        lightbox!.classList.add('open');
+        renderItem(currentIndex, lbContent);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        lightbox.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
 
       function closeLightbox() {
-        lightbox!.classList.remove('open');
+        lightbox.classList.remove('open');
         document.body.style.overflow = '';
       }
 
-      function navigate(dir: number) {
-        currentIndex = (currentIndex + dir + gallery.length) % gallery.length;
-        renderItem(currentIndex, lbContent!);
-        if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
+      function navigate(dir) {
+        currentIndex = (currentIndex + dir + items.length) % items.length;
+        renderItem(currentIndex, lbContent);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
         thumbs.forEach(t => t.classList.remove('active'));
-        thumbs[currentIndex]?.classList.add('active');
-        if (main) renderItem(currentIndex, main);
+        items[currentIndex].el.classList.add('active');
+        renderItem(currentIndex, main);
       }
 
-      lightbox.querySelector('.lightbox-close')?.addEventListener('click', closeLightbox);
-      lightbox.querySelector('.lightbox-prev')?.addEventListener('click', () => navigate(-1));
-      lightbox.querySelector('.lightbox-next')?.addEventListener('click', () => navigate(1));
+      main.addEventListener('click', openLightbox);
+
+      const lbClose = lightbox.querySelector('.lightbox-close');
+      const lbPrev = lightbox.querySelector('.lightbox-prev');
+      const lbNext = lightbox.querySelector('.lightbox-next');
+      if (lbClose) lbClose.addEventListener('click', closeLightbox);
+      if (lbPrev) lbPrev.addEventListener('click', () => navigate(-1));
+      if (lbNext) lbNext.addEventListener('click', () => navigate(1));
       lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
       document.addEventListener('keydown', (e) => {
-        if (!lightbox!.classList.contains('open')) return;
+        if (!lightbox.classList.contains('open')) return;
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') navigate(-1);
         if (e.key === 'ArrowRight') navigate(1);
@@ -324,7 +331,7 @@ const faqs = [
 
       document.querySelectorAll('.faq-item').forEach(item => {
         const q = item.querySelector('.faq-q');
-        q?.addEventListener('click', () => item.classList.toggle('open'));
+        if (q) q.addEventListener('click', () => item.classList.toggle('open'));
       });
     })();
   </script>
