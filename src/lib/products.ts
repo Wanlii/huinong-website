@@ -85,11 +85,12 @@ function parseCSVLine(line: string): string[] {
 }
 
 // 读取产品图片
+// 只返回 jpg/png（不用 webp，避免图库重复显示）
 function getImagesForProduct(id: string): { main: string; gallery: string[] } {
   const dir = path.join(IMG_ROOT, id);
   if (!fs.existsSync(dir)) return { main: '', gallery: [] };
   const files = fs.readdirSync(dir)
-    .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
+    .filter(f => /\.(jpg|jpeg|png)$/i.test(f))   // 排除 .webp
     .filter(f => !f.startsWith('.'))
     .sort();
   if (files.length === 0) return { main: '', gallery: [] };

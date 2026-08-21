@@ -2,64 +2,69 @@
 import Layout from '../layouts/Layout.astro';
 
 const stats = [
-  { num: '300', label: '亩种植基地' },
-  { num: '80+', label: '专业员工' },
-  { num: '500+', label: '在售品种' },
+  { num: '860+', label: '公顷种植基地' },
+  { num: '60万+', label: '现有苗木' },
   { num: '40+', label: '出口国家' },
+  { num: '20+', label: '年行业经验' },
 ];
 
 const team = [
-  { name: '创始人 / 总经理', role: '30 年行业经验', desc: '负责公司战略与基地管理', emoji: '👨‍🌾' },
+  { name: '创始人 / 总经理', role: '20+ 年行业经验', desc: '负责公司战略与基地管理', emoji: '👨‍🌾' },
   { name: '出口业务负责人', role: '10+ 年外贸经验', desc: '负责欧洲与中亚市场', emoji: '👩‍💼' },
   { name: '质量管理负责人', role: '植物检疫专业', desc: '负责出口合规与品控', emoji: '👨‍🔬' },
 ];
 
 const milestones = [
-  { year: '1990 年代', text: '从几亩苗圃起步，专注本土市场' },
-  { year: '2005 年', text: '扩建基地至 100 亩，开始盆景规模化种植' },
-  { year: '2012 年', text: '首次出口，发往东南亚市场' },
+  { year: '2003 年', text: '汇农天下在江苏新沂创立，依托当地花木主产区资源起步' },
+  { year: '2008 年', text: '扩建基地，开始造型植物规模化种植' },
+  { year: '2012 年', text: '首次出口，进入东南亚市场' },
   { year: '2016 年', text: '获得出口企业备案，进入欧盟市场' },
-  { year: '2020 年', text: '基地扩至 300 亩，年出口额破千万' },
-  { year: '2026 年', text: '覆盖 40+ 国家，成为区域领先出口商' },
+  { year: '2020 年', text: '基地扩至 860 公顷，年出口额破千万' },
+  { year: '2026 年', text: '覆盖 40+ 国家，年均出口苗木约 3 万株' },
 ];
 
 const commitments = [
-  { icon: '🌱', title: '源头把控', desc: '每一株苗都来自自有基地' },
-  { icon: '📜', title: '合规第一', desc: '所有出口流程符合国际法规' },
-  { icon: '🤝', title: '长期共赢', desc: '不赚一次性钱，做长期伙伴' },
+  { icon: '🌱', title: '源头把控', desc: '每一株苗都来自自有 860 公顷基地' },
+  { icon: '📜', title: '合规第一', desc: 'EU 2016/2031 & 2019/2072 全面合规' },
+  { icon: '🤝', title: '长期共赢', desc: '不赚一次性钱，做长期合作伙伴' },
   { icon: '📢', title: '信息透明', desc: '规格、价格、周期如实告知' },
 ];
 ---
-<Layout title="关于我们 - 汇农天下" lang="zh" description="汇农天下 - 30 年盆栽与观赏苗木出口经验，300 亩自有基地。">
+<Layout title="关于我们 - 汇农天下" lang="zh" description="汇农天下 - 始创于 2003 年，江苏新沂，860 公顷自有基地，专注观赏苗木与盆栽出口。">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>关于我们</h1>
-      <p class="hero-sub">30 年专注盆栽与观赏苗木 · 300 亩源头基地 · 服务 40+ 国家</p>
+      <p class="hero-sub">从苗木到盆景，从中国到世界</p>
     </div>
   </section>
 
+  <!-- 公司介绍（来自用户提供的企业介绍） -->
   <section class="section">
     <div class="container">
-      <div class="about-teaser">
-        <div>
-          <div class="about-img">🏞️</div>
-          <div class="about-badge"><div class="num">300</div><div class="label">亩种植基地</div></div>
-        </div>
-        <div class="about-text">
-          <h2>我们的故事</h2>
-          <p>1990 年代初，创始人从几亩苗圃起家。30 年过去，从内销到出口，从单一品种到 500+ 品种，从国内市场到欧洲、中亚、东南亚 40+ 国家。</p>
-          <p>今天，汇农天下拥有 300 亩种植基地，专业的出口团队，完善的物流体系。但我们始终坚持一件事：源头把控品质，合规才能长久。</p>
-          <ul class="about-features">
-            <li>自有基地，从源头控制品质</li>
-            <li>专业团队，30 年行业深耕</li>
-            <li>合规出口，欧盟认证资质</li>
-            <li>持续创新，品种不断丰富</li>
+      <div class="intro-grid">
+        <div class="intro-text">
+          <div class="kicker">关于我们</div>
+          <h2>从源头到世界</h2>
+          <p class="lead">汇农天下，始创于 <strong>2003 年</strong>，总部位于江苏省新沂市，地处中国最大的花木主产区。</p>
+          <p>产区气候适宜、土地肥沃、地势平缓，聚集花木种植企业上万家，种植总面积超 40 万公顷，是中国花木产业规模最大、产业链最完整的核心产区。</p>
+          <p>依托产区资源，汇农天下深耕行业二十余年，已发展成为中国领先的观赏园艺生产综合服务企业：</p>
+          <ul class="intro-list">
+            <li><strong>860 余公顷</strong> 基地</li>
+            <li><strong>60 万+ 株</strong> 现有苗木</li>
+            <li><strong>3 万株/年</strong> 出口量</li>
+            <li>专注：中国特色造型植物 / 国际标准观赏苗木 / 观赏小盆栽</li>
           </ul>
+          <p class="quote">"我们不只是卖苗木，更希望成为全球园艺采购商值得信赖的长期合作伙伴。"</p>
+        </div>
+        <div class="intro-imgs">
+          <img src="/assets/images/company/nursery/main.jpg" alt="汇农天下苗圃" />
+          <img src="/assets/images/company/factory/main.jpg" alt="汇农天下工厂" />
         </div>
       </div>
     </div>
   </section>
 
+  <!-- 核心数据 -->
   <section class="section products-bg">
     <div class="container">
       <div class="section-header"><h2>核心数据</h2><p>数字背后的实力</p></div>
@@ -74,6 +79,7 @@ const commitments = [
     </div>
   </section>
 
+  <!-- 核心团队 -->
   <section class="section">
     <div class="container">
       <div class="section-header"><h2>核心团队</h2><p>专业的人做专业的事</p></div>
@@ -90,9 +96,10 @@ const commitments = [
     </div>
   </section>
 
+  <!-- 发展历程 -->
   <section class="section products-bg">
     <div class="container">
-      <div class="section-header"><h2>发展历程</h2><p>30 年里程碑</p></div>
+      <div class="section-header"><h2>发展历程</h2><p>从 2003 到 2026</p></div>
       <div class="timeline">
         {milestones.map(m => (
           <div class="timeline-item">
@@ -104,6 +111,7 @@ const commitments = [
     </div>
   </section>
 
+  <!-- 我们的承诺 -->
   <section class="section">
     <div class="container">
       <div class="section-header"><h2>我们的承诺</h2><p>让每一单合作都放心</p></div>
@@ -129,24 +137,31 @@ const commitments = [
 </Layout>
 
 <style>
-.about-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-.about-img {
-  width: 100%; height: 380px;
-  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center; font-size: 80px;
+.intro-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: center; }
+.intro-text .kicker {
+  display: inline-block; font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--green); font-weight: 600;
+  margin-bottom: 12px;
 }
-.about-badge {
-  display: inline-block; background: var(--green); color: var(--white);
-  padding: 16px 24px; border-radius: 8px; margin-top: 16px;
+.intro-text h2 { font-size: 36px; color: var(--green-dark); margin-bottom: 20px; }
+.intro-text .lead { font-size: 17px; color: var(--text); margin-bottom: 16px; line-height: 1.7; }
+.intro-text p { font-size: 15px; color: var(--text-light); line-height: 1.8; margin-bottom: 14px; }
+.intro-list { list-style: none; margin: 20px 0; padding: 0; }
+.intro-list li {
+  padding: 8px 0; border-bottom: 1px solid var(--cream-dark);
+  font-size: 14px; color: var(--text);
 }
-.about-badge .num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 32px; font-weight: 700; line-height: 1; }
-.about-badge .label { font-size: 12px; opacity: 0.9; }
-.about-text h2 { font-size: 32px; margin-bottom: 16px; }
-.about-text p { font-size: 15px; color: var(--text-light); margin-bottom: 20px; }
-.about-features { list-style: none; margin-bottom: 24px; }
-.about-features li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
-.about-features li::before { content: "✓"; color: var(--green); font-weight: 700; font-size: 16px; }
+.intro-list li:last-child { border-bottom: none; }
+.intro-text .quote {
+  font-style: italic; color: var(--green); font-size: 15px;
+  padding: 16px 20px; background: var(--cream); border-left: 3px solid var(--green);
+  border-radius: 4px; margin-top: 20px;
+}
+.intro-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.intro-imgs img {
+  width: 100%; height: 220px; object-fit: cover; border-radius: 8px;
+  box-shadow: var(--shadow);
+}
 
 .stats-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
@@ -192,10 +207,30 @@ const commitments = [
 .commit-card h4 { font-size: 15px; margin-bottom: 8px; }
 .commit-card p { font-size: 13px; color: var(--text-light); }
 
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+
+.section { padding: 72px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
+.section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
+.products-bg { background: var(--cream-dark); }
+
 @media (max-width: 900px) {
-  .about-teaser { grid-template-columns: 1fr; gap: 32px; }
+  .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+  .intro-imgs { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .team-grid { grid-template-columns: 1fr; }
   .commit-grid { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 48px 0; }
+  .section-header h2 { font-size: 24px; }
 }
 </style>

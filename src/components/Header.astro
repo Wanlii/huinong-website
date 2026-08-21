@@ -1,4 +1,7 @@
 ---
+import fs from 'fs';
+import path from 'path';
+
 const { lang = 'zh' } = Astro.props;
 const isZh = lang === 'zh';
 
@@ -23,11 +26,18 @@ const otherLangHref = isZh ? '/en/' : '/';
 const otherLangLabel = isZh ? 'EN' : '中文';
 const ctaLabel = isZh ? '立即询盘' : 'Request a Quote';
 const ctaHref = isZh ? '/contact' : '/en/contact';
-const logoHtml = isZh ? '汇农<span>天下</span>' : 'Huinong';
+const logoText = isZh ? '汇农天下' : 'Huinong';
+
+// 检测 logo 文件是否存在
+const logoPath = '/assets/images/logo/main.png';
+const logoExists = fs.existsSync(path.join(process.cwd(), 'public/assets/images/logo/main.png'));
 ---
 <nav class="nav">
   <div class="container nav-inner">
-    <a href={homeHref} class="logo" set:html={logoHtml}></a>
+    <a href={homeHref} class="logo">
+      {logoExists && <img class="logo-img" src={logoPath} alt="汇农天下" />}
+      <span class="logo-text">{logoText}</span>
+    </a>
     <div class="nav-links">
       {navItems.map(item => (
         <a href={item.href}>{item.label}</a>
@@ -49,11 +59,18 @@ const logoHtml = isZh ? '汇农<span>天下</span>' : 'Huinong';
   height: 72px;
 }
 .logo {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--green);
   font-family: 'Playfair Display', 'Georgia', serif;
-  font-size: 24px; font-weight: 700; color: var(--green);
+  font-size: 22px; font-weight: 700;
   letter-spacing: -0.5px;
+  line-height: 1;
 }
-.logo :global(span) { color: var(--wood); }
+.logo-img {
+  height: 40px; width: auto; max-width: 180px; object-fit: contain;
+  display: block;
+}
+.logo-text { color: var(--green); }
 .nav-links { display: flex; gap: 28px; align-items: center; }
 .nav-links a {
   font-size: 14px; font-weight: 500; color: var(--text);
@@ -80,6 +97,7 @@ const logoHtml = isZh ? '汇农<span>天下</span>' : 'Huinong';
 @media (max-width: 900px) {
   .nav-links a:not(.lang-switch):not(.nav-cta) { display: none; }
   .nav-inner { height: 60px; }
-  .logo { font-size: 20px; }
+  .logo { font-size: 18px; gap: 8px; }
+  .logo-img { height: 32px; }
 }
 </style>
