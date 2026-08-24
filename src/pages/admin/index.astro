@@ -1,0 +1,55 @@
+---
+// Admin login page (no index link in public nav, only direct URL)
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Admin - Huinong" lang="zh">
+  <section class="section" style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container" style="max-width: 400px;">
+      <div class="kicker" style="text-align: center; color: var(--green); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Restricted</div>
+      <h1 style="text-align: center; font-size: 28px; margin-bottom: 28px;">管理后台登录</h1>
+      <form id="login-form" style="background: var(--white); padding: 32px; border-radius: 12px; box-shadow: var(--shadow);">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; color: var(--text-light); margin-bottom: 6px;">Password</label>
+          <input type="password" id="password" name="password" required autofocus
+            style="width: 100%; padding: 10px 14px; border: 1px solid var(--cream-dark); border-radius: 6px; font-size: 15px; font-family: inherit;" />
+        </div>
+        <button type="submit" class="btn-green" style="width: 100%; padding: 12px; font-size: 15px; border: none; cursor: pointer;">登录</button>
+        <div id="error" style="display: none; margin-top: 14px; padding: 10px; background: #fde8e8; color: #b91c1c; border-radius: 6px; font-size: 13px;"></div>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const errorBox = document.getElementById('error') as HTMLDivElement;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+    const btn = form.querySelector('button') as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = '登录中...';
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        window.location.href = '/admin/inquiries';
+      } else {
+        const data = await res.json().catch(() => ({}));
+        errorBox.textContent = data.error || '登录失败';
+        errorBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '登录';
+      }
+    } catch (err) {
+      errorBox.textContent = '网络错误';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '登录';
+    }
+  });
+</script>
