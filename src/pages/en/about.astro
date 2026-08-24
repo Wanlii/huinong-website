@@ -1,28 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const stats = [
-  { num: '860+', label: 'Hectares of Base' },
-  { num: '600K+', label: 'Plants in Stock' },
-  { num: '40+', label: 'Export Countries' },
-  { num: '20+', label: 'Years in Industry' },
-];
-
-const team = [
-  { name: 'Founder / GM', role: '20+ years experience', desc: 'Strategy and base management', emoji: '👨‍🌾' },
-  { name: 'Export Director', role: '10+ years in trade', desc: 'European and Central Asian markets', emoji: '👩‍💼' },
-  { name: 'QA Manager', role: 'Phytosanitary expert', desc: 'Compliance and quality control', emoji: '👨‍🔬' },
-];
-
-const milestones = [
-  { year: '2003', text: 'Founded in Xinyi, Jiangsu, leveraging the local flower & tree production region' },
-  { year: '2008', text: 'Expanded base, started large-scale shaped plant production' },
-  { year: '2012', text: 'First export, entered Southeast Asian markets' },
-  { year: '2016', text: 'Obtained export registration, entered EU market' },
-  { year: '2020', text: 'Base expanded to 860 hectares, annual exports exceeded 10M' },
-  { year: '2026', text: 'Serving 40+ countries, ~30,000 plants exported annually' },
-];
-
 const commitments = [
   { icon: '🌱', title: 'Source Control', desc: 'Every plant from our own 860 ha base' },
   { icon: '📜', title: 'Compliance First', desc: 'EU 2016/2031 & 2019/2072 fully compliant' },
@@ -65,51 +43,13 @@ const commitments = [
   </section>
 
   <!-- Stats -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header"><h2>Key Figures</h2><p>The numbers behind our strength</p></div>
-      <div class="stats-grid">
-        {stats.map(s => (
-          <div class="stat-item">
-            <div class="stat-num">{s.num}</div>
-            <div class="stat-label">{s.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- (removed: Key Figures section) -->
 
   <!-- Team -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header"><h2>Core Team</h2><p>Professionals doing professional work</p></div>
-      <div class="team-grid">
-        {team.map(t => (
-          <div class="team-card">
-            <div class="team-avatar">{t.emoji}</div>
-            <h4>{t.name}</h4>
-            <div class="role">{t.role}</div>
-            <p>{t.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- (removed: Core Team section) -->
 
   <!-- Milestones -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header"><h2>Milestones</h2><p>From 2003 to 2026</p></div>
-      <div class="timeline">
-        {milestones.map(m => (
-          <div class="timeline-item">
-            <h4>{m.year}</h4>
-            <p>{m.text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- (removed: Milestones section) -->
 
   <!-- Commitments -->
   <section class="section">
@@ -163,39 +103,6 @@ const commitments = [
   box-shadow: var(--shadow);
 }
 
-.stats-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-  background: var(--green-dark); padding: 32px; border-radius: 8px; color: var(--white);
-}
-.stat-item { text-align: center; }
-.stat-num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
-.stat-label { font-size: 14px; opacity: 0.85; }
-
-.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.team-card {
-  background: var(--white); border-radius: 8px; padding: 24px;
-  text-align: center; box-shadow: var(--shadow);
-}
-.team-avatar {
-  width: 80px; height: 80px; border-radius: 50%;
-  background: var(--cream-dark); margin: 0 auto 12px;
-  display: flex; align-items: center; justify-content: center; font-size: 40px;
-}
-.team-card h4 { font-size: 16px; margin-bottom: 4px; }
-.team-card .role { font-size: 13px; color: var(--green); margin-bottom: 8px; font-weight: 600; }
-.team-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
-
-.timeline { max-width: 700px; margin: 0 auto; position: relative; padding-left: 32px; }
-.timeline::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--green-light); }
-.timeline-item { position: relative; margin-bottom: 28px; }
-.timeline-item::before {
-  content: ""; position: absolute; left: -28px; top: 4px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--green); border: 3px solid var(--cream);
-}
-.timeline-item h4 { font-size: 16px; margin-bottom: 4px; color: var(--green); }
-.timeline-item p { font-size: 14px; color: var(--text-light); }
-
 .commit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .commit-card {
   background: var(--white); border: 1px solid var(--cream-dark);
@@ -227,8 +134,6 @@ const commitments = [
 @media (max-width: 900px) {
   .intro-grid { grid-template-columns: 1fr; gap: 32px; }
   .intro-imgs { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .team-grid { grid-template-columns: 1fr; }
   .commit-grid { grid-template-columns: repeat(2, 1fr); }
   .section { padding: 48px 0; }
   .section-header h2 { font-size: 24px; }

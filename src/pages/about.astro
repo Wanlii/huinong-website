@@ -1,28 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const stats = [
-  { num: '860+', label: '公顷种植基地' },
-  { num: '60万+', label: '现有苗木' },
-  { num: '40+', label: '出口国家' },
-  { num: '20+', label: '年行业经验' },
-];
-
-const team = [
-  { name: '创始人 / 总经理', role: '20+ 年行业经验', desc: '负责公司战略与基地管理', emoji: '👨‍🌾' },
-  { name: '出口业务负责人', role: '10+ 年外贸经验', desc: '负责欧洲与中亚市场', emoji: '👩‍💼' },
-  { name: '质量管理负责人', role: '植物检疫专业', desc: '负责出口合规与品控', emoji: '👨‍🔬' },
-];
-
-const milestones = [
-  { year: '2003 年', text: '汇农天下在江苏新沂创立，依托当地花木主产区资源起步' },
-  { year: '2008 年', text: '扩建基地，开始造型植物规模化种植' },
-  { year: '2012 年', text: '首次出口，进入东南亚市场' },
-  { year: '2016 年', text: '获得出口企业备案，进入欧盟市场' },
-  { year: '2020 年', text: '基地扩至 860 公顷，年出口额破千万' },
-  { year: '2026 年', text: '覆盖 40+ 国家，年均出口苗木约 3 万株' },
-];
-
 const commitments = [
   { icon: '🌱', title: '源头把控', desc: '每一株苗都来自自有 860 公顷基地' },
   { icon: '📜', title: '合规第一', desc: 'EU 2016/2031 & 2019/2072 全面合规' },
@@ -60,53 +38,6 @@ const commitments = [
           <img src="/assets/images/company/nursery/main.jpg" alt="汇农天下苗圃" />
           <img src="/assets/images/company/factory/main.jpg" alt="汇农天下工厂" />
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 核心数据 -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header"><h2>核心数据</h2><p>数字背后的实力</p></div>
-      <div class="stats-grid">
-        {stats.map(s => (
-          <div class="stat-item">
-            <div class="stat-num">{s.num}</div>
-            <div class="stat-label">{s.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 核心团队 -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header"><h2>核心团队</h2><p>专业的人做专业的事</p></div>
-      <div class="team-grid">
-        {team.map(t => (
-          <div class="team-card">
-            <div class="team-avatar">{t.emoji}</div>
-            <h4>{t.name}</h4>
-            <div class="role">{t.role}</div>
-            <p>{t.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 发展历程 -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header"><h2>发展历程</h2><p>从 2003 到 2026</p></div>
-      <div class="timeline">
-        {milestones.map(m => (
-          <div class="timeline-item">
-            <h4>{m.year}</h4>
-            <p>{m.text}</p>
-          </div>
-        ))}
       </div>
     </div>
   </section>
@@ -163,39 +94,6 @@ const commitments = [
   box-shadow: var(--shadow);
 }
 
-.stats-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-  background: var(--green-dark); padding: 32px; border-radius: 8px; color: var(--white);
-}
-.stat-item { text-align: center; }
-.stat-num { font-family: 'Playfair Display', 'Georgia', serif; font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
-.stat-label { font-size: 14px; opacity: 0.85; }
-
-.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.team-card {
-  background: var(--white); border-radius: 8px; padding: 24px;
-  text-align: center; box-shadow: var(--shadow);
-}
-.team-avatar {
-  width: 80px; height: 80px; border-radius: 50%;
-  background: var(--cream-dark); margin: 0 auto 12px;
-  display: flex; align-items: center; justify-content: center; font-size: 40px;
-}
-.team-card h4 { font-size: 16px; margin-bottom: 4px; }
-.team-card .role { font-size: 13px; color: var(--green); margin-bottom: 8px; font-weight: 600; }
-.team-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
-
-.timeline { max-width: 700px; margin: 0 auto; position: relative; padding-left: 32px; }
-.timeline::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--green-light); }
-.timeline-item { position: relative; margin-bottom: 28px; }
-.timeline-item::before {
-  content: ""; position: absolute; left: -28px; top: 4px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--green); border: 3px solid var(--cream);
-}
-.timeline-item h4 { font-size: 16px; margin-bottom: 4px; color: var(--green); }
-.timeline-item p { font-size: 14px; color: var(--text-light); }
-
 .commit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .commit-card {
   background: var(--white); border: 1px solid var(--cream-dark);
@@ -227,8 +125,6 @@ const commitments = [
 @media (max-width: 900px) {
   .intro-grid { grid-template-columns: 1fr; gap: 32px; }
   .intro-imgs { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .team-grid { grid-template-columns: 1fr; }
   .commit-grid { grid-template-columns: repeat(2, 1fr); }
   .section { padding: 48px 0; }
   .section-header h2 { font-size: 24px; }

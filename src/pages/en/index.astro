@@ -66,30 +66,29 @@ const categories = [
     </div>
   </section>
 
-  <!-- 4. 精选产品（横向滚动 B1） -->
+  <!-- 4. Featured Products (4-col grid, same as catalog page) -->
   <section class="section products-bg">
     <div class="container">
       <div class="section-header">
         <h2>Featured Products</h2>
         <p>Main varieties, click for details</p>
       </div>
-      <div class="featured-wrapper">
-        <button class="scroll-btn scroll-prev" aria-label="Previous">‹</button>
-        <div class="featured-track" id="featured-track">
-          {featured.map(item => (
-            <a href={`/en/products/${item.id}`} class="product-card">
-              <div class="product-img">
-                {item.mainImage ? <img src={item.mainImage} alt={item.enName} loading="lazy" /> : item.emoji}
-              </div>
-              <div class="product-info">
-                <div class="product-name">{item.enName}</div>
-                <div class="product-latin">{item.latin}</div>
-                <div class="product-specs"><span>H {item.height}</span></div>
-              </div>
-            </a>
-          ))}
-        </div>
-        <button class="scroll-btn scroll-next" aria-label="Next">›</button>
+      <div class="product-grid">
+        {featured.slice(0, 8).map(item => (
+          <a href={`/en/products/${item.id}`} class="product-card">
+            <div class="product-img">
+              {item.mainImage ? <img src={item.mainImage} alt={item.enName} loading="lazy" /> : item.emoji}
+            </div>
+            <div class="product-info">
+              <div class="product-name">{item.enName}</div>
+              <div class="product-latin">{item.latin}</div>
+              <div class="product-specs"><span>H {item.height}</span></div>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="/en/products" style="display: inline-block; padding: 12px 28px; background: var(--green); color: var(--white); border-radius: 4px; font-weight: 600;">View All Products →</a>
       </div>
     </div>
   </section>
@@ -199,12 +198,11 @@ const categories = [
   scrollbar-width: none;
 }
 .featured-track::-webkit-scrollbar { display: none; }
+.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .product-card {
-  flex: 0 0 calc(25% - 15px); min-width: 240px;
   background: var(--white); border-radius: 8px; overflow: hidden;
   box-shadow: var(--shadow);
   transition: transform .2s, box-shadow .2s;
-  scroll-snap-align: start;
 }
 .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 .product-img {
@@ -249,23 +247,15 @@ const categories = [
 .btn-white:hover { transform: scale(1.03); }
 
 @media (max-width: 900px) {
-  .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
   .scroll-btn { display: none; }
   .cta-strip h2 { font-size: 22px; }
+}
+@media (max-width: 600px) {
+  .product-grid { grid-template-columns: 1fr; }
 }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const track = document.getElementById('featured-track');
-    const prev = document.querySelector('.scroll-prev');
-    const next = document.querySelector('.scroll-next');
-    if (!track || !prev || !next) return;
-    const step = () => {
-      const card = track.querySelector('.product-card');
-      return card ? card.offsetWidth + 20 : 260;
-    };
-    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
-  });
+  // Featured products now use grid layout, no scroll needed
 </script>
