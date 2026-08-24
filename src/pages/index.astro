@@ -24,8 +24,8 @@ const heroWebp = '/assets/images/hero/main.webp';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
 const categories = [
-  { name: '观赏苗木', desc: `乔木 · 灌木 · ${ornamentalCount}+ 品种 · 适合大宗采购`, emoji: '🌳', href: '/products?cat=ornamental' },
-  { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, emoji: '🪴', href: '/products?cat=potted' },
+  { name: '观赏苗木', desc: `乔木 · 灌木 · ${ornamentalCount}+ 品种 · 适合大宗采购`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
+  { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, image: '/assets/images/category/potted.jpg', href: '/products?cat=potted' },
 ];
 ---
 <Layout title="汇农天下 - 盆栽与观赏苗木出口商" lang="zh">
@@ -61,7 +61,7 @@ const categories = [
       <div class="cat-grid">
         {categories.map(cat => (
           <a href={cat.href} class="cat-card">
-            <div class="cat-img">{cat.emoji}</div>
+            <div class="cat-img" style={`background-image: url('${cat.image}');`}></div>
             <div class="cat-body">
               <h3>{cat.name}</h3>
               <p>{cat.desc}</p>
@@ -90,7 +90,6 @@ const categories = [
               <div class="product-info">
                 <div class="product-name">{item.zhName}</div>
                 <div class="product-latin">{item.latin}</div>
-                <div class="product-specs"><span>高 {item.height}</span></div>
               </div>
             </a>
           ))}
@@ -181,13 +180,13 @@ const categories = [
 .cat-img {
   width: 100%;
   height: 240px;
-  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 60px;
-  color: var(--white);
+  background-color: #c9d4c5;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: transform .4s;
 }
+.cat-card:hover .cat-img { transform: scale(1.04); }
 .cat-body { padding: 24px; }
 .cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
 .cat-body p { font-size: 14px; color: var(--text-light); }
@@ -224,11 +223,7 @@ const categories = [
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin {
   font-size: 12px; color: var(--text-light);
-  font-style: italic; margin-bottom: 10px;
-}
-.product-specs {
-  display: flex; gap: 12px; font-size: 12px; color: var(--text-light);
-  border-top: 1px solid var(--cream-dark); padding-top: 10px;
+  font-style: italic;
 }
 .scroll-btn {
   position: absolute; top: 50%; transform: translateY(-50%);
