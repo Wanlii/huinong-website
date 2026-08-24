@@ -38,7 +38,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
           <div class="pd-grid">
             <!-- 左：图册 -->
             <div class="pd-gallery">
-              <div class="pd-main" id="pd-main">
+              <div class="pd-main" id="pd-main" data-gallery={JSON.stringify(product.gallery)}>
                 <img src={product.mainImage} alt={product.zhName} />
               </div>
               {product.gallery.length > 1 && (
@@ -298,7 +298,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 
 {isComplete && (
   <script>
-    // 缩略图切换 + Lightbox（含"查看更多"入口）
+    // 缩略图切换 + Lightbox（含"查看更多"入口 - 翻全部图）
     (() => {
       const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
       const main = document.getElementById('pd-main');
@@ -308,21 +308,20 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       const moreBtn = document.getElementById('pd-more');
       if (!main || !lightbox || !lbContent) return;
 
-      // 收集所有图（包括可见的缩略图 + 隐藏的）
-      const items = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
+      // 全部图（从主图 data-gallery 读，lightbox 翻全部）
+      const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
+      // 可见缩略图（用于切换主图）
+      const thumbItems = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
       let currentIndex = 0;
 
-      function renderItem(idx, container) {
-        const it = items[idx];
-        if (it && it.img) {
-          container.innerHTML = '<img src="' + it.img + '" alt="" />';
-        }
+      function renderIn(container, img) {
+        if (img) container.innerHTML = '<img src="' + img + '" alt="" />';
       }
 
       function openLightbox(idx) {
         if (typeof idx === 'number') currentIndex = idx;
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
         lightbox.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
@@ -333,12 +332,15 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       }
 
       function navigate(dir) {
-        currentIndex = (currentIndex + dir + items.length) % items.length;
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
+        // 同步更新下方可见缩略图的高亮（如果在显示范围内）
+        const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
         thumbs.forEach(t => t.classList.remove('active'));
-        if (items[currentIndex].el) items[currentIndex].el.classList.add('active');
-        renderItem(currentIndex, main);
+        if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
+        // 同步更新主图
+        renderIn(main, allImages[currentIndex]);
       }
 
       // 缩略图点击 → 切换主图
@@ -347,7 +349,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
           thumbs.forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
           currentIndex = i;
-          renderItem(i, main);
+          renderIn(main, allImages[currentIndex]);
         });
       });
 

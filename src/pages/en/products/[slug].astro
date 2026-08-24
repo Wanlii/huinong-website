@@ -38,7 +38,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
           <div class="pd-grid">
             <!-- Left: gallery -->
             <div class="pd-gallery">
-              <div class="pd-main" id="pd-main">
+              <div class="pd-main" id="pd-main" data-gallery={JSON.stringify(product.gallery)}>
                 <img src={product.mainImage} alt={product.enName} />
               </div>
               {product.gallery.length > 1 && (
@@ -306,20 +306,18 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       const moreBtn = document.getElementById('pd-more');
       if (!main || !lightbox || !lbContent) return;
 
-      const items = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
+      const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
+      const thumbItems = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
       let currentIndex = 0;
 
-      function renderItem(idx, container) {
-        const it = items[idx];
-        if (it && it.img) {
-          container.innerHTML = '<img src="' + it.img + '" alt="" />';
-        }
+      function renderIn(container, img) {
+        if (img) container.innerHTML = '<img src="' + img + '" alt="" />';
       }
 
       function openLightbox(idx) {
         if (typeof idx === 'number') currentIndex = idx;
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
         lightbox.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
@@ -330,12 +328,13 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       }
 
       function navigate(dir) {
-        currentIndex = (currentIndex + dir + items.length) % items.length;
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
+        const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
         thumbs.forEach(t => t.classList.remove('active'));
-        if (items[currentIndex].el) items[currentIndex].el.classList.add('active');
-        renderItem(currentIndex, main);
+        if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
+        renderIn(main, allImages[currentIndex]);
       }
 
       thumbs.forEach((thumb, i) => {
@@ -343,7 +342,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
           thumbs.forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
           currentIndex = i;
-          renderItem(i, main);
+          renderIn(main, allImages[currentIndex]);
         });
       });
 
