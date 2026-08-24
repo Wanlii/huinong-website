@@ -151,12 +151,3 @@ export function getProductsByCategory(cat: 'ornamental' | 'potted'): Product[] {
   return getAllProducts().filter(p => p.category === cat);
 }
 
-// 从 CSV 统计在线品种数（CSV 是部署源，Cloudflare 一定能读到，素材/ 目录是本地的）
-// 观赏苗木 = category === 'ornamental'，盆栽 = category === 'potted'
-// Build-time only
-export function getActualSpeciesCounts(): { ornamental: number; potted: number; total: number } {
-  const products = getAllProducts();
-  const ornamental = products.filter(p => p.category === 'ornamental').length;
-  const potted = products.filter(p => p.category === 'potted').length;
-  return { ornamental, potted, total: ornamental + potted };
-}
