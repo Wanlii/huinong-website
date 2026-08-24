@@ -12,20 +12,6 @@ const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
 const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
-
-const specs = [
-  { h: '60-80cm', c: '40-60cm', d: '2-3cm', y: '3-4 年' },
-  { h: '80-100cm', c: '50-80cm', d: '3-4cm', y: '4-5 年' },
-  { h: '100-120cm', c: '60-100cm', d: '4-5cm', y: '5-7 年' },
-  { h: '120-150cm', c: '80-120cm', d: '5-7cm', y: '7-10 年' },
-];
-
-const faqs = [
-  { q: `${product.zhName} 适合什么气候？`, a: '耐寒性强，可耐 -15°C 低温，适合温带至亚热带气候，欧洲大部分地区均可露天种植。' },
-  { q: '运输方式与装柜量？', a: `20'GP 约 1500-2000 株（裸根），40'HC 约 3500-5000 株。建议秋冬季节起苗运输。` },
-  { q: '是否需要 CITES 许可？', a: `${product.zhName} 不属于 CITES 保护物种，无需额外许可，常规植物检疫证即可。` },
-  { q: '是否提供检疫处理？', a: '可按客户要求提供熏蒸处理，并出具相应证明文件。' },
-];
 ---
 <Layout
   title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
@@ -78,30 +64,10 @@ const faqs = [
               <h3 class="pd-h3">产品介绍</h3>
               <div class="long-desc">{product.longDesc}</div>
 
-              <h3 class="pd-h3">主要规格</h3>
-              <table class="spec-table">
-                <tr><th>高度</th><th>冠幅</th><th>干径</th><th>树龄</th></tr>
-                {specs.map(s => (
-                  <tr><td>{s.h}</td><td>{s.c}</td><td>{s.d}</td><td>{s.y}</td></tr>
-                ))}
-              </table>
-
               <div class="pd-actions">
                 <a href={`/contact?product=${product.zhName}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
                 <a href="#" class="btn-outline">💬 WhatsApp</a>
               </div>
-            </div>
-          </div>
-
-          <div class="pd-faq">
-            <div class="section-header"><h2 style="font-size: 24px;">养护要点 & 常见问题</h2><p>采购前必读</p></div>
-            <div class="faq-list">
-              {faqs.map((f, i) => (
-                <div class="faq-item" data-faq={i}>
-                  <div class="faq-q"><span>{f.q}</span><span class="faq-icon">+</span></div>
-                  <div class="faq-a">{f.a}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -338,11 +304,6 @@ const faqs = [
         if (e.key === 'ArrowRight') navigate(1);
       });
 
-      // FAQ 折叠
-      document.querySelectorAll('.faq-item').forEach(item => {
-        const q = item.querySelector('.faq-q');
-        if (q) q.addEventListener('click', () => item.classList.toggle('open'));
-      });
     })();
   </script>
 )}
