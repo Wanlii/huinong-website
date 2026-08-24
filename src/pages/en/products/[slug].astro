@@ -12,20 +12,6 @@ const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
 const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : 'Potted Plants (Bonsai)';
-
-const specs = [
-  { h: '60-80cm', c: '40-60cm', d: '2-3cm', y: '3-4 yrs' },
-  { h: '80-100cm', c: '50-80cm', d: '3-4cm', y: '4-5 yrs' },
-  { h: '100-120cm', c: '60-100cm', d: '4-5cm', y: '5-7 yrs' },
-  { h: '120-150cm', c: '80-120cm', d: '5-7cm', y: '7-10 yrs' },
-];
-
-const faqs = [
-  { q: `What climate is ${product.enName} suitable for?`, a: 'Hardy and cold-tolerant down to -15°C. Suitable for temperate to subtropical climates, can be planted outdoors in most of Europe.' },
-  { q: 'Shipping method and container capacity?', a: `20'GP: ~1,500-2,000 plants (bare root). 40'HC: ~3,500-5,000 plants. Autumn/winter lifting recommended.` },
-  { q: 'Is CITES permit required?', a: `${product.enName} is not a CITES-protected species. Regular phytosanitary certificate is sufficient.` },
-  { q: 'Do you provide quarantine treatment?', a: 'Fumigation treatment available on request, with corresponding documentation.' },
-];
 ---
 <Layout
   title={isComplete ? `${product.enName} - Product Details - Huinong` : `${product.enName} - Huinong`}
@@ -78,30 +64,10 @@ const faqs = [
               <h3 class="pd-h3">Product Introduction</h3>
               <div class="long-desc">{product.longDesc}</div>
 
-              <h3 class="pd-h3">Standard Specifications</h3>
-              <table class="spec-table">
-                <tr><th>Height</th><th>Crown</th><th>Trunk Ø</th><th>Age</th></tr>
-                {specs.map(s => (
-                  <tr><td>{s.h}</td><td>{s.c}</td><td>{s.d}</td><td>{s.y}</td></tr>
-                ))}
-              </table>
-
               <div class="pd-actions">
                 <a href={`/en/contact?product=${product.enName}`} class="btn-green" style="flex: 1; text-align: center;">📩 Inquire Now</a>
                 <a href="#" class="btn-outline">💬 WhatsApp</a>
               </div>
-            </div>
-          </div>
-
-          <div class="pd-faq">
-            <div class="section-header"><h2 style="font-size: 24px;">Care Tips & FAQ</h2><p>Read before ordering</p></div>
-            <div class="faq-list">
-              {faqs.map((f, i) => (
-                <div class="faq-item" data-faq={i}>
-                  <div class="faq-q"><span>{f.q}</span><span class="faq-icon">+</span></div>
-                  <div class="faq-a">{f.a}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -329,10 +295,6 @@ const faqs = [
         if (e.key === 'ArrowRight') navigate(1);
       });
 
-      document.querySelectorAll('.faq-item').forEach(item => {
-        const q = item.querySelector('.faq-q');
-        if (q) q.addEventListener('click', () => item.classList.toggle('open'));
-      });
     })();
   </script>
 )}

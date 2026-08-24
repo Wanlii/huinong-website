@@ -1,18 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getFeaturedProducts, getAllProducts } from '../lib/products';
+import { getFeaturedProducts, getAllProducts, getActualSpeciesCounts } from '../lib/products';
 import fs from 'fs';
 import path from 'path';
 
 const featured = getFeaturedProducts();
-const totalProducts = getAllProducts().length;
-const ornamentalCount = getAllProducts().filter(p => p.category === 'ornamental').length;
-const pottedCount = getAllProducts().filter(p => p.category === 'potted').length;
+const { ornamental: ornamentalCount, potted: pottedCount, total: totalProducts } = getActualSpeciesCounts();
 
 const trustItems = [
-  { num: '30+', label: '年种植经验' },
+  { num: '20+', label: '种植经验' },
+  { num: '8.6+', label: '平方公里基地' },
   { num: totalProducts + '+', label: '在线品种' },
-  { num: '40+', label: '出口国家' },
   { num: '100%', label: '合规出口' },
 ];
 
@@ -22,7 +20,7 @@ const heroWebp = '/assets/images/hero/main.webp';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
 const categories = [
-  { name: '观赏苗木', desc: `乔木 · 灌木 · 地被 · ${ornamentalCount}+ 品种 · 适合大宗采购`, emoji: '🌳', href: '/products?cat=ornamental' },
+  { name: '观赏苗木', desc: `乔木 · 灌木 · ${ornamentalCount}+ 品种 · 适合大宗采购`, emoji: '🌳', href: '/products?cat=ornamental' },
   { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, emoji: '🪴', href: '/products?cat=potted' },
 ];
 ---
@@ -32,7 +30,7 @@ const categories = [
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>从源头到世界</h1>
-      <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 30 年种植经验 · 源头直供</p>
+      <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 20 年种植经验 · 源头直供</p>
       <a href="/contact" class="btn-green hero-cta">立即询盘 →</a>
     </div>
   </section>

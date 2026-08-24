@@ -1,18 +1,16 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getFeaturedProducts, getAllProducts } from '../../lib/products';
+import { getFeaturedProducts, getAllProducts, getActualSpeciesCounts } from '../../lib/products';
 import fs from 'fs';
 import path from 'path';
 
 const featured = getFeaturedProducts();
-const totalProducts = getAllProducts().length;
-const ornamentalCount = getAllProducts().filter(p => p.category === 'ornamental').length;
-const pottedCount = getAllProducts().filter(p => p.category === 'potted').length;
+const { ornamental: ornamentalCount, potted: pottedCount, total: totalProducts } = getActualSpeciesCounts();
 
 const trustItems = [
-  { num: '30+', label: 'Years of Experience' },
+  { num: '20+', label: 'Years of Experience' },
+  { num: '8.6+', label: 'km² of Farmland' },
   { num: totalProducts + '+', label: 'Varieties Online' },
-  { num: '40+', label: 'Export Countries' },
   { num: '100%', label: 'Compliant Export' },
 ];
 
@@ -20,7 +18,7 @@ const heroJpg = '/assets/images/hero/main.jpg';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
 const categories = [
-  { name: 'Ornamental Plants', desc: `Trees · Shrubs · Ground covers · ${ornamentalCount}+ varieties · bulk procurement`, emoji: '🌳', href: '/en/products?cat=ornamental' },
+  { name: 'Ornamental Plants', desc: `Trees · Shrubs · ${ornamentalCount}+ varieties · bulk procurement`, emoji: '🌳', href: '/en/products?cat=ornamental' },
   { name: 'Potted Plants (Bonsai)', desc: `Conifers · Hardwoods · Flowering · ${pottedCount}+ varieties · wholesale`, emoji: '🪴', href: '/en/products?cat=potted' },
 ];
 ---
@@ -30,7 +28,7 @@ const categories = [
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>From Source to the World</h1>
-      <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 30 years of growing experience · source factory</p>
+      <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 20 years of growing experience · source factory</p>
       <a href="/en/contact" class="btn-green hero-cta">Request a Quote →</a>
     </div>
   </section>
