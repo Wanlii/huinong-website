@@ -151,27 +151,12 @@ export function getProductsByCategory(cat: 'ornamental' | 'potted'): Product[] {
   return getAllProducts().filter(p => p.category === cat);
 }
 
-// 从素材目录统计实际品种数（CSV 可能滞后，以源文件为准）
-// 观赏苗木 = 造型树 + 观赏树，盆栽 = 盆栽目录
+// 从 CSV 统计在线品种数（CSV 是部署源，Cloudflare 一定能读到，素材/ 目录是本地的）
+// 观赏苗木 = category === 'ornamental'，盆栽 = category === 'potted'
 // Build-time only
 export function getActualSpeciesCounts(): { ornamental: number; potted: number; total: number } {
-  const root = path.join(process.cwd(), '素材/处理后/产品图片');
-  let ornamental = 0;
-  let potted = 0;
-
-  for (const sub of ['观赏苗木/造型树', '观赏苗木/观赏树']) {
-    const dir = path.join(root, sub);
-    if (fs.existsSync(dir)) {
-      ornamental += fs.readdirSync(dir, { withFileTypes: true })
-        .filter(d => d.isDirectory()).length;
-    }
-  }
-
-  const pottedDir = path.join(root, '盆栽');
-  if (fs.existsSync(pottedDir)) {
-    potted = fs.readdirSync(pottedDir, { withFileTypes: true })
-      .filter(d => d.isDirectory()).length;
-  }
-
+  const products = getAllProducts();
+  const ornamental = products.filter(p => p.category === 'ornamental').length;
+  const potted = products.filter(p => p.category === 'potted').length;
   return { ornamental, potted, total: ornamental + potted };
 }

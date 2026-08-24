@@ -1,11 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getFeaturedProducts, getAllProducts, getActualSpeciesCounts } from '../../lib/products';
+import { getFeaturedProducts, getAllProducts } from '../../lib/products';
 import fs from 'fs';
 import path from 'path';
 
 const featured = getFeaturedProducts();
-const { ornamental: ornamentalCount, potted: pottedCount, total: totalProducts } = getActualSpeciesCounts();
+// 用 CSV 统计（不依赖源文件夹，Cloudflare 构建时也能算）
+const allProducts = getAllProducts();
+const totalProducts = allProducts.length;
+const ornamentalCount = allProducts.filter(p => p.category === 'ornamental').length;
+const pottedCount = allProducts.filter(p => p.category === 'potted').length;
 
 const trustItems = [
   { num: '20+', label: 'Years of Experience' },
