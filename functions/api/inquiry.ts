@@ -1,58 +1,104 @@
 // Cloudflare Pages Function: 询盘表单接收
 // 部署后路径: /api/inquiry
-// 配置环境变量 (Cloudflare Pages → Settings → Environment variables):
-//   - RESEND_API_KEY: 在 https://resend.com 注册并获取
-//   - INQUIRY_TO_EMAIL: 询盘接收邮箱 (如 export@huinongplants.com)
+// 配置 (Cloudflare Pages → Settings → Environment variables):
+//   - RESEND_API_KEY:  https://resend.com/api-keys
+//   - INQUIRY_TO_EMAIL: 询盘接收邮箱 (如 contact@huinongplants.com)
+// D1 binding:
+//   - Variable name: DB
+//   - Database: huinong-inquiries (在 Cloudflare D1 控制台创建)
+//   - Schema: 见 db/schema.sql
+
+interface D1Database {
+  prepare(query: string): D1PreparedStatement;
+  exec(query: string): Promise<unknown>;
+}
+
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement;
+  run(): Promise<{ success: boolean }>;
+  all<T = unknown>(): Promise<{ results: T[] }>;
+  first<T = unknown>(): Promise<T | null>;
+}
 
 interface Env {
   RESEND_API_KEY: string;
   INQUIRY_TO_EMAIL: string;
+  DB: D1Database;
+}
+
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+function jsonResponse(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS },
+  });
+}
+
+function textResponse(text: string, status = 200) {
+  return new Response(text, { status, headers: CORS });
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
-  // CORS
   if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    });
+    return new Response(null, { headers: CORS });
   }
 
+  // 1. 解析 body
   let body: Record<string, string>;
   try {
     body = await request.json();
   } catch {
-    return new Response('Invalid JSON', {
-      status: 400,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-    });
+    return textResponse('Invalid JSON', 400);
   }
 
-  // 必填项校验
+  // 2. 必填项校验
   const required = ['company', 'country', 'name', 'email', 'message'];
   for (const f of required) {
     if (!body[f] || !String(body[f]).trim()) {
-      return new Response(`Missing field: ${f}`, {
-        status: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-      });
+      return textResponse(`Missing field: ${f}`, 400);
     }
   }
 
-  // 邮箱格式
+  // 3. 邮箱格式
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    return new Response('Invalid email', {
-      status: 400,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-    });
+    return textResponse('Invalid email', 400);
   }
 
-  // 邮件内容
+  // 4. 写 D1（best-effort：失败不阻塞邮件）
+  const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '';
+  const ua = request.headers.get('user-agent') || '';
+  let inquiryId: number | null = null;
+  try {
+    const result = await env.DB.prepare(
+      `INSERT INTO inquiries (name, company, country, email, phone, category, product, message, lang, ip, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      body.name.trim(),
+      body.company.trim(),
+      body.country.trim(),
+      body.email.trim(),
+      body.phone?.trim() || null,
+      body.category?.trim() || null,
+      body.product?.trim() || null,
+      body.message.trim(),
+      body.lang || 'zh',
+      ip,
+      ua
+    ).run();
+    inquiryId = (result as unknown as { meta?: { last_row_id?: number } }).meta?.last_row_id ?? null;
+    console.log(`Inquiry saved to D1, id=${inquiryId}`);
+  } catch (err) {
+    console.error('D1 write failed (continuing to email):', err);
+  }
+
+  // 5. 邮件内容
   const isEn = body.lang === 'en';
   const subject = isEn
     ? `[New Inquiry] ${body.company} - ${body.country}`
@@ -74,7 +120,8 @@ ${body.message}
 
 ---
 Source: ${isEn ? 'English' : 'Chinese'} page
-Time: ${new Date().toISOString()}`
+Time: ${new Date().toISOString()}
+DB ID: ${inquiryId ?? '(not saved)'}`
     : `来自网站的询盘:
 
 公司: ${body.company}
@@ -90,9 +137,10 @@ ${body.message}
 
 ---
 来源: ${isEn ? '英文' : '中文'} 页面
-时间: ${new Date().toISOString()}`;
+时间: ${new Date().toISOString()}
+DB ID: ${inquiryId ?? '(未保存)'}`;
 
-  // 发送邮件（Resend）
+  // 6. 发邮件（Resend）
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -111,22 +159,12 @@ ${body.message}
 
     if (!res.ok) {
       const err = await res.text();
-      return new Response(`Email send failed: ${err}`, {
-        status: 500,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-      });
+      console.error('Resend error:', err);
+      return textResponse(`Email send failed: ${err}`, 500);
     }
 
-    return new Response(JSON.stringify({ ok: true, message: 'Inquiry sent' }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
+    return jsonResponse({ ok: true, message: 'Inquiry sent', id: inquiryId });
   } catch (e) {
-    return new Response(`Server error: ${(e as Error).message}`, {
-      status: 500,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-    });
+    return textResponse(`Server error: ${(e as Error).message}`, 500);
   }
 };

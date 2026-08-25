@@ -1,0 +1,134 @@
+---
+// Admin inquiries list page
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="询盘管理 - Huinong" lang="zh">
+  <section class="section" style="padding: 32px 0;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h1 style="font-size: 24px;">询盘管理</h1>
+        <button id="logout-btn" style="padding: 6px 14px; border: 1px solid var(--cream-dark); background: var(--white); border-radius: 4px; cursor: pointer; font-size: 13px;">登出</button>
+      </div>
+      <div id="login-prompt" style="display: none; padding: 24px; background: var(--cream); border-radius: 8px; text-align: center;">
+        <p>需要登录才能查看询盘。<a href="/admin" style="color: var(--green);">点此登录</a></p>
+      </div>
+      <div id="list-container" style="display: none;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; font-size: 13px; color: var(--text-light);">
+          <span id="count"></span>
+          <button id="refresh-btn" style="margin-left: auto; padding: 4px 10px; background: var(--white); border: 1px solid var(--cream-dark); border-radius: 4px; cursor: pointer; font-size: 12px;">刷新</button>
+        </div>
+        <div id="inquiry-list"></div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .inq-card {
+    background: var(--white);
+    border: 1px solid var(--cream-dark);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    transition: border-color .2s;
+  }
+  .inq-card.unread { border-left: 4px solid var(--green); }
+  .inq-card.archived { opacity: 0.55; }
+  .inq-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+  .inq-meta { font-size: 12px; color: var(--text-light); }
+  .inq-company { font-weight: 600; font-size: 16px; }
+  .inq-name { font-size: 14px; color: var(--text-light); }
+  .inq-msg { font-size: 14px; line-height: 1.6; padding: 12px; background: var(--cream); border-radius: 4px; margin: 10px 0; white-space: pre-wrap; }
+  .inq-actions { display: flex; gap: 6px; }
+  .inq-btn { padding: 4px 10px; background: var(--white); border: 1px solid var(--cream-dark); border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .inq-btn:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+  .inq-btn.danger:hover { background: #b91c1c; border-color: #b91c1c; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.new { background: var(--green); color: var(--white); }
+  .badge.read { background: var(--cream-dark); color: var(--text-light); }
+  .badge.archived { background: transparent; border: 1px solid var(--cream-dark); color: var(--text-light); }
+</style>
+
+<script>
+  const STATUS_LABELS: Record<string, string> = { new: '新', read: '已读', archived: '已归档' };
+
+  function escape(s: string): string {
+    return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  }
+
+  function formatTime(iso: string): string {
+    try {
+      const d = new Date(iso + (iso.includes('Z') ? '' : 'Z'));
+      return d.toLocaleString('zh-CN', { hour12: false });
+    } catch { return iso; }
+  }
+
+  async function loadList() {
+    const res = await fetch('/api/admin/inquiries');
+    if (res.status === 401) {
+      document.getElementById('login-prompt')!.style.display = 'block';
+      document.getElementById('list-container')!.style.display = 'none';
+      return;
+    }
+    if (!res.ok) {
+      alert('加载失败');
+      return;
+    }
+    const data = await res.json();
+    const items = data.items || [];
+    document.getElementById('list-container')!.style.display = 'block';
+    document.getElementById('count')!.textContent = `共 ${items.length} 条`;
+
+    const list = document.getElementById('inquiry-list')!;
+    list.innerHTML = items.map((it: any) => `
+      <div class="inq-card ${it.status === 'new' ? 'unread' : ''} ${it.status === 'archived' ? 'archived' : ''}" data-id="${it.id}">
+        <div class="inq-head">
+          <div>
+            <span class="inq-company">${escape(it.company)}</span>
+            <span class="badge ${it.status}">${STATUS_LABELS[it.status] || it.status}</span>
+            <span class="inq-name">· ${escape(it.name)} · ${escape(it.country)}</span>
+          </div>
+          <div class="inq-meta">${formatTime(it.created_at)} ${it.lang === 'en' ? '🇬🇧' : '🇨🇳'}</div>
+        </div>
+        <div class="inq-meta">
+          📧 <a href="mailto:${escape(it.email)}">${escape(it.email)}</a>
+          ${it.phone ? ' · 📱 ' + escape(it.phone) : ''}
+          ${it.category ? ' · 🏷️ ' + escape(it.category) : ''}
+          ${it.product ? ' · 📦 ' + escape(it.product) : ''}
+        </div>
+        <div class="inq-msg">${escape(it.message)}</div>
+        <div class="inq-actions">
+          <a href="mailto:${escape(it.email)}?subject=Re: ${escape(it.company)} - Huinong" class="inq-btn">回复</a>
+          ${it.status === 'new' ? '<button class="inq-btn" data-act="read">标已读</button>' : ''}
+          ${it.status === 'read' ? '<button class="inq-btn" data-act="unread">标未读</button>' : ''}
+          ${it.status !== 'archived' ? '<button class="inq-btn" data-act="archive">归档</button>' : ''}
+          <button class="inq-btn danger" data-act="delete">删除</button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('button[data-act]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const card = (btn as HTMLElement).closest('.inq-card') as HTMLElement | null;
+        if (!card) return;
+        const id = card.dataset.id;
+        const act = (btn as HTMLElement).dataset.act;
+        if (act === 'delete' && !confirm('确认删除？')) return;
+        const r = await fetch('/api/admin/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(id), action: act }),
+        });
+        if (r.ok) loadList();
+        else alert('操作失败');
+      });
+    });
+  }
+
+  document.getElementById('refresh-btn')?.addEventListener('click', loadList);
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin';
+  });
+  loadList();
+</script>
