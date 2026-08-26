@@ -1,0 +1,12 @@
+const fs = require('fs');
+const body = fs.readFileSync('C:/Users/97126/AppData/Local/Temp/dev_dujuan.html', 'utf8');
+console.log('=== 杜鹃详情页 (zh) ===');
+console.log('  size:', body.length, 'bytes');
+console.log('  pd-main:', body.includes('pd-main') ? 'yes' : 'no');
+console.log('  pd-thumbs:', (body.match(/pd-thumb/g) || []).length);
+console.log('  pd-more btn:', body.includes('pd-more') ? 'yes' : 'no');
+console.log('  查看全部:', body.includes('查看全部') ? 'yes' : 'no');
+console.log('  meta-item 数量:', (body.match(/meta-item/g) || []).length);
+console.log('  meta 4 字段 (BAD):', (body.match(/>分类</) ? 'yes' : 'no'));
+console.log('  meta 规格图片 (NEW):', body.includes('规格图片') ? 'yes' : 'no');
+console.log('  data-gallery (全部图):', body.includes('data-gallery=') ? 'yes' : 'no');
