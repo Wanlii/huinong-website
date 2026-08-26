@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from '../../layouts/Layout.astro';
 import { getAllProducts } from '../../lib/products';
 
@@ -12,6 +12,11 @@ const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
 const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
+
+// 缩略图：最多显示 4 张，剩下的用一个 "+更多" 卡片代替
+const MAX_THUMBS = 4;
+const visibleThumbs = product.gallery.slice(0, MAX_THUMBS);
+const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 ---
 <Layout
   title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
@@ -28,47 +33,68 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
 
   {isComplete ? (
     <>
-      <section class="section">
+      <section class="section" style="padding-top: 32px;">
         <div class="container">
           <div class="pd-grid">
+            <!-- 左：图册 -->
             <div class="pd-gallery">
-              <div class="pd-thumbs">
-                {product.gallery.map((img, i) => (
-                  <div
-                    class={`pd-thumb ${i === 0 ? 'active' : ''}`}
-                    data-index={i}
-                    data-image={img}
-                  >
-                    <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
-                  </div>
-                ))}
-              </div>
-              <div class="pd-main" id="pd-main">
+              <div class="pd-main" id="pd-main" data-gallery={JSON.stringify(product.gallery)}>
                 <img src={product.mainImage} alt={product.zhName} />
               </div>
+              {product.gallery.length > 1 && (
+                <div class="pd-thumbs">
+                  {visibleThumbs.map((img, i) => (
+                    <div
+                      class={`pd-thumb ${i === 0 ? 'active' : ''}`}
+                      data-index={i}
+                      data-image={img}
+                    >
+                      <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
+                    </div>
+                  ))}
+                  {hiddenCount > 0 && (
+                    <button class="pd-more" id="pd-more" type="button">
+                      <span class="more-num">+{hiddenCount}</span>
+                      <span class="more-label">查看全部 {product.gallery.length} 张</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
+            <!-- 右：信息（sticky 跟随） -->
             <div class="pd-info">
               <h1>{product.zhName}</h1>
               <p class="latin">{product.latin} · {product.enName}</p>
 
               <div class="short-desc">{product.shortDesc}</div>
 
-              <div class="meta-grid">
-                <div class="meta-item"><div class="k">分类</div><div class="v">{categoryName}</div></div>
-                <div class="meta-item"><div class="k">高度</div><div class="v">{product.height}</div></div>
-                <div class="meta-item"><div class="k">盆器</div><div class="v">{product.pot}</div></div>
-                <div class="meta-item"><div class="k">MOQ</div><div class="v">{product.moq}</div></div>
+              <div class="pd-meta">
+                <div class="meta-item">
+                  <div class="k">📷 规格图片</div>
+                  <div class="v">{product.gallery.length} 张</div>
+                </div>
+                <div class="meta-item">
+                  <div class="k">🌿 分类</div>
+                  <div class="v">{categoryName}</div>
+                </div>
               </div>
-
-              <h3 class="pd-h3">产品介绍</h3>
-              <div class="long-desc">{product.longDesc}</div>
 
               <div class="pd-actions">
-                <a href={`/contact?product=${product.zhName}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
-                <a href="#" class="btn-outline">💬 WhatsApp</a>
+                <a href={`/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
+                <a href="#" class="btn-outline" title="WhatsApp">💬</a>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 产品介绍：全宽 -->
+      <section class="section" style="padding-top: 0;">
+        <div class="container">
+          <div class="pd-content">
+            <h3 class="pd-h3">产品介绍</h3>
+            <div class="long-desc">{product.longDesc}</div>
           </div>
         </div>
       </section>
@@ -77,7 +103,7 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
         <div class="container">
           <h2>想采购 {product.zhName}？</h2>
           <p>告诉我们您的规格、数量、目的港</p>
-          <a href={`/contact?product=${product.zhName}`} class="btn-white">📩 Inquire {product.zhName}</a>
+          <a href={`/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-white">📩 Inquire {product.zhName}</a>
         </div>
       </section>
 
@@ -116,74 +142,95 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
 .breadcrumb a:hover { color: var(--green); }
 .breadcrumb span { color: var(--text); }
 
-.pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-.pd-gallery { display: grid; grid-template-columns: 1fr 4fr; gap: 12px; }
-.pd-thumbs { display: flex; flex-direction: column; gap: 8px; }
-.pd-thumb {
-  width: 100%; height: 80px; background: var(--cream-dark);
-  border-radius: 6px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-  transition: border-color .2s;
-  border: 2px solid transparent;
+/* === 主布局：左 60% 图册 / 右 40% 信息（sticky） === */
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 36px;
+  align-items: start;
 }
-.pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.pd-thumb.active { border-color: var(--green); }
+.pd-gallery { display: flex; flex-direction: column; gap: 12px; }
 .pd-main {
-  width: 100%; height: 380px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   background: var(--cream-dark);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   cursor: zoom-in;
   overflow: hidden;
   user-select: none;
 }
 .pd-main img { width: 100%; height: 100%; object-fit: cover; }
-.pd-info h1 { font-size: 30px; margin-bottom: 6px; }
-.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin-bottom: 16px; }
-.short-desc { font-size: 15px; color: var(--text); line-height: 1.7; padding: 12px 16px; background: var(--cream-dark); border-radius: 6px; margin-bottom: 16px; }
-.long-desc { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 16px; }
-.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.meta-item { padding: 12px; background: var(--cream); border-radius: 6px; }
-.meta-item .k { font-size: 11px; color: var(--text-light); }
-.meta-item .v { font-size: 14px; font-weight: 600; margin-top: 2px; }
-.pd-h3 { font-size: 17px; margin: 24px 0 10px; }
-.spec-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-.spec-table th { background: var(--green); color: var(--white); padding: 10px; text-align: left; font-size: 13px; }
-.spec-table td { padding: 10px; border-bottom: 1px solid var(--cream-dark); font-size: 13px; }
-.pd-actions { display: flex; gap: 10px; margin-top: 20px; }
 
-.pd-faq { max-width: 900px; margin: 56px auto 0; }
-.faq-item { border-bottom: 1px solid var(--cream-dark); padding: 14px 0; }
-.faq-q {
-  font-weight: 600; cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 15px;
+/* 缩略图横排，最多 4 张 + 1 个"更多"卡片 */
+.pd-thumbs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
 }
-.faq-q .faq-icon { font-size: 22px; color: var(--green); font-weight: 400; transition: transform .2s; }
-.faq-item.open .faq-q .faq-icon { transform: rotate(45deg); }
-.faq-a { padding-top: 10px; color: var(--text-light); font-size: 14px; line-height: 1.7; display: none; }
-.faq-item.open .faq-a { display: block; }
-
-.placeholder-product { text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0; }
-.placeholder-emoji {
-  font-size: 100px; margin: 0 auto 20px;
-  width: 200px; height: 200px;
-  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  border-radius: 16px;
+.pd-thumb {
+  aspect-ratio: 1;
+  background: var(--cream-dark);
+  border-radius: 6px;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: border-color .2s, transform .15s;
+  border: 2px solid transparent;
 }
-.placeholder-product h1 { font-size: 36px; margin-bottom: 8px; color: var(--green); }
-.placeholder-cat {
-  display: inline-block; background: var(--green);
-  color: var(--white); padding: 4px 12px;
-  border-radius: 12px; font-size: 13px;
-  margin: 12px 0 24px;
-}
-.placeholder-msg { font-size: 15px; color: var(--text-light); line-height: 1.8; }
-.placeholder-msg p { margin-bottom: 8px; }
+.pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pd-thumb:hover { transform: translateY(-2px); }
+.pd-thumb.active { border-color: var(--green); }
 
-/* Lightbox */
+.pd-more {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #2c4a2c 0%, #1a3a1a 100%);
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+  transition: transform .15s, background .2s;
+}
+.pd-more:hover { transform: translateY(-2px); background: linear-gradient(135deg, #3a5a3a 0%, #254525 100%); }
+.pd-more .more-num { font-size: 20px; font-weight: 700; line-height: 1; }
+.pd-more .more-label { font-size: 11px; opacity: 0.9; line-height: 1.2; }
+
+/* === 右侧信息（sticky 跟随） === */
+.pd-info {
+  position: sticky;
+  top: 100px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.pd-info h1 { font-size: 30px; margin-bottom: 0; }
+.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin: 0; }
+.short-desc {
+  font-size: 14px; color: var(--text); line-height: 1.7;
+  padding: 14px 16px; background: var(--cream-dark);
+  border-radius: 8px;
+}
+.pd-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.meta-item {
+  padding: 10px 14px;
+  background: var(--cream);
+  border-radius: 8px;
+}
+.meta-item .k { font-size: 11px; color: var(--text-light); }
+.meta-item .v { font-size: 14px; font-weight: 600; margin-top: 4px; }
+.pd-actions { display: flex; gap: 10px; margin-top: 6px; }
+.pd-actions .btn-outline { padding: 12px 18px; min-width: 50px; text-align: center; font-size: 18px; }
+
+/* === 产品介绍 === */
+.pd-content { max-width: 920px; margin: 0 auto; }
+.pd-h3 { font-size: 18px; margin: 0 0 12px; color: var(--green); }
+.long-desc { font-size: 15px; color: var(--text-light); line-height: 1.85; }
+
+/* === Lightbox === */
 .lightbox {
   display: none;
   position: fixed; inset: 0;
@@ -221,51 +268,60 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
   color: white; font-size: 14px; opacity: 0.7;
 }
 
+/* === Placeholder（无图产品的占位） === */
+.placeholder-product { text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0; }
+.placeholder-emoji {
+  font-size: 100px; margin: 0 auto 20px;
+  width: 200px; height: 200px;
+  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.placeholder-product h1 { font-size: 36px; margin-bottom: 8px; color: var(--green); }
+.placeholder-cat {
+  display: inline-block; background: var(--green);
+  color: var(--white); padding: 4px 12px;
+  border-radius: 12px; font-size: 13px;
+  margin: 12px 0 24px;
+}
+.placeholder-msg { font-size: 15px; color: var(--text-light); line-height: 1.8; }
+.placeholder-msg p { margin-bottom: 8px; }
+
+/* === 响应式：< 900px 切单列 === */
 @media (max-width: 900px) {
-  .pd-grid { grid-template-columns: 1fr; }
-  .pd-gallery { grid-template-columns: 1fr; }
-  .pd-thumbs { flex-direction: row; }
-  .meta-grid { grid-template-columns: 1fr; }
+  .pd-grid { grid-template-columns: 1fr; gap: 24px; }
+  .pd-info { position: static; }
+  .pd-thumbs { grid-template-columns: repeat(4, 1fr); }
   .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
 }
 </style>
 
 {isComplete && (
   <script>
-    // 缩略图切换 + Lightbox
-    // 用 data 属性存图，不依赖 define:vars
+    // 缩略图切换 + Lightbox（含"查看更多"入口 - 翻全部图）
     (() => {
       const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
       const main = document.getElementById('pd-main');
       const lightbox = document.getElementById('lightbox');
       const lbContent = document.getElementById('lb-content');
       const lbCounter = document.getElementById('lb-counter');
-      if (!thumbs.length || !main || !lightbox || !lbContent) return;
+      const moreBtn = document.getElementById('pd-more');
+      if (!main || !lightbox || !lbContent) return;
 
-      // 从 thumb 的 data-image 属性读图
-      const items = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
+      // 全部图（从主图 data-gallery 读，lightbox 翻全部）
+      const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
+      // 可见缩略图（用于切换主图）
+      const thumbItems = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
       let currentIndex = 0;
 
-      function renderItem(idx, container) {
-        const it = items[idx];
-        if (it && it.img) {
-          container.innerHTML = '<img src="' + it.img + '" alt="" />';
-        }
+      function renderIn(container, img) {
+        if (img) container.innerHTML = '<img src="' + img + '" alt="" />';
       }
 
-      // 缩略图点击 → 切换主图
-      thumbs.forEach((thumb, i) => {
-        thumb.addEventListener('click', () => {
-          thumbs.forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-          currentIndex = i;
-          renderItem(i, main);
-        });
-      });
-
-      function openLightbox() {
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+      function openLightbox(idx) {
+        if (typeof idx === 'number') currentIndex = idx;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
         lightbox.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
@@ -276,16 +332,34 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
       }
 
       function navigate(dir) {
-        currentIndex = (currentIndex + dir + items.length) % items.length;
-        renderItem(currentIndex, lbContent);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + items.length;
+        currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
+        renderIn(lbContent, allImages[currentIndex]);
+        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
+        // 同步更新下方可见缩略图的高亮（如果在显示范围内）
+        const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
         thumbs.forEach(t => t.classList.remove('active'));
-        items[currentIndex].el.classList.add('active');
-        renderItem(currentIndex, main);
+        if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
+        // 同步更新主图
+        renderIn(main, allImages[currentIndex]);
       }
 
-      // 主图点击 → 打开 Lightbox
-      main.addEventListener('click', openLightbox);
+      // 缩略图点击 → 切换主图
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => {
+          thumbs.forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          currentIndex = i;
+          renderIn(main, allImages[currentIndex]);
+        });
+      });
+
+      // 主图点击 → 打开 Lightbox（从当前图开始）
+      main.addEventListener('click', () => openLightbox(currentIndex));
+
+      // "查看全部"按钮 → 从第 5 张开始
+      if (moreBtn) {
+        moreBtn.addEventListener('click', () => openLightbox(4));
+      }
 
       // Lightbox 控件
       const lbClose = lightbox.querySelector('.lightbox-close');
@@ -303,7 +377,6 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
         if (e.key === 'ArrowLeft') navigate(-1);
         if (e.key === 'ArrowRight') navigate(1);
       });
-
     })();
   </script>
 )}
