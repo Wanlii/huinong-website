@@ -13,6 +13,8 @@ export interface ProductCSVRow {
   enName: string;
   latin: string;
   category: 'ornamental' | 'potted';
+  subcategory: 'premium' | 'mini' | '';  // 仅 potted 有值: premium=精品盆栽, mini=小微盆栽
+  species: string;                          // 物种（用于分组筛选）
   height: string;
   pot: string;
   moq: string;
@@ -53,6 +55,8 @@ function parseCSV(text: string): ProductCSVRow[] {
       enName: obj['英文名'],
       latin: obj['拉丁学名'],
       category: obj['分类'] as 'ornamental' | 'potted',
+      subcategory: (obj['子分类'] || '') as 'premium' | 'mini' | '',
+      species: obj['物种'] || '',
       height: obj['高度'],
       pot: obj['盆器'],
       moq: obj['MOQ'],
@@ -85,14 +89,19 @@ function parseCSVLine(line: string): string[] {
 }
 
 // 读取产品图片
-// 只返回 jpg/png（不用 webp，避免图库重复显示）
+// 主图为 1.* (用户约定: 命名为 1 的为首图)
 function getImagesForProduct(id: string): { main: string; gallery: string[] } {
   const dir = path.join(IMG_ROOT, id);
   if (!fs.existsSync(dir)) return { main: '', gallery: [] };
   const files = fs.readdirSync(dir)
-    .filter(f => /\.(jpg|jpeg|png)$/i.test(f))   // 排除 .webp
+    .filter(f => /\.(jpg|jpeg|png)$/i.test(f))   // 排除 .webp (避免重复)
     .filter(f => !f.startsWith('.'))
-    .sort();
+    .sort((a, b) => {
+      // 按数字排序 (1, 2, 10 而不是 1, 10, 2)
+      const na = parseInt(a.split('.')[0]) || 0;
+      const nb = parseInt(b.split('.')[0]) || 0;
+      return na - nb;
+    });
   if (files.length === 0) return { main: '', gallery: [] };
   const urls = files.map(f => `/assets/images/products/${id}/${f}`);
   return { main: urls[0], gallery: urls };
@@ -104,8 +113,27 @@ function getRows(): ProductCSVRow[] {
   const text = fs.readFileSync(CSV_PATH, 'utf8');
   // 去掉 UTF-8 BOM
   const clean = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
-  _cache = parseCSV(clean);
+  const rows = parseCSV(clean);
+  // 兜底: 如果 CSV 里没填 species/subcategory，从 imageFolder 推断
+  for (const r of rows) {
+    if (!r.species) r.species = deriveSpecies(r);
+    if (r.category === 'potted' && !r.subcategory) r.subcategory = 'mini'; // 默认小微
+  }
+  _cache = rows;
   return _cache;
+}
+
+function deriveSpecies(r: ProductCSVRow): string {
+  const parts = r.imageFolder.split('/').filter(Boolean);
+  if (r.category === 'ornamental') {
+    // 路径以"观赏苗木"开头 → species 是最后一段
+    if (parts[0] === '观赏苗木') return parts[parts.length - 1] || r.zhName;
+    // 否则 species 是第一段
+    return parts[0] || r.zhName;
+  }
+  // potted: 都是 "盆栽/X" → X
+  if (parts[0] === '盆栽' && parts.length > 1) return parts[1];
+  return parts[0] || r.zhName;
 }
 
 // 公开接口（带图片）
@@ -151,3 +179,38 @@ export function getProductsByCategory(cat: 'ornamental' | 'potted'): Product[] {
   return getAllProducts().filter(p => p.category === cat);
 }
 
+// 从素材目录统计实际品种数（CSV 可能滞后，以源文件为准）
+// 观赏苗木 = 造型树 + 观赏树，盆栽 = 盆栽目录
+// Build-time only
+export function getActualSpeciesCounts(): { ornamental: number; potted: number; total: number } {
+  const root = path.join(process.cwd(), '素材/处理后/产品图片');
+  let ornamental = 0;
+  let potted = 0;
+
+  for (const sub of ['观赏苗木/造型树', '观赏苗木/观赏树']) {
+    const dir = path.join(root, sub);
+    if (fs.existsSync(dir)) {
+      ornamental += fs.readdirSync(dir, { withFileTypes: true })
+        .filter(d => d.isDirectory()).length;
+    }
+  }
+
+  const pottedDir = path.join(root, '盆栽');
+  if (fs.existsSync(pottedDir)) {
+    potted = fs.readdirSync(pottedDir, { withFileTypes: true })
+      .filter(d => d.isDirectory()).length;
+  }
+
+  return { ornamental, potted, total: ornamental + potted };
+}
+
+// 取得某 category 下的所有 species（去重，按出现顺序）
+export function getSpeciesByCategory(cat: 'ornamental' | 'potted'): string[] {
+  const seen: string[] = [];
+  for (const p of getAllProducts()) {
+    if (p.category === cat && p.species && !seen.includes(p.species)) {
+      seen.push(p.species);
+    }
+  }
+  return seen;
+}

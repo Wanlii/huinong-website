@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from '../../layouts/Layout.astro';
 import { getAllProducts } from '../../lib/products';
 
@@ -12,11 +12,6 @@ const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
 const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
-
-// 缩略图：最多显示 4 张，剩下的用一个 "+更多" 卡片代替
-const MAX_THUMBS = 4;
-const visibleThumbs = product.gallery.slice(0, MAX_THUMBS);
-const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 ---
 <Layout
   title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
@@ -43,7 +38,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
               </div>
               {product.gallery.length > 1 && (
                 <div class="pd-thumbs">
-                  {visibleThumbs.map((img, i) => (
+                  {product.gallery.map((img, i) => (
                     <div
                       class={`pd-thumb ${i === 0 ? 'active' : ''}`}
                       data-index={i}
@@ -52,12 +47,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
                       <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
                     </div>
                   ))}
-                  {hiddenCount > 0 && (
-                    <button class="pd-more" id="pd-more" type="button">
-                      <span class="more-num">+{hiddenCount}</span>
-                      <span class="more-label">查看全部 {product.gallery.length} 张</span>
-                    </button>
-                  )}
                 </div>
               )}
             </div>
@@ -162,10 +151,10 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 }
 .pd-main img { width: 100%; height: 100%; object-fit: cover; }
 
-/* 缩略图横排，最多 4 张 + 1 个"更多"卡片 */
+/* 缩略图自动换行，缩略图自动填充，min 80px */
 .pd-thumbs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 8px;
 }
 .pd-thumb {
@@ -181,23 +170,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 .pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pd-thumb:hover { transform: translateY(-2px); }
 .pd-thumb.active { border-color: var(--green); }
-
-.pd-more {
-  aspect-ratio: 1;
-  background: linear-gradient(135deg, #2c4a2c 0%, #1a3a1a 100%);
-  color: white;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 4px;
-  font-family: inherit;
-  transition: transform .15s, background .2s;
-}
-.pd-more:hover { transform: translateY(-2px); background: linear-gradient(135deg, #3a5a3a 0%, #254525 100%); }
-.pd-more .more-num { font-size: 20px; font-weight: 700; line-height: 1; }
-.pd-more .more-label { font-size: 11px; opacity: 0.9; line-height: 1.2; }
 
 /* === 右侧信息（sticky 跟随） === */
 .pd-info {
@@ -291,21 +263,20 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 @media (max-width: 900px) {
   .pd-grid { grid-template-columns: 1fr; gap: 24px; }
   .pd-info { position: static; }
-  .pd-thumbs { grid-template-columns: repeat(4, 1fr); }
+  .pd-thumbs { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
   .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
 }
 </style>
 
 {isComplete && (
   <script>
-    // 缩略图切换 + Lightbox（含"查看更多"入口 - 翻全部图）
+    // 缩略图切换 + Lightbox（所有图片都直接展示）
     (() => {
       const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
       const main = document.getElementById('pd-main');
       const lightbox = document.getElementById('lightbox');
       const lbContent = document.getElementById('lb-content');
       const lbCounter = document.getElementById('lb-counter');
-      const moreBtn = document.getElementById('pd-more');
       if (!main || !lightbox || !lbContent) return;
 
       // 全部图（从主图 data-gallery 读，lightbox 翻全部）
@@ -335,7 +306,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
         currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
         renderIn(lbContent, allImages[currentIndex]);
         if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
-        // 同步更新下方可见缩略图的高亮（如果在显示范围内）
+        // 同步高亮下方缩略图
         const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
         thumbs.forEach(t => t.classList.remove('active'));
         if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
@@ -355,11 +326,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 
       // 主图点击 → 打开 Lightbox（从当前图开始）
       main.addEventListener('click', () => openLightbox(currentIndex));
-
-      // "查看全部"按钮 → 从第 5 张开始
-      if (moreBtn) {
-        moreBtn.addEventListener('click', () => openLightbox(4));
-      }
 
       // Lightbox 控件
       const lbClose = lightbox.querySelector('.lightbox-close');

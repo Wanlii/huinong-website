@@ -1,14 +1,9 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import { getAllProducts } from '../../../lib/products';
+import { getAllProducts, getSpeciesByCategory } from '../../../lib/products';
 
 const products = getAllProducts();
-
-const categories = [
-  { id: 'all', name: 'All Products', active: true },
-  { id: 'potted', name: 'Potted (Bonsai)' },
-  { id: 'ornamental', name: 'Ornamental Plants' },
-];
+const ornamentalSpecies = getSpeciesByCategory('ornamental');
 
 const sorted = [...products].sort((a, b) => {
   if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
@@ -26,10 +21,25 @@ const sorted = [...products].sort((a, b) => {
 
   <section class="section" style="padding-bottom: 0;">
     <div class="container">
+      <!-- Level 1 -->
       <div class="cat-filter" id="cat-filter">
-        {categories.map(c => (
-          <button class={`cat-filter-btn ${c.active ? 'active' : ''}`} data-cat={c.id}>{c.name}</button>
+        <button class="cat-filter-btn active" data-cat="all">All Products</button>
+        <button class="cat-filter-btn" data-cat="ornamental">Ornamental</button>
+        <button class="cat-filter-btn" data-cat="potted">Potted (Bonsai)</button>
+      </div>
+
+      <!-- Level 2: species for ornamental -->
+      <div class="sub-filter" id="species-filter" style="display: none;">
+        <span class="sub-label">By species:</span>
+        {ornamentalSpecies.map(sp => (
+          <button class="sub-btn" data-species={sp}>{sp}</button>
         ))}
+      </div>
+
+      <!-- Level 2: subcategory for potted -->
+      <div class="sub-filter" id="subcat-filter" style="display: none; justify-content: center;">
+        <button class="sub-btn" data-sub="premium">Premium Bonsai</button>
+        <button class="sub-btn" data-sub="mini">Mini Bonsai</button>
       </div>
     </div>
   </section>
@@ -37,16 +47,21 @@ const sorted = [...products].sort((a, b) => {
   <section class="section">
     <div class="container">
       <div class="toolbar">
+        <div class="search-wrap">
+          <input type="search" id="search-input" class="search-input" placeholder="Search (English / Latin name)" autocomplete="off" />
+        </div>
         <span class="count">Showing <span id="visible-count">{sorted.length}</span> / {products.length} products</span>
-        <select class="sort-select" id="sort-select">
-          <option value="default">Sort by category</option>
-          <option value="name">Sort by name</option>
-        </select>
       </div>
 
       <div class="product-grid" id="product-grid">
         {sorted.map(p => (
-          <a href={`/en/products/${p.id}`} class="product-card" data-cat={p.category}>
+          <a href={`/en/products/${p.id}`} class="product-card"
+             data-cat={p.category}
+             data-subcat={p.subcategory}
+             data-species={p.species}
+             data-zhname={p.zhName}
+             data-enname={p.enName}
+             data-latin={p.latin}>
             <div class="product-img">
               {p.mainImage ? <img src={p.mainImage} alt={p.enName} loading="lazy" /> : p.emoji}
             </div>
@@ -58,13 +73,9 @@ const sorted = [...products].sort((a, b) => {
         ))}
       </div>
 
-      <div class="pagination">
-        <button>Previous</button>
-        <button class="active">1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>…</button>
-        <button>Next</button>
+      <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
+        <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
+        <p>No matching products. Try a different keyword or category.</p>
       </div>
     </div>
   </section>
@@ -79,7 +90,7 @@ const sorted = [...products].sort((a, b) => {
 </Layout>
 
 <style>
-.cat-filter { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.cat-filter { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
 .cat-filter-btn {
   background: var(--white); border: 1px solid var(--cream-dark);
   padding: 8px 18px; border-radius: 20px;
@@ -88,9 +99,29 @@ const sorted = [...products].sort((a, b) => {
 }
 .cat-filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
 
-.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.toolbar .count { color: var(--text-light); font-size: 14px; }
-.sort-select { padding: 8px 12px; border-radius: 4px; border: 1px solid #ddd; font-size: 14px; }
+.sub-filter {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  justify-content: center; margin-bottom: 24px; max-width: 900px; margin-left: auto; margin-right: auto;
+}
+.sub-label { font-size: 13px; color: var(--text-light); margin-right: 4px; }
+.sub-btn {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  padding: 4px 12px; border-radius: 14px;
+  cursor: pointer; font-size: 13px;
+  transition: all .2s;
+}
+.sub-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+.search-wrap { flex: 1; min-width: 240px; max-width: 400px; }
+.search-input {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid var(--cream-dark); border-radius: 6px;
+  font-size: 14px; font-family: inherit; background: var(--white);
+  transition: border-color .2s;
+}
+.search-input:focus { outline: none; border-color: var(--green); }
+.toolbar .count { color: var(--text-light); font-size: 14px; white-space: nowrap; }
 
 .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .product-card {
@@ -110,13 +141,6 @@ const sorted = [...products].sort((a, b) => {
 .product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .product-latin { font-size: 12px; color: var(--text-light); font-style: italic; }
 
-.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 48px; }
-.pagination button {
-  background: var(--white); border: 1px solid var(--cream-dark);
-  padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 14px;
-}
-.pagination button.active { background: var(--green); color: var(--white); border-color: var(--green); }
-
 @media (max-width: 900px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -126,46 +150,91 @@ const sorted = [...products].sort((a, b) => {
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.cat-filter-btn');
-    const cards = document.querySelectorAll('.product-card');
-    const visibleCount = document.getElementById('visible-count');
-    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
-    const grid = document.getElementById('product-grid');
+  const catFilter = document.getElementById('cat-filter')!;
+  const speciesFilter = document.getElementById('species-filter')!;
+  const subcatFilter = document.getElementById('subcat-filter')!;
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const grid = document.getElementById('product-grid')!;
+  const cards = Array.from(grid.querySelectorAll('.product-card')) as HTMLElement[];
+  const visibleCount = document.getElementById('visible-count')!;
+  const emptyState = document.getElementById('empty-state')!;
 
-    filterButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const cat = (btn as HTMLElement).dataset.cat;
-        let n = 0;
-        cards.forEach(c => {
-          const match = cat === 'all' || (c as HTMLElement).dataset.cat === cat;
-          (c as HTMLElement).style.display = match ? '' : 'none';
-          if (match) n++;
-        });
-        if (visibleCount) visibleCount.textContent = String(n);
-      });
+  let activeCat = 'all';
+  let activeSpecies = '';
+  let activeSub = '';
+  let searchTerm = '';
+
+  function applyFilters() {
+    let n = 0;
+    const term = searchTerm.trim().toLowerCase();
+    for (const c of cards) {
+      const cat = c.dataset.cat || '';
+      const sp = c.dataset.species || '';
+      const sub = c.dataset.subcat || '';
+      const zh = (c.dataset.zhname || '').toLowerCase();
+      const en = (c.dataset.enname || '').toLowerCase();
+      const latin = (c.dataset.latin || '').toLowerCase();
+
+      let ok = true;
+      if (activeCat !== 'all' && cat !== activeCat) ok = false;
+      if (ok && activeCat === 'ornamental' && activeSpecies && sp !== activeSpecies) ok = false;
+      if (ok && activeCat === 'potted' && activeSub && sub !== activeSub) ok = false;
+      if (ok && term && !zh.includes(term) && !en.includes(term) && !latin.includes(term)) ok = false;
+
+      c.style.display = ok ? '' : 'none';
+      if (ok) n++;
+    }
+    visibleCount.textContent = String(n);
+    emptyState.style.display = n === 0 ? 'block' : 'none';
+  }
+
+  catFilter.querySelectorAll('.cat-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      catFilter.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = (btn as HTMLElement).dataset.cat || 'all';
+
+      activeSpecies = '';
+      activeSub = '';
+      speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+      subcatFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+      speciesFilter.style.display = activeCat === 'ornamental' ? 'flex' : 'none';
+      subcatFilter.style.display = activeCat === 'potted' ? 'flex' : 'none';
+
+      applyFilters();
     });
+  });
 
-    sortSelect?.addEventListener('change', () => {
-      const v = sortSelect.value;
-      if (!grid) return;
-      const list = Array.from(cards) as HTMLElement[];
-      if (v === 'name') {
-        list.sort((a, b) => {
-          const an = a.querySelector('.product-name')?.textContent || '';
-          const bn = b.querySelector('.product-name')?.textContent || '';
-          return an.localeCompare(bn, 'en');
-        });
+  speciesFilter.querySelectorAll('.sub-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.contains('active');
+      speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+      if (isActive) {
+        activeSpecies = '';
       } else {
-        list.sort((a, b) => {
-          const ac = a.dataset.cat === 'ornamental' ? -1 : 1;
-          const bc = b.dataset.cat === 'ornamental' ? -1 : 1;
-          return ac - bc;
-        });
+        btn.classList.add('active');
+        activeSpecies = (btn as HTMLElement).dataset.species || '';
       }
-      list.forEach(c => grid.appendChild(c));
+      applyFilters();
     });
+  });
+
+  subcatFilter.querySelectorAll('.sub-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.contains('active');
+      subcatFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+      if (isActive) {
+        activeSub = '';
+      } else {
+        btn.classList.add('active');
+        activeSub = (btn as HTMLElement).dataset.sub || '';
+      }
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener('input', () => {
+    searchTerm = searchInput.value;
+    applyFilters();
   });
 </script>

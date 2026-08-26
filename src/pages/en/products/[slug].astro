@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from '../../../layouts/Layout.astro';
 import { getAllProducts } from '../../../lib/products';
 
@@ -12,11 +12,6 @@ const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
 const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : 'Potted Plants (Bonsai)';
-
-// 缩略图：最多显示 4 张，剩下的用一个 "+更多" 卡片代替
-const MAX_THUMBS = 4;
-const visibleThumbs = product.gallery.slice(0, MAX_THUMBS);
-const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 ---
 <Layout
   title={isComplete ? `${product.enName} - Product Details - Huinong` : `${product.enName} - Huinong`}
@@ -43,7 +38,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
               </div>
               {product.gallery.length > 1 && (
                 <div class="pd-thumbs">
-                  {visibleThumbs.map((img, i) => (
+                  {product.gallery.map((img, i) => (
                     <div
                       class={`pd-thumb ${i === 0 ? 'active' : ''}`}
                       data-index={i}
@@ -52,12 +47,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
                       <img src={img} alt={`${product.enName} ${i+1}`} loading="lazy" />
                     </div>
                   ))}
-                  {hiddenCount > 0 && (
-                    <button class="pd-more" id="pd-more" type="button">
-                      <span class="more-num">+{hiddenCount}</span>
-                      <span class="more-label">View all {product.gallery.length}</span>
-                    </button>
-                  )}
                 </div>
               )}
             </div>
@@ -164,7 +153,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 
 .pd-thumbs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 8px;
 }
 .pd-thumb {
@@ -180,23 +169,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 .pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pd-thumb:hover { transform: translateY(-2px); }
 .pd-thumb.active { border-color: var(--green); }
-
-.pd-more {
-  aspect-ratio: 1;
-  background: linear-gradient(135deg, #2c4a2c 0%, #1a3a1a 100%);
-  color: white;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 4px;
-  font-family: inherit;
-  transition: transform .15s, background .2s;
-}
-.pd-more:hover { transform: translateY(-2px); background: linear-gradient(135deg, #3a5a3a 0%, #254525 100%); }
-.pd-more .more-num { font-size: 20px; font-weight: 700; line-height: 1; }
-.pd-more .more-label { font-size: 11px; opacity: 0.9; line-height: 1.2; }
 
 /* === Right info (sticky) === */
 .pd-info {
@@ -290,7 +262,7 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
 @media (max-width: 900px) {
   .pd-grid { grid-template-columns: 1fr; gap: 24px; }
   .pd-info { position: static; }
-  .pd-thumbs { grid-template-columns: repeat(4, 1fr); }
+  .pd-thumbs { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
   .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
 }
 </style>
@@ -303,7 +275,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       const lightbox = document.getElementById('lightbox');
       const lbContent = document.getElementById('lb-content');
       const lbCounter = document.getElementById('lb-counter');
-      const moreBtn = document.getElementById('pd-more');
       if (!main || !lightbox || !lbContent) return;
 
       const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
@@ -347,10 +318,6 @@ const hiddenCount = Math.max(0, product.gallery.length - MAX_THUMBS);
       });
 
       main.addEventListener('click', () => openLightbox(currentIndex));
-
-      if (moreBtn) {
-        moreBtn.addEventListener('click', () => openLightbox(4));
-      }
 
       const lbClose = lightbox.querySelector('.lightbox-close');
       const lbPrev = lightbox.querySelector('.lightbox-prev');
