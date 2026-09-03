@@ -58,17 +58,6 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 
               <div class="short-desc">{product.shortDesc}</div>
 
-              <div class="pd-meta">
-                <div class="meta-item">
-                  <div class="k">📷 Photos</div>
-                  <div class="v">{product.gallery.length}</div>
-                </div>
-                <div class="meta-item">
-                  <div class="k">🌿 Category</div>
-                  <div class="v">{categoryName}</div>
-                </div>
-              </div>
-
               <div class="pd-actions">
                 <a href={`/contact?product=${encodeURIComponent(product.enName)}`} class="btn-green" style="flex: 1; text-align: center;">📩 Inquire Now</a>
                 <a href="#" class="btn-outline" title="WhatsApp">💬</a>
