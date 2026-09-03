@@ -2,33 +2,33 @@
 import Layout from '../layouts/Layout.astro';
 
 const certs = [
-  { icon: '📜', title: '植物检疫证 Phytosanitary Certificate', desc: '由中华人民共和国海关总署签发，证明出口植物产品符合目的地国家/地区的植物检疫要求。每批货物随附原件，是欧盟及其他国家海关清关的必备文件。' },
-  { icon: '🏭', title: '出口企业备案 Export Registration', desc: '在海关总署完成出口企业注册登记，具备合法出口资质。可向客户提供备案编号，方便客户在官方系统核实。' },
-  { icon: '🌡️', title: '熏蒸/检疫处理证明 Fumigation Certificate', desc: '按客户要求进行熏蒸处理，并出具官方处理证明。常用方法：溴甲烷熏蒸、磷化铝熏蒸、温度处理等。' },
-  { icon: '✅', title: 'EU 合规认证 EU Compliance', desc: '严格遵守欧盟植物检疫法规：EU 2016/2031（欧盟植物检疫法规）/ EU 2019/2072（统一植物检疫措施）/ EU 2020/1201（有害生物紧急措施）。客户可在 EUR-Lex 官方系统查询。' },
+  { icon: '📜', title: 'Phytosanitary Certificate', desc: 'Issued by the General Administration of Customs of China, certifying that exported plant products meet the phytosanitary requirements of destination countries/regions. Original certificate accompanies every shipment, required for EU and other customs clearance.' },
+  { icon: '🏭', title: 'Export Registration', desc: 'Registered with the General Administration of Customs as a qualified exporter. We provide the registration number for clients to verify in the official system.' },
+  { icon: '🌡️', title: 'Fumigation / Quarantine Treatment Certificate', desc: 'Fumigation treatment upon client request, with official certificate. Common methods: methyl bromide, aluminum phosphide, temperature treatment.' },
+  { icon: '✅', title: 'EU Compliance Certification', desc: 'Strict compliance with EU phytosanitary regulations: EU 2016/2031 (Plant Health Regulation) / EU 2019/2072 (Uniform Phytosanitary Measures) / EU 2020/1201 (Pest Emergency Measures). Clients can verify on EUR-Lex official system.' },
 ];
 
 const regs = [
-  { code: 'EU 2016/2031', desc: '欧盟植物检疫法规' },
-  { code: 'EU 2019/2072', desc: '欧盟统一植物检疫措施实施细则' },
-  { code: 'EU 2020/1201', desc: '有害生物紧急措施' },
-  { code: 'ISPM 12', desc: '植物检疫证书标准' },
-  { code: 'CITES 公约', desc: '濒危野生动植物种国际贸易公约' },
-  { code: 'IPPC', desc: '国际植物保护公约框架' },
+  { code: 'EU 2016/2031', desc: 'EU Plant Health Regulation' },
+  { code: 'EU 2019/2072', desc: 'Uniform Phytosanitary Measures' },
+  { code: 'EU 2020/1201', desc: 'Pest Emergency Measures' },
+  { code: 'ISPM 12', desc: 'Phytosanitary Certificates Standard' },
+  { code: 'CITES', desc: 'Convention on International Trade in Endangered Species' },
+  { code: 'IPPC', desc: 'International Plant Protection Convention' },
 ];
 ---
-<Layout title="资质合规 - 汇农天下" lang="zh" description="汇农天下出口资质：植物检疫证、出口备案、熏蒸证明、EU 2016/2031 & 2019/2072 合规。">
+<Layout title="Certifications - Huinong" lang="en" description="Huinong export certifications: Phytosanitary Certificate, Export Registration, Fumigation Certificate, EU 2016/2031 & 2019/2072 compliance.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>资质合规</h1>
-      <p class="hero-sub">合规出口 · 让您放心下单</p>
+      <h1>Certifications</h1>
+      <p class="hero-sub">Compliant exports · order with confidence</p>
     </div>
   </section>
 
   <section class="section" style="padding-bottom: 32px;">
     <div class="container">
       <p style="text-align: center; max-width: 720px; margin: 0 auto; font-size: 15px; line-height: 1.8; color: var(--text-light);">
-        汇农天下持有完整的出口资质，严格遵守国际植物检疫法规。所有出口产品均配备官方植物检疫证书，符合欧盟植物检疫法规（EU 2016/2031 & EU 2019/2072）。
+        Huinong holds full export qualifications and strictly complies with international phytosanitary regulations. All exported products come with official Phytosanitary Certificates, meeting EU Plant Health Regulations (EU 2016/2031 & EU 2019/2072).
       </p>
     </div>
   </section>
@@ -41,7 +41,7 @@ const regs = [
           <div>
             <h3>{c.title}</h3>
             <p>{c.desc}</p>
-            <a href="#" class="btn-green" style="font-size: 13px; padding: 8px 14px;">📥 下载样本（脱敏）</a>
+            <a href="#" class="btn-green" style="font-size: 13px; padding: 8px 14px;">📥 Download Sample (redacted)</a>
           </div>
         </div>
       ))}
@@ -50,12 +50,12 @@ const regs = [
 
   <section class="section products-bg">
     <div class="container">
-      <div class="section-header"><h2>CITES 合规声明</h2><p>涉及保护物种时的承诺</p></div>
+      <div class="section-header"><h2>CITES Compliance Statement</h2><p>Our commitment for protected species</p></div>
       <div style="max-width: 720px; margin: 0 auto; padding: 28px; background: var(--cream); border-radius: 12px; text-align: center;">
         <div style="font-size: 42px; margin-bottom: 12px;">🦜</div>
         <p style="font-size: 15px; line-height: 1.8;">
-          <strong>汇农天下承诺</strong>：所有 CITES 保护物种的出口，均配备合法的 CITES 出口许可证。<br>
-          <span style="color: var(--text-light); font-size: 14px;">CITES（濒危野生动植物种国际贸易公约）许可证需出口国与进口国双方签发。</span>
+          <strong>Huinong commits</strong>: All exports of CITES-protected species come with valid CITES export permits.<br>
+          <span style="color: var(--text-light); font-size: 14px;">CITES (Convention on International Trade in Endangered Species) permits must be issued by both the exporting and importing countries.</span>
         </p>
       </div>
     </div>
@@ -63,7 +63,7 @@ const regs = [
 
   <section class="section">
     <div class="container">
-      <div class="section-header"><h2>遵循的法规标准</h2><p>客户可在官方系统查询</p></div>
+      <div class="section-header"><h2>Regulations We Follow</h2><p>Verifiable on official systems</p></div>
       <div class="reg-grid">
         {regs.map(r => (
           <div class="reg-card">
@@ -77,9 +77,9 @@ const regs = [
 
   <section class="cta-strip">
     <div class="container">
-      <h2>需要资质文件？</h2>
-      <p>我们将根据您的订单提供相应文件</p>
-      <a href="/contact" class="btn-white">📩 联系我们索取</a>
+      <h2>Need certification documents?</h2>
+      <p>We'll provide the relevant files for your order</p>
+      <a href="/contact" class="btn-white">📩 Contact Us</a>
     </div>
   </section>
 </Layout>

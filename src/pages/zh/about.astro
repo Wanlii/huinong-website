@@ -2,59 +2,50 @@
 import Layout from '../../layouts/Layout.astro';
 
 const commitments = [
-  { icon: '🌱', title: 'Source Control', desc: 'Every plant from our own 860 ha base' },
-  { icon: '📜', title: 'Compliance First', desc: 'EU 2016/2031 & 2019/2072 fully compliant' },
-  { icon: '🤝', title: 'Long-term Win', desc: 'Not a one-time deal, a lasting partnership' },
-  { icon: '📢', title: 'Transparency', desc: 'Specs, pricing, and timelines disclosed honestly' },
+  { icon: '🌱', title: '源头把控', desc: '每一株苗都来自自有 860 公顷基地' },
+  { icon: '📜', title: '合规第一', desc: 'EU 2016/2031 & 2019/2072 全面合规' },
+  { icon: '🤝', title: '长期共赢', desc: '不赚一次性钱，做长期合作伙伴' },
+  { icon: '📢', title: '信息透明', desc: '规格、价格、周期如实告知' },
 ];
 ---
-<Layout title="About Us - Huinong" lang="en" description="Huinong - Founded 2003, Xinyi Jiangsu. 860 hectares of self-owned base. Premium ornamental plants and bonsai exporter.">
+<Layout title="关于我们 - 汇农天下" lang="zh" description="汇农天下 - 始创于 2003 年，江苏新沂，860 公顷自有基地，专注观赏苗木与盆栽出口。">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>About Us</h1>
-      <p class="hero-sub">From Seedlings to Bonsai, From China to the World</p>
+      <h1>关于我们</h1>
+      <p class="hero-sub">从苗木到盆景，从中国到世界</p>
     </div>
   </section>
 
-  <!-- Company Introduction -->
+  <!-- 公司介绍（来自用户提供的企业介绍） -->
   <section class="section">
     <div class="container">
       <div class="intro-grid">
         <div class="intro-text">
-          <div class="kicker">About Us</div>
-          <h2>From Source to the World</h2>
-          <p class="lead">Huinong was founded in <strong>2003</strong>, headquartered in Xinyi City, Jiangsu Province — at the heart of China's largest flower and tree production region.</p>
-          <p>With its favorable climate, fertile soil, and flat terrain, the region hosts over 10,000 horticultural enterprises and spans 400,000+ hectares of cultivation area — making it China's largest and most complete horticultural industry cluster.</p>
-          <p>Leveraging these regional resources, Huinong has grown over 20+ years into one of China's leading ornamental horticulture production and service companies:</p>
+          <div class="kicker">关于我们</div>
+          <h2>从源头到世界</h2>
+          <p class="lead">汇农天下，始创于 <strong>2003 年</strong>，总部位于江苏省新沂市，地处中国最大的花木主产区。</p>
+          <p>产区气候适宜、土地肥沃、地势平缓，聚集花木种植企业上万家，种植总面积超 40 万公顷，是中国花木产业规模最大、产业链最完整的核心产区。</p>
+          <p>依托产区资源，汇农天下深耕行业二十余年，已发展成为中国领先的观赏园艺生产综合服务企业：</p>
           <ul class="intro-list">
-            <li><strong>860+ hectares</strong> of self-owned base</li>
-            <li><strong>600,000+ plants</strong> in stock</li>
-            <li><strong>~30,000 plants</strong> exported annually</li>
-            <li>Specialties: Chinese-style shaped plants / international-standard ornamentals / small potted plants</li>
+            <li><strong>860 余公顷</strong> 基地</li>
+            <li><strong>60 万+ 株</strong> 现有苗木</li>
+            <li><strong>3 万株/年</strong> 出口量</li>
+            <li>专注：中国特色造型植物 / 国际标准观赏苗木 / 观赏小盆栽</li>
           </ul>
-          <p class="quote">Serve Others, Succeed Together.</p>
+          <p class="quote">服务他人 成就你我</p>
         </div>
         <div class="intro-imgs">
-          <img src="/assets/images/company/nursery/main.jpg" alt="Huinong nursery" />
-          <img src="/assets/images/company/factory/main.jpg" alt="Huinong factory" />
+          <img src="/assets/images/company/nursery/main.jpg" alt="汇农天下苗圃" />
+          <img src="/assets/images/company/factory/main.jpg" alt="汇农天下工厂" />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Stats -->
-  <!-- (removed: Key Figures section) -->
-
-  <!-- Team -->
-  <!-- (removed: Core Team section) -->
-
-  <!-- Milestones -->
-  <!-- (removed: Milestones section) -->
-
-  <!-- Commitments -->
+  <!-- 我们的承诺 -->
   <section class="section">
     <div class="container">
-      <div class="section-header"><h2>Our Commitments</h2><p>Making every deal worry-free</p></div>
+      <div class="section-header"><h2>我们的承诺</h2><p>让每一单合作都放心</p></div>
       <div class="commit-grid">
         {commitments.map(c => (
           <div class="commit-card">
@@ -69,9 +60,9 @@ const commitments = [
 
   <section class="cta-strip">
     <div class="container">
-      <h2>Want to know more?</h2>
-      <p>Get in touch, or browse our product catalog first</p>
-      <a href="/en/contact" class="btn-white">📩 Contact Us</a>
+      <h2>想了解更多？</h2>
+      <p>欢迎联系我们，或先浏览产品目录</p>
+      <a href="/zh/contact" class="btn-white">📩 联系我们</a>
     </div>
   </section>
 </Layout>

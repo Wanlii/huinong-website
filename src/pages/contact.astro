@@ -2,10 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 
 const channels = [
-  { icon: '📧', title: 'Email', content: 'export@huinongplants.com（外贸专用）' },
-  { icon: '💬', title: 'WhatsApp / WeChat', content: '+86 xxx xxxx xxxx（推荐）' },
-  { icon: '📞', title: 'Phone', content: '+86 xxx-xxxxxxxx（座机）' },
-  { icon: '📍', title: '公司地址', content: '安徽省合肥市 XX 区 XX 路 88 号' },
+  { icon: '📧', title: 'Email · Sales Manager Shirley', content: 'shirley.jiang@huinonghort.com' },
+  { icon: '📧', title: 'Email · General Manager Ma ShuangYang', content: 'ma@huinonghort.com' },
+  { icon: '📞', title: 'Landline', content: '+86 0516 8857 6789' },
+  { icon: '📞', title: 'Shirley Mobile', content: '+86 1385 7408 273' },
 ];
 
 const countries = [
@@ -14,11 +14,11 @@ const countries = [
   'Kazakhstan', 'Uzbekistan', 'Kyrgyzstan', 'Other'
 ];
 ---
-<Layout title="联系我们 - 汇农天下" lang="zh" description="联系汇农天下：邮箱、WhatsApp、电话、地址。12 小时内回复。">
+<Layout title="Contact - Huinong" lang="en" description="Contact Huinong: email, phone. Reply within 12 hours.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>联系我们</h1>
-      <p class="hero-sub">12 小时内回复 · 全程无忧对接</p>
+      <h1>Contact</h1>
+      <p class="hero-sub">Reply within 12 hours · smooth communication</p>
     </div>
   </section>
 
@@ -26,8 +26,8 @@ const countries = [
     <div class="container">
       <div class="contact-grid">
         <div>
-          <h2 style="font-size: 24px; margin-bottom: 12px;">多渠道联系</h2>
-          <p style="font-size: 14px; color: var(--text-light); margin-bottom: 20px;">选择最适合您的方式，我们 12 小时内回复</p>
+          <h2 style="font-size: 24px; margin-bottom: 12px;">Multi-channel Contact</h2>
+          <p style="font-size: 14px; color: var(--text-light); margin-bottom: 20px;">Choose what works best for you. We reply within 12 hours.</p>
 
           {channels.map(c => (
             <div class="contact-card">
@@ -40,58 +40,58 @@ const countries = [
           ))}
 
           <div class="time-note">
-            <strong>工作时间：</strong>周一至周六 09:00-18:00 (GMT+8)<br>
-            <strong>欧洲时差：</strong>北京 09:00 = 柏林 03:00；建议您留言或发邮件，12 小时内必回
+            <strong>Working hours:</strong> Mon - Sat 09:00-18:00 (GMT+8)<br>
+            <strong>Europe time diff:</strong> Beijing 09:00 = Berlin 03:00. We recommend email, reply within 12 hours.
           </div>
         </div>
 
         <div class="form-wrap">
-          <h2>📩 询盘表单</h2>
-          <p>告诉我们您的需求，我们将在 12 小时内回复</p>
+          <h2>📩 Inquiry Form</h2>
+          <p>Tell us your needs, we'll reply within 12 hours</p>
 
           <form id="inquiry-form" action="#" method="POST">
             <div class="form-grid">
               <div class="form-group">
-                <label>公司名 *</label>
+                <label>Company *</label>
                 <input type="text" name="company" placeholder="Your company name" required>
               </div>
               <div class="form-group">
-                <label>国家 *</label>
+                <label>Country *</label>
                 <select name="country" required>
-                  <option value="">请选择</option>
+                  <option value="">Please select</option>
                   {countries.map(c => <option value={c}>{c}</option>)}
                 </select>
               </div>
               <div class="form-group">
-                <label>姓名 *</label>
+                <label>Name *</label>
                 <input type="text" name="name" placeholder="First Last" required>
               </div>
               <div class="form-group">
-                <label>邮箱 *</label>
+                <label>Email *</label>
                 <input type="email" name="email" placeholder="you@company.com" required>
               </div>
               <div class="form-group">
-                <label>电话</label>
+                <label>Phone</label>
                 <input type="tel" name="phone" placeholder="+xx xxx xxx xxxx">
               </div>
               <div class="form-group">
-                <label>感兴趣品类</label>
+                <label>Category of interest</label>
                 <select name="category">
-                  <option value="">请选择</option>
-                  <option value="potted">盆栽（Bonsai）</option>
-                  <option value="ornamental">观赏苗木</option>
-                  <option value="undecided">未决定，需要建议</option>
+                  <option value="">Please select</option>
+                  <option value="potted">Potted Plants (Bonsai)</option>
+                  <option value="ornamental">Ornamental Plants</option>
+                  <option value="undecided">Undecided, need advice</option>
                 </select>
               </div>
               <div class="form-group full">
-                <label>留言内容 *</label>
-                <textarea name="message" placeholder="请描述您的需求：产品、规格、数量、目的港等" required></textarea>
+                <label>Message *</label>
+                <textarea name="message" placeholder="Describe your needs: products, specs, quantity, destination port, etc." required></textarea>
               </div>
               <div class="form-group full">
-                <button type="submit" class="btn-green" style="width: 100%; padding: 14px;">📩 提交询盘</button>
+                <button type="submit" class="btn-green" style="width: 100%; padding: 14px;">📩 Submit Inquiry</button>
               </div>
             </div>
-            <p style="font-size: 12px; color: var(--text-light); text-align: center; margin-top: 12px;">提交即表示您同意我们处理您提交的信息</p>
+            <p style="font-size: 12px; color: var(--text-light); text-align: center; margin-top: 12px;">By submitting, you agree to our processing of the information you provide.</p>
           </form>
         </div>
       </div>
@@ -100,8 +100,8 @@ const countries = [
 
   <section class="section products-bg">
     <div class="container">
-      <div class="section-header"><h2>公司位置</h2><p>欢迎预约参观基地</p></div>
-      <div class="map-box">📍 <span style="margin-left: 12px;">Google Maps 嵌入区（正式版显示基地实景地图）</span></div>
+      <div class="section-header"><h2>Our Location</h2><p>Visit our base by appointment</p></div>
+      <div class="map-box">📍 <span style="margin-left: 12px;">Google Maps embed area (production version shows base map)</span></div>
     </div>
   </section>
 </Layout>
@@ -157,7 +157,6 @@ const countries = [
     const form = document.getElementById('inquiry-form');
     if (!form) return;
 
-    // 实时清除错误样式
     form.querySelectorAll('input, select, textarea').forEach(el => {
       el.addEventListener('input', () => { el.style.borderColor = ''; });
       el.addEventListener('change', () => { el.style.borderColor = ''; });
@@ -166,7 +165,6 @@ const countries = [
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // 1. 必填项校验
       const required = form.querySelectorAll('[required]');
       let valid = true;
       let firstInvalid: HTMLElement | null = null;
@@ -182,13 +180,12 @@ const countries = [
         }
       });
 
-      // 2. 邮箱格式校验
       const email = form.querySelector('input[type="email"]') as HTMLInputElement | null;
       if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
         valid = false;
         email.style.borderColor = '#c0392b';
         if (!firstInvalid) firstInvalid = email;
-        alert('请输入有效的邮箱地址');
+        alert('Please enter a valid email address');
       }
 
       if (!valid) {
@@ -196,11 +193,10 @@ const countries = [
         return;
       }
 
-      // 3. 提交到 Cloudflare Pages Function (/api/inquiry)
       const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
       if (!submitBtn) return;
       const originalText = submitBtn.textContent;
-      submitBtn.textContent = '提交中...';
+      submitBtn.textContent = 'Submitting...';
       submitBtn.disabled = true;
 
       try {
@@ -216,7 +212,7 @@ const countries = [
         });
 
         if (res.ok) {
-          submitBtn.textContent = '✓ 已提交！我们将尽快联系您';
+          submitBtn.textContent = '✓ Submitted! We will contact you soon';
           form.reset();
           setTimeout(() => {
             submitBtn.textContent = originalText;
@@ -224,12 +220,12 @@ const countries = [
           }, 4000);
         } else {
           const err = await res.text();
-          alert('提交失败：' + err);
+          alert('Submission failed: ' + err);
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
         }
       } catch (err) {
-        alert('网络错误：' + (err as Error).message);
+        alert('Network error: ' + (err as Error).message);
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
       }

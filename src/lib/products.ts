@@ -89,22 +89,34 @@ function parseCSVLine(line: string): string[] {
 }
 
 // 读取产品图片
-// 主图为 1.* (用户约定: 命名为 1 的为首图)
+// 用户约定:
+//   1) 优先 1.* 作为主图
+//   2) 没有 1.* 时按"数字优先 + 非数字字母序"取第一张
+//   3) 整体顺序: 数字编号图片按数字大小排在前，非数字命名的按文件名字母序排在后
 function getImagesForProduct(id: string): { main: string; gallery: string[] } {
   const dir = path.join(IMG_ROOT, id);
   if (!fs.existsSync(dir)) return { main: '', gallery: [] };
   const files = fs.readdirSync(dir)
     .filter(f => /\.(jpg|jpeg|png)$/i.test(f))   // 排除 .webp (避免重复)
-    .filter(f => !f.startsWith('.'))
-    .sort((a, b) => {
-      // 按数字排序 (1, 2, 10 而不是 1, 10, 2)
-      const na = parseInt(a.split('.')[0]) || 0;
-      const nb = parseInt(b.split('.')[0]) || 0;
-      return na - nb;
-    });
+    .filter(f => !f.startsWith('.'));
   if (files.length === 0) return { main: '', gallery: [] };
-  const urls = files.map(f => `/assets/images/products/${id}/${f}`);
-  return { main: urls[0], gallery: urls };
+
+  // 数字命名 (1.jpg, 2.jpg, ..., 20.jpg) → 按数字升序
+  const numeric = files
+    .filter(f => /^\d+\./.test(f))
+    .sort((a, b) => parseInt(a) - parseInt(b));
+  // 非数字命名 (a.jpg, hash 文件名等) → 按字母升序
+  const others = files
+    .filter(f => !/^\d+\./.test(f))
+    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
+
+  const ordered = [...numeric, ...others];
+  const urls = ordered.map(f => `/assets/images/products/${id}/${f}`);
+
+  // 主图: 找 1.* (精准匹配, 不会误中 10.jpg/11.jpg); 没有则取排序后第一张
+  const mainFile = ordered.find(f => /^1\./.test(f)) || ordered[0];
+  const main = mainFile ? `/assets/images/products/${id}/${mainFile}` : '';
+  return { main, gallery: urls };
 }
 
 let _cache: ProductCSVRow[] | null = null;

@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const certs = [
+  { icon: '📜', title: '植物检疫证 Phytosanitary Certificate', desc: '由中华人民共和国海关总署签发，证明出口植物产品符合目的地国家/地区的植物检疫要求。每批货物随附原件，是欧盟及其他国家海关清关的必备文件。' },
+  { icon: '🏭', title: '出口企业备案 Export Registration', desc: '在海关总署完成出口企业注册登记，具备合法出口资质。可向客户提供备案编号，方便客户在官方系统核实。' },
+  { icon: '🌡️', title: '熏蒸/检疫处理证明 Fumigation Certificate', desc: '按客户要求进行熏蒸处理，并出具官方处理证明。常用方法：溴甲烷熏蒸、磷化铝熏蒸、温度处理等。' },
+  { icon: '✅', title: 'EU 合规认证 EU Compliance', desc: '严格遵守欧盟植物检疫法规：EU 2016/2031（欧盟植物检疫法规）/ EU 2019/2072（统一植物检疫措施）/ EU 2020/1201（有害生物紧急措施）。客户可在 EUR-Lex 官方系统查询。' },
+];
+
+const regs = [
+  { code: 'EU 2016/2031', desc: '欧盟植物检疫法规' },
+  { code: 'EU 2019/2072', desc: '欧盟统一植物检疫措施实施细则' },
+  { code: 'EU 2020/1201', desc: '有害生物紧急措施' },
+  { code: 'ISPM 12', desc: '植物检疫证书标准' },
+  { code: 'CITES 公约', desc: '濒危野生动植物种国际贸易公约' },
+  { code: 'IPPC', desc: '国际植物保护公约框架' },
+];
+---
+<Layout title="资质合规 - 汇农天下" lang="zh" description="汇农天下出口资质：植物检疫证、出口备案、熏蒸证明、EU 2016/2031 & 2019/2072 合规。">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>资质合规</h1>
+      <p class="hero-sub">合规出口 · 让您放心下单</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-bottom: 32px;">
+    <div class="container">
+      <p style="text-align: center; max-width: 720px; margin: 0 auto; font-size: 15px; line-height: 1.8; color: var(--text-light);">
+        汇农天下持有完整的出口资质，严格遵守国际植物检疫法规。所有出口产品均配备官方植物检疫证书，符合欧盟植物检疫法规（EU 2016/2031 & EU 2019/2072）。
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      {certs.map(c => (
+        <div class="cert-row">
+          <div class="cert-big">{c.icon}</div>
+          <div>
+            <h3>{c.title}</h3>
+            <p>{c.desc}</p>
+            <a href="#" class="btn-green" style="font-size: 13px; padding: 8px 14px;">📥 下载样本（脱敏）</a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section products-bg">
+    <div class="container">
+      <div class="section-header"><h2>CITES 合规声明</h2><p>涉及保护物种时的承诺</p></div>
+      <div style="max-width: 720px; margin: 0 auto; padding: 28px; background: var(--cream); border-radius: 12px; text-align: center;">
+        <div style="font-size: 42px; margin-bottom: 12px;">🦜</div>
+        <p style="font-size: 15px; line-height: 1.8;">
+          <strong>汇农天下承诺</strong>：所有 CITES 保护物种的出口，均配备合法的 CITES 出口许可证。<br>
+          <span style="color: var(--text-light); font-size: 14px;">CITES（濒危野生动植物种国际贸易公约）许可证需出口国与进口国双方签发。</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header"><h2>遵循的法规标准</h2><p>客户可在官方系统查询</p></div>
+      <div class="reg-grid">
+        {regs.map(r => (
+          <div class="reg-card">
+            <h4>{r.code}</h4>
+            <p>{r.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>需要资质文件？</h2>
+      <p>我们将根据您的订单提供相应文件</p>
+      <a href="/zh/contact" class="btn-white">📩 联系我们索取</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.cert-row {
+  display: grid; grid-template-columns: 1fr 2.5fr; gap: 40px; align-items: center;
+  margin: 24px 0; padding: 28px; background: var(--white);
+  border-radius: 12px; box-shadow: var(--shadow);
+}
+.cert-big { font-size: 70px; text-align: center; }
+.cert-row h3 { font-size: 20px; margin-bottom: 10px; color: var(--green); }
+.cert-row p { font-size: 14px; line-height: 1.7; color: var(--text-light); margin-bottom: 10px; }
+
+.reg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.reg-card {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 8px; padding: 22px;
+}
+.reg-card h4 { font-size: 15px; margin-bottom: 6px; color: var(--green); }
+.reg-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .cert-row { grid-template-columns: 1fr; }
+  .reg-grid { grid-template-columns: 1fr; }
+}
+</style>

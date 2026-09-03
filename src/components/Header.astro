@@ -2,30 +2,30 @@
 import fs from 'fs';
 import path from 'path';
 
-const { lang = 'zh' } = Astro.props;
+const { lang = 'en' } = Astro.props;
 const isZh = lang === 'zh';
 
 const navItems = isZh
   ? [
-      { href: '/', label: '首页' },
-      { href: '/about', label: '关于我们' },
-      { href: '/products', label: '产品目录' },
-      { href: '/certifications', label: '资质合规' },
-      { href: '/contact', label: '联系我们' },
+      { href: '/zh/', label: '首页' },
+      { href: '/zh/about', label: '关于我们' },
+      { href: '/zh/products', label: '产品目录' },
+      { href: '/zh/certifications', label: '资质合规' },
+      { href: '/zh/contact', label: '联系我们' },
     ]
   : [
-      { href: '/en/', label: 'Home' },
-      { href: '/en/about', label: 'About Us' },
-      { href: '/en/products', label: 'Products' },
-      { href: '/en/certifications', label: 'Certifications' },
-      { href: '/en/contact', label: 'Contact' },
+      { href: '/', label: 'Home' },
+      { href: '/about', label: 'About Us' },
+      { href: '/products', label: 'Products' },
+      { href: '/certifications', label: 'Certifications' },
+      { href: '/contact', label: 'Contact' },
     ];
 
-const homeHref = isZh ? '/' : '/en/';
-const otherLangHref = isZh ? '/en/' : '/';
+const homeHref = isZh ? '/zh/' : '/';
+const otherLangHref = isZh ? '/' : '/zh/';
 const otherLangLabel = isZh ? 'EN' : '中文';
 const ctaLabel = isZh ? '立即询盘' : 'Request a Quote';
-const ctaHref = isZh ? '/contact' : '/en/contact';
+const ctaHref = isZh ? '/zh/contact' : '/contact';
 const logoText = isZh ? '汇农天下' : 'Huinong';
 
 // 检测 logo 文件是否存在

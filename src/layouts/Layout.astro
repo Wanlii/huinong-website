@@ -9,7 +9,7 @@ interface Props {
   description?: string;
   ogImage?: string;
 }
-const { title, lang = 'zh', description, ogImage } = Astro.props;
+const { title, lang = 'en', description, ogImage } = Astro.props;
 const isZh = lang === 'zh';
 const defaultDesc = isZh
   ? '汇农天下 - 优质盆栽与观赏苗木出口商，源头直供，欧盟认证。'

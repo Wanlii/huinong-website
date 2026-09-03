@@ -4,14 +4,6 @@ import { getAllProducts, getSpeciesByCategory } from '../../lib/products';
 
 const products = getAllProducts();
 const ornamentalSpecies = getSpeciesByCategory('ornamental');
-const ornamentalCount = products.filter(p => p.category === 'ornamental').length;
-const pottedCount = products.filter(p => p.category === 'potted').length;
-
-// 按分类 + 物种分桶
-const ornamentalProducts = products.filter(p => p.category === 'ornamental');
-const pottedProducts = products.filter(p => p.category === 'potted');
-const premiumProducts = pottedProducts.filter(p => p.subcategory === 'premium');
-const miniProducts = pottedProducts.filter(p => p.subcategory === 'mini');
 
 const sorted = [...products].sort((a, b) => {
   if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
@@ -19,46 +11,40 @@ const sorted = [...products].sort((a, b) => {
   return a.order - b.order;
 });
 ---
-<Layout title="产品目录 - 汇农天下" lang="zh" description="汇农天下产品目录 - 观赏苗木、盆栽两大类，500+ 在售品种。">
+<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai, 500+ varieties in stock.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>产品目录</h1>
-      <p class="hero-sub">{products.length}+ 在售品种 · 持续更新 · 支持定制</p>
+      <h1>Product Catalog</h1>
+      <p class="hero-sub">{products.length}+ varieties in stock · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
   <section class="section" style="padding-bottom: 0;">
     <div class="container">
-      <!-- 一级分类 -->
+      <!-- Level 1 -->
       <div class="cat-filter" id="cat-filter">
-        <button class="cat-filter-btn active" data-cat="all">全部产品</button>
-        <button class="cat-filter-btn" data-cat="ornamental">观赏苗木</button>
-        <button class="cat-filter-btn" data-cat="potted">盆栽</button>
+        <button class="cat-filter-btn active" data-cat="all">All Products</button>
+        <button class="cat-filter-btn" data-cat="ornamental">Ornamental</button>
+        <button class="cat-filter-btn" data-cat="potted">Potted (Bonsai)</button>
       </div>
 
-      <!-- 二级筛选: 观赏苗木 显示物种 -->
+      <!-- Level 2: species for ornamental -->
       <div class="sub-filter" id="species-filter" style="display: none;">
-        <span class="sub-label">按物种：</span>
+        <span class="sub-label">By species:</span>
         {ornamentalSpecies.map(sp => (
           <button class="sub-btn" data-species={sp}>{sp}</button>
         ))}
       </div>
-
-      <!-- 二级筛选: 盆栽 显示精品/小微 -->
-      <div class="sub-filter" id="subcat-filter" style="display: none; justify-content: center;">
-        <button class="sub-btn" data-sub="premium">精品盆栽</button>
-        <button class="sub-btn" data-sub="mini">小微盆栽</button>
-      </div>
-    </div>
+</div>
   </section>
 
   <section class="section">
     <div class="container">
       <div class="toolbar">
         <div class="search-wrap">
-          <input type="search" id="search-input" class="search-input" placeholder="搜索产品（中文名 / 拉丁学名）" autocomplete="off" />
+          <input type="search" id="search-input" class="search-input" placeholder="Search (English / Latin name)" autocomplete="off" />
         </div>
-        <span class="count">显示 <span id="visible-count">{sorted.length}</span> / 共 {products.length} 个产品</span>
+        <span class="count">Showing <span id="visible-count">{sorted.length}</span> / {products.length} products</span>
       </div>
 
       <div class="product-grid" id="product-grid">
@@ -68,12 +54,13 @@ const sorted = [...products].sort((a, b) => {
              data-subcat={p.subcategory}
              data-species={p.species}
              data-zhname={p.zhName}
+             data-enname={p.enName}
              data-latin={p.latin}>
             <div class="product-img">
-              {p.mainImage ? <img src={p.mainImage} alt={p.zhName} loading="lazy" /> : p.emoji}
+              {p.mainImage ? <img src={p.mainImage} alt={p.enName} loading="lazy" /> : p.emoji}
             </div>
             <div class="product-info">
-              <div class="product-name">{p.zhName}</div>
+              <div class="product-name">{p.enName}</div>
               <div class="product-latin">{p.latin}</div>
             </div>
           </a>
@@ -82,16 +69,16 @@ const sorted = [...products].sort((a, b) => {
 
       <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
         <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
-        <p>没找到匹配的产品，试试别的关键词或分类。</p>
+        <p>No matching products. Try a different keyword or category.</p>
       </div>
     </div>
   </section>
 
   <section class="cta-strip">
     <div class="container">
-      <h2>找不到想要的产品？</h2>
-      <p>告诉我们您的需求，我们帮您找</p>
-      <a href="/contact" class="btn-white">📩 立即询盘</a>
+      <h2>Can't find what you need?</h2>
+      <p>Tell us your requirements and we'll source it for you</p>
+      <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
   </section>
 </Layout>
@@ -159,7 +146,7 @@ const sorted = [...products].sort((a, b) => {
 <script>
   const catFilter = document.getElementById('cat-filter')!;
   const speciesFilter = document.getElementById('species-filter')!;
-  const subcatFilter = document.getElementById('subcat-filter')!;
+
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const grid = document.getElementById('product-grid')!;
   const cards = Array.from(grid.querySelectorAll('.product-card')) as HTMLElement[];
@@ -168,7 +155,7 @@ const sorted = [...products].sort((a, b) => {
 
   let activeCat = 'all';
   let activeSpecies = '';
-  let activeSub = '';
+
   let searchTerm = '';
 
   function applyFilters() {
@@ -179,13 +166,14 @@ const sorted = [...products].sort((a, b) => {
       const sp = c.dataset.species || '';
       const sub = c.dataset.subcat || '';
       const zh = (c.dataset.zhname || '').toLowerCase();
+      const en = (c.dataset.enname || '').toLowerCase();
       const latin = (c.dataset.latin || '').toLowerCase();
 
       let ok = true;
       if (activeCat !== 'all' && cat !== activeCat) ok = false;
       if (ok && activeCat === 'ornamental' && activeSpecies && sp !== activeSpecies) ok = false;
-      if (ok && activeCat === 'potted' && activeSub && sub !== activeSub) ok = false;
-      if (ok && term && !zh.includes(term) && !latin.includes(term)) ok = false;
+
+      if (ok && term && !zh.includes(term) && !en.includes(term) && !latin.includes(term)) ok = false;
 
       c.style.display = ok ? '' : 'none';
       if (ok) n++;
@@ -194,26 +182,23 @@ const sorted = [...products].sort((a, b) => {
     emptyState.style.display = n === 0 ? 'block' : 'none';
   }
 
-  // 一级分类
   catFilter.querySelectorAll('.cat-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       catFilter.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCat = (btn as HTMLElement).dataset.cat || 'all';
 
-      // 重置二级 + 显示对应二级
       activeSpecies = '';
-      activeSub = '';
+
       speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-      subcatFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+
       speciesFilter.style.display = activeCat === 'ornamental' ? 'flex' : 'none';
-      subcatFilter.style.display = activeCat === 'potted' ? 'flex' : 'none';
+
 
       applyFilters();
     });
   });
 
-  // 物种
   speciesFilter.querySelectorAll('.sub-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const isActive = btn.classList.contains('active');
@@ -228,22 +213,6 @@ const sorted = [...products].sort((a, b) => {
     });
   });
 
-  // 子分类
-  subcatFilter.querySelectorAll('.sub-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const isActive = btn.classList.contains('active');
-      subcatFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-      if (isActive) {
-        activeSub = '';
-      } else {
-        btn.classList.add('active');
-        activeSub = (btn as HTMLElement).dataset.sub || '';
-      }
-      applyFilters();
-    });
-  });
-
-  // 搜索
   searchInput.addEventListener('input', () => {
     searchTerm = searchInput.value;
     applyFilters();

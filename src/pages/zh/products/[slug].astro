@@ -11,18 +11,18 @@ const product = getAllProducts().find(p => p.id === slug)!;
 const hasImages = product.gallery.length > 0;
 const isComplete = hasImages;
 
-const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : 'Potted Plants (Bonsai)';
+const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
 ---
 <Layout
-  title={isComplete ? `${product.enName} - Product Details - Huinong` : `${product.enName} - Huinong`}
-  lang="en"
+  title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
+  lang="zh"
   description={isComplete
-    ? `${product.enName} (${product.latin}) - Premium quality from Huinong. FOB price on inquiry.`
-    : `${product.enName} (${product.latin}) - Huinong premium product.`}
+    ? `${product.zhName}（${product.latin}）- ${product.enName}，FOB 起价询盘，HS Code 0602.90。`
+    : `${product.zhName}（${product.latin}）- ${product.enName}，汇农天下优质产品。`}
 >
   <div class="breadcrumb">
     <div class="container">
-      <a href="/en/">Home</a> › <a href="/en/products">Catalog</a> › <span>{product.enName}</span>
+      <a href="/zh/">首页</a> › <a href="/zh/products">产品目录</a> › <span>{product.zhName}</span>
     </div>
   </div>
 
@@ -31,10 +31,10 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
       <section class="section" style="padding-top: 32px;">
         <div class="container">
           <div class="pd-grid">
-            <!-- Left: gallery -->
+            <!-- 左：图册 -->
             <div class="pd-gallery">
               <div class="pd-main" id="pd-main" data-gallery={JSON.stringify(product.gallery)}>
-                <img src={product.mainImage} alt={product.enName} />
+                <img src={product.mainImage} alt={product.zhName} />
               </div>
               {product.gallery.length > 1 && (
                 <div class="pd-thumbs">
@@ -44,33 +44,33 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
                       data-index={i}
                       data-image={img}
                     >
-                      <img src={img} alt={`${product.enName} ${i+1}`} loading="lazy" />
+                      <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <!-- Right: info (sticky) -->
+            <!-- 右：信息（sticky 跟随） -->
             <div class="pd-info">
-              <h1>{product.enName}</h1>
-              <p class="latin">{product.latin} · {product.zhName}</p>
+              <h1>{product.zhName}</h1>
+              <p class="latin">{product.latin} · {product.enName}</p>
 
               <div class="short-desc">{product.shortDesc}</div>
 
               <div class="pd-meta">
                 <div class="meta-item">
-                  <div class="k">📷 Photos</div>
-                  <div class="v">{product.gallery.length}</div>
+                  <div class="k">📷 规格图片</div>
+                  <div class="v">{product.gallery.length} 张</div>
                 </div>
                 <div class="meta-item">
-                  <div class="k">🌿 Category</div>
+                  <div class="k">🌿 分类</div>
                   <div class="v">{categoryName}</div>
                 </div>
               </div>
 
               <div class="pd-actions">
-                <a href={`/en/contact?product=${encodeURIComponent(product.enName)}`} class="btn-green" style="flex: 1; text-align: center;">📩 Inquire Now</a>
+                <a href={`/zh/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
                 <a href="#" class="btn-outline" title="WhatsApp">💬</a>
               </div>
             </div>
@@ -78,11 +78,11 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
         </div>
       </section>
 
-      <!-- Product intro: full width -->
+      <!-- 产品介绍：全宽 -->
       <section class="section" style="padding-top: 0;">
         <div class="container">
           <div class="pd-content">
-            <h3 class="pd-h3">Product Introduction</h3>
+            <h3 class="pd-h3">产品介绍</h3>
             <div class="long-desc">{product.longDesc}</div>
           </div>
         </div>
@@ -90,17 +90,17 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 
       <section class="cta-strip">
         <div class="container">
-          <h2>Want to source {product.enName}?</h2>
-          <p>Tell us your specs, quantity & destination port</p>
-          <a href={`/en/contact?product=${encodeURIComponent(product.enName)}`} class="btn-white">📩 Request a Quote</a>
+          <h2>想采购 {product.zhName}？</h2>
+          <p>告诉我们您的规格、数量、目的港</p>
+          <a href={`/zh/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-white">📩 Inquire {product.zhName}</a>
         </div>
       </section>
 
       <!-- Lightbox -->
       <div class="lightbox" id="lightbox" aria-hidden="true">
-        <button class="lightbox-close" aria-label="Close">×</button>
-        <button class="lightbox-prev" aria-label="Previous">‹</button>
-        <button class="lightbox-next" aria-label="Next">›</button>
+        <button class="lightbox-close" aria-label="关闭">×</button>
+        <button class="lightbox-prev" aria-label="上一张">‹</button>
+        <button class="lightbox-next" aria-label="下一张">›</button>
         <div class="lightbox-content" id="lb-content"></div>
         <div class="lightbox-counter" id="lb-counter"></div>
       </div>
@@ -110,14 +110,14 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
       <div class="container">
         <div class="placeholder-product">
           <div class="placeholder-emoji">{product.emoji}</div>
-          <h1>{product.enName}</h1>
-          <p class="latin">{product.latin} · {product.zhName}</p>
-          <span class="placeholder-cat">Category: {categoryName}</span>
+          <h1>{product.zhName}</h1>
+          <p class="latin">{product.latin} · {product.enName}</p>
+          <span class="placeholder-cat">分类：{categoryName}</span>
           <div class="short-desc" style="margin: 20px 0;">{product.shortDesc}</div>
           <div class="placeholder-msg">
             <p>{product.longDesc}</p>
-            <p style="margin-top: 24px;">Product images and detailed specifications coming soon.</p>
-            <p style="margin-top: 24px;">For inquiries, please <a href="/en/contact" class="btn-green">Contact Us</a> or browse <a href="/en/products">our catalog</a>.</p>
+            <p style="margin-top: 24px;">实物图片与详细规格资料正在完善中。</p>
+            <p style="margin-top: 24px;">如果您对该产品有采购意向，欢迎 <a href="/zh/contact" class="btn-green">立即询盘</a> 或浏览 <a href="/zh/products">产品目录</a>。</p>
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 .breadcrumb a:hover { color: var(--green); }
 .breadcrumb span { color: var(--text); }
 
-/* === Main layout: left 60% gallery / right 40% info (sticky) === */
+/* === 主布局：左 60% 图册 / 右 40% 信息（sticky） === */
 .pd-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -151,6 +151,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 }
 .pd-main img { width: 100%; height: 100%; object-fit: cover; }
 
+/* 缩略图自动换行，缩略图自动填充，min 80px */
 .pd-thumbs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -170,13 +171,13 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 .pd-thumb:hover { transform: translateY(-2px); }
 .pd-thumb.active { border-color: var(--green); }
 
-/* === Right info (sticky) === */
+/* === 右侧信息（sticky 跟随） === */
 .pd-info {
   position: sticky;
   top: 100px;
   display: flex; flex-direction: column; gap: 14px;
 }
-.pd-info h1 { font-size: 28px; margin-bottom: 0; }
+.pd-info h1 { font-size: 30px; margin-bottom: 0; }
 .pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin: 0; }
 .short-desc {
   font-size: 14px; color: var(--text); line-height: 1.7;
@@ -196,7 +197,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 .pd-actions { display: flex; gap: 10px; margin-top: 6px; }
 .pd-actions .btn-outline { padding: 12px 18px; min-width: 50px; text-align: center; font-size: 18px; }
 
-/* === Product intro === */
+/* === 产品介绍 === */
 .pd-content { max-width: 920px; margin: 0 auto; }
 .pd-h3 { font-size: 18px; margin: 0 0 12px; color: var(--green); }
 .long-desc { font-size: 15px; color: var(--text-light); line-height: 1.85; }
@@ -239,7 +240,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
   color: white; font-size: 14px; opacity: 0.7;
 }
 
-/* === Placeholder === */
+/* === Placeholder（无图产品的占位） === */
 .placeholder-product { text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0; }
 .placeholder-emoji {
   font-size: 100px; margin: 0 auto 20px;
@@ -258,7 +259,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 .placeholder-msg { font-size: 15px; color: var(--text-light); line-height: 1.8; }
 .placeholder-msg p { margin-bottom: 8px; }
 
-/* === Responsive === */
+/* === 响应式：< 900px 切单列 === */
 @media (max-width: 900px) {
   .pd-grid { grid-template-columns: 1fr; gap: 24px; }
   .pd-info { position: static; }
@@ -269,6 +270,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
 
 {isComplete && (
   <script>
+    // 缩略图切换 + Lightbox（所有图片都直接展示）
     (() => {
       const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
       const main = document.getElementById('pd-main');
@@ -277,7 +279,9 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
       const lbCounter = document.getElementById('lb-counter');
       if (!main || !lightbox || !lbContent) return;
 
+      // 全部图（从主图 data-gallery 读，lightbox 翻全部）
       const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
+      // 可见缩略图（用于切换主图）
       const thumbItems = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
       let currentIndex = 0;
 
@@ -302,12 +306,15 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
         currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
         renderIn(lbContent, allImages[currentIndex]);
         if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
+        // 同步高亮下方缩略图
         const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
         thumbs.forEach(t => t.classList.remove('active'));
         if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
+        // 同步更新主图
         renderIn(main, allImages[currentIndex]);
       }
 
+      // 缩略图点击 → 切换主图
       thumbs.forEach((thumb, i) => {
         thumb.addEventListener('click', () => {
           thumbs.forEach(t => t.classList.remove('active'));
@@ -317,8 +324,10 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
         });
       });
 
+      // 主图点击 → 打开 Lightbox（从当前图开始）
       main.addEventListener('click', () => openLightbox(currentIndex));
 
+      // Lightbox 控件
       const lbClose = lightbox.querySelector('.lightbox-close');
       const lbPrev = lightbox.querySelector('.lightbox-prev');
       const lbNext = lightbox.querySelector('.lightbox-next');
@@ -327,6 +336,7 @@ const categoryName = product.category === 'ornamental' ? 'Ornamental Plants' : '
       if (lbNext) lbNext.addEventListener('click', () => navigate(1));
       lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
 
+      // 键盘控制
       document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('open')) return;
         if (e.key === 'Escape') closeLightbox();
