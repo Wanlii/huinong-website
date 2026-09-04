@@ -101,7 +101,23 @@ const countries = [
   <section class="section products-bg">
     <div class="container">
       <div class="section-header"><h2>公司位置</h2><p>欢迎预约参观基地</p></div>
-      <div class="map-box">📍 <span style="margin-left: 12px;">Google Maps 嵌入区（正式版显示基地实景地图）</span></div>
+      <div class="map-wrap">
+        <div class="map-info">
+          <div class="map-icon">📍</div>
+          <div>
+            <div class="map-title">汇农天下基地 — 江苏省徐州市新沂市</div>
+            <div class="map-sub">自有基地 860+ 公顷 · 源头工厂 · 预约参观</div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E8%BE%B3%E5%B8%82+%E6%B1%9F%E8%8B%8F%E7%9C%81+%E4%B8%AD%E5%9B%BD" target="_blank" rel="noopener">在 Google Maps 中打开 →</a>
+          </div>
+        </div>
+        <iframe
+          class="map-frame"
+          title="汇农天下基地位置"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=%E6%96%B0%E8%BE%B3%E5%B8%82+%E6%B1%9F%E8%8B%8F%E7%9C%81&t=&z=11&ie=UTF8&iwloc=&output=embed">
+        </iframe>
+      </div>
     </div>
   </section>
 </Layout>
@@ -138,6 +154,40 @@ const countries = [
 }
 .form-group textarea { min-height: 110px; resize: vertical; }
 
+.map-wrap {
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.map-info {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px 24px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--cream-dark);
+}
+.map-info .map-icon { font-size: 28px; line-height: 1; }
+.map-title { font-size: 16px; font-weight: 600; color: var(--green); }
+.map-sub { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+.map-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--green);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s;
+}
+.map-link:hover { border-bottom-color: var(--green); }
+.map-frame {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border: 0;
+}
 .map-box {
   width: 100%; height: 320px;
   background: linear-gradient(135deg, #e8e2d4 0%, #d4cab8 100%);

@@ -3,11 +3,25 @@ import Layout from '../../layouts/Layout.astro';
 import { getAllProducts, getSpeciesByCategory } from '../../lib/products';
 
 const products = getAllProducts();
-const ornamentalSpecies = getSpeciesByCategory('ornamental');
+// 英文版: 用 enName 作 chip label，但 data-species 仍用中文 key 匹配
+const ornamentalSpeciesZh = getSpeciesByCategory('ornamental', 'zh');
+const ornamentalSpeciesEn = getSpeciesByCategory('ornamental', 'en');
+
+// 盆栽分组: 1=精品盆栽(非紫藤的premium), 2=紫藤(ziteng), 3=其他(mini)
+function pottedGroup(p: typeof products[number]): number {
+  if (p.id !== 'ziteng' && p.subcategory === 'premium') return 1;
+  if (p.id === 'ziteng') return 2;
+  return 3;  // mini + 其他
+}
 
 const sorted = [...products].sort((a, b) => {
   if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
   if (a.category !== 'ornamental' && b.category === 'ornamental') return 1;
+  // potted 按组排：精品 → 紫藤 → 其他；同组内按 order
+  if (a.category === 'potted' && b.category === 'potted') {
+    const ga = pottedGroup(a), gb = pottedGroup(b);
+    if (ga !== gb) return ga - gb;
+  }
   return a.order - b.order;
 });
 ---
@@ -31,8 +45,8 @@ const sorted = [...products].sort((a, b) => {
       <!-- Level 2: species for ornamental -->
       <div class="sub-filter" id="species-filter" style="display: none;">
         <span class="sub-label">By species:</span>
-        {ornamentalSpecies.map(sp => (
-          <button class="sub-btn" data-species={sp}>{sp}</button>
+        {ornamentalSpeciesZh.map((sp, i) => (
+          <button class="sub-btn" data-species={sp}>{ornamentalSpeciesEn[i]}</button>
         ))}
       </div>
 </div>

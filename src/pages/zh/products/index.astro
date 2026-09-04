@@ -11,9 +11,20 @@ const pottedCount = products.filter(p => p.category === 'potted').length;
 const ornamentalProducts = products.filter(p => p.category === 'ornamental');
 const pottedProducts = products.filter(p => p.category === 'potted');
 
+// 盆栽分组: 1=精品盆栽(非紫藤的premium), 2=紫藤(ziteng), 3=其他(mini)
+function pottedGroup(p: typeof products[number]): number {
+  if (p.id !== 'ziteng' && p.subcategory === 'premium') return 1;
+  if (p.id === 'ziteng') return 2;
+  return 3;
+}
+
 const sorted = [...products].sort((a, b) => {
   if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
   if (a.category !== 'ornamental' && b.category === 'ornamental') return 1;
+  if (a.category === 'potted' && b.category === 'potted') {
+    const ga = pottedGroup(a), gb = pottedGroup(b);
+    if (ga !== gb) return ga - gb;
+  }
   return a.order - b.order;
 });
 ---

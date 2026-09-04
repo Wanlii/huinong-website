@@ -217,11 +217,12 @@ export function getActualSpeciesCounts(): { ornamental: number; potted: number; 
 }
 
 // 取得某 category 下的所有 species（去重，按出现顺序）
-export function getSpeciesByCategory(cat: 'ornamental' | 'potted'): string[] {
+// lang: 'zh' 返回中文 species，'en' 返回对应英文名
+export function getSpeciesByCategory(cat: 'ornamental' | 'potted', lang: 'zh' | 'en' = 'zh'): string[] {
   const seen: string[] = [];
   for (const p of getAllProducts()) {
     if (p.category === cat && p.species && !seen.includes(p.species)) {
-      seen.push(p.species);
+      seen.push(lang === 'en' ? p.enName : p.species);
     }
   }
   return seen;
