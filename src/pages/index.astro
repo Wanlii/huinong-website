@@ -22,7 +22,7 @@ const heroJpg = '/assets/images/hero/main.jpg';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
 const categories = [
-  { name: 'Ornamental Plants', desc: `Trees · Shrubs · ${ornamentalCount}+ varieties · bulk procurement`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
+  { name: 'Ornamental Plants', desc: `${ornamentalCount}+ varieties · bulk procurement`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
   { name: 'Potted Plants (Bonsai)', desc: `Conifers · Hardwoods · Flowering · ${pottedCount}+ varieties · wholesale`, image: '/assets/images/category/potted.jpg', href: '/products?cat=potted' },
 ];
 ---

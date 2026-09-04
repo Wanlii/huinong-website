@@ -24,7 +24,7 @@ const heroWebp = '/assets/images/hero/main.webp';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 
 const categories = [
-  { name: '观赏苗木', desc: `乔木 · 灌木 · ${ornamentalCount}+ 品种 · 适合大宗采购`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
+  { name: '观赏苗木', desc: `${ornamentalCount}+ 品种 · 适合大宗采购`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
   { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, image: '/assets/images/category/potted.jpg', href: '/products?cat=potted' },
 ];
 ---
