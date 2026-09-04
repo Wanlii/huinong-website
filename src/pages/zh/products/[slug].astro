@@ -53,8 +53,8 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
 
             <!-- 右：信息（sticky 跟随） -->
             <div class="pd-info">
-              <h1>{product.zhName}</h1>
-              <p class="latin">{product.latin} · {product.enName}</p>
+              <h1 class="latin-main">{product.latin}</h1>
+              <p class="zh-sub">{product.zhName}</p>
 
               <div class="short-desc">{product.shortDesc}</div>
 
@@ -99,8 +99,8 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
       <div class="container">
         <div class="placeholder-product">
           <div class="placeholder-emoji">{product.emoji}</div>
-          <h1>{product.zhName}</h1>
-          <p class="latin">{product.latin} · {product.enName}</p>
+          <h1 class="latin-main">{product.latin}</h1>
+          <p class="zh-sub">{product.zhName}</p>
           <span class="placeholder-cat">分类：{categoryName}</span>
           <div class="short-desc" style="margin: 20px 0;">{product.shortDesc}</div>
           <div class="placeholder-msg">
@@ -166,8 +166,9 @@ const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆�
   top: 100px;
   display: flex; flex-direction: column; gap: 14px;
 }
-.pd-info h1 { font-size: 30px; margin-bottom: 0; }
-.pd-info .latin { font-size: 16px; color: var(--text-light); font-style: italic; margin: 0; }
+.pd-info h1 { font-size: 30px; margin-bottom: 0; line-height: 1.25; }
+.pd-info .latin-main { font-family: 'Playfair Display', 'Georgia', serif; font-style: italic; }
+.pd-info .zh-sub { font-size: 16px; color: var(--text-light); margin: 0; }
 .short-desc {
   font-size: 14px; color: var(--text); line-height: 1.7;
   padding: 14px 16px; background: var(--cream-dark);

@@ -219,11 +219,17 @@ const sorted = [...products].sort((a, b) => {
       speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
       if (isActive) {
         activeSpecies = '';
+        applyFilters();
       } else {
         btn.classList.add('active');
         activeSpecies = (btn as HTMLElement).dataset.species || '';
+        applyFilters();
+        // 滚动到该种类第一个匹配的产品（"直接展示"）
+        const firstMatch = document.querySelector(`.product-card[data-species="${CSS.escape(activeSpecies)}"]:not([style*="display: none"])`);
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
-      applyFilters();
     });
   });
 
