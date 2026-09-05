@@ -49,7 +49,6 @@ const searchIndex = allForSearch.map(p => ({
             <button class="chip" data-species={s.zh}>
               <span class="chip-latin">{s.latin}</span>
               <span class="chip-zh">{s.zh}</span>
-              <span class="chip-count">{s.count}</span>
             </button>
           ))}
         </div>
@@ -184,15 +183,6 @@ const searchIndex = allForSearch.map(p => ({
 }
 .chip-latin { font-style: italic; }
 .chip-zh { font-weight: 500; }
-.chip-count {
-  background: rgba(0,0,0,0.08);
-  color: inherit;
-  padding: 1px 7px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.chip.active .chip-count { background: rgba(255,255,255,0.25); }
 
 .results-header {
   display: flex;
