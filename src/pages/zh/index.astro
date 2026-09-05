@@ -49,7 +49,7 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
       </div>
       <div class="cat-grid">
         {topCats.map(cat => (
-          <a href={`/zh/products/${cat.slug}`} class="cat-card">
+          <a href={cat.slug === 'ornamental' ? '/zh/products' : `/zh/products/${cat.slug}`} class="cat-card">
             <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
               <h3>{cat.zh}</h3>
@@ -57,7 +57,7 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
               {cat.hasSub ? (
                 <span class="cat-cta">查看子分类 →</span>
               ) : (
-                <span class="cat-cta">查看详情 →</span>
+                <span class="cat-cta">查看产品 →</span>
               )}
             </div>
           </a>

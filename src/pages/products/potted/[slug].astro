@@ -1,18 +1,18 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import { getSubCategory, getSubCategories, getCategoryGallery } from '../../../lib/products';
+import { getPottedSubCategory, getPottedSubCategories, getPottedGallery } from '../../../lib/products';
 
 export function getStaticPaths() {
-  return getSubCategories('potted').map(sub => ({ params: { slug: sub.slug } }));
+  return getPottedSubCategories().map(sub => ({ params: { slug: sub.slug } }));
 }
 
 const { slug } = Astro.params;
-const info = getSubCategory(slug!);
+const info = getPottedSubCategory(slug!);
 if (!info) {
   throw new Error(`Unknown potted subcategory: ${slug}`);
 }
-const gallery = getCategoryGallery(slug!);
-const otherSubs = getSubCategories('potted').filter(s => s.slug !== slug);
+const gallery = getPottedGallery(slug!);
+const otherSubs = getPottedSubCategories().filter(s => s.slug !== slug);
 
 const titleEn = `${info.en} - ${info.zh} Gallery - Huinong`;
 const descEn = `${info.enDesc}. ${info.count} photos. Source factory direct.`;

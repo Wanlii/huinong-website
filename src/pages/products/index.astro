@@ -1,48 +1,119 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getTopCategories } from '../../lib/products';
+import {
+  getProductsByCategory,
+  getSpeciesByCategory,
+  getSpeciesImages,
+  getAllProducts,
+  type Product,
+  type SpeciesInfo,
+} from '../../lib/products';
 
-const topCats = getTopCategories();
+const products = getProductsByCategory('ornamental');
+const species = getSpeciesByCategory('ornamental');
+const allForSearch = getAllProducts().map(p => ({
+  id: p.id, latin: p.latin, zh: p.zhName, en: p.enName, species: p.species,
+  gallery: p.gallery,
+}));
+
+// 把所有图片按种属分组（用于筛选时的图集）
+const speciesGallery: Record<string, string[]> = {};
+for (const s of species) {
+  speciesGallery[s.zh] = getSpeciesImages(s.zh);
+}
+
+// 搜索时按 拉丁+中文+英文 匹配
+const searchIndex = allForSearch.map(p => ({
+  ...p,
+  haystack: `${p.latin} ${p.zh} ${p.en} ${p.species}`.toLowerCase(),
+}));
 ---
-<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai, source factory direct.">
+<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai. Browse by species, search by Latin or Chinese name.">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>Product Catalog</h1>
-      <p class="hero-sub">Two main categories · continuously updated · custom orders welcome</p>
+      <p class="hero-sub">{products.length}+ ornamental varieties · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
-  <section class="section" style="padding-top: 0;">
+  <section class="section" style="padding-bottom: 0;">
     <div class="container">
-      <div class="cat-grid">
-        {topCats.map(cat => (
-          <a href={`/products/${cat.slug}`} class="cat-card">
-            <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
-            <div class="cat-body">
-              <h3>{cat.en}</h3>
-              <p>{cat.enDesc}</p>
-              <div class="cat-meta">
-                {cat.hasSub ? (
-                  <span class="cat-info">{cat.subCount} subcategories</span>
-                ) : (
-                  <span class="cat-info">Coming soon</span>
-                )}
-                <span class="cat-arrow">View →</span>
-              </div>
+      <!-- Category tabs -->
+      <div class="cat-tabs" id="cat-tabs">
+        <button class="cat-tab active" data-cat="ornamental">Ornamental Plants</button>
+        <a class="cat-tab" href="/products/potted">Potted Plants (Bonsai)</a>
+      </div>
+
+      <!-- Search + chips -->
+      <div class="filter-bar" id="filter-bar">
+        <div class="search-wrap">
+          <input type="search" id="search-input" class="search-input" placeholder="Search (Latin / English / 中文)" autocomplete="off" />
+        </div>
+        <div class="chips" id="chips">
+          <button class="chip active" data-species="">All Species</button>
+          {species.map(s => (
+            <button class="chip" data-species={s.zh}>
+              <span class="chip-latin">{s.latin}</span>
+              <span class="chip-zh">{s.zh}</span>
+              <span class="chip-count">{s.count}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <!-- Results header (back button shown in gallery mode) -->
+      <div class="results-header" id="results-header">
+        <button id="back-btn" class="back-btn" style="display: none;">← Back to list</button>
+        <span class="count" id="result-count">{products.length} products</span>
+      </div>
+
+      <!-- Card grid (default) -->
+      <div class="product-grid" id="product-grid" data-mode="cards">
+        {products.map(p => (
+          <a href={`/products/ornamental/${p.id}`} class="product-card"
+             data-id={p.id}
+             data-species={p.species}>
+            <div class="product-img">
+              {p.mainImage ? <img src={p.mainImage} alt={`${p.latin} (${p.zhName})`} loading="lazy" /> : p.emoji}
+            </div>
+            <div class="product-info">
+              <div class="product-name">{p.latin}</div>
+              <div class="product-zh">{p.zhName}</div>
             </div>
           </a>
         ))}
+      </div>
+
+      <!-- Image gallery (shown when filter active) -->
+      <div class="gallery-grid" id="gallery-grid" style="display: none;"></div>
+
+      <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
+        <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
+        <p>No matching products. Try a different keyword or species.</p>
       </div>
     </div>
   </section>
 
   <section class="cta-strip">
     <div class="container">
-      <h2>Can't find what you need?</h2>
+      <h2>Need custom sourcing?</h2>
       <p>Tell us your requirements and we'll source it for you</p>
       <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
   </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" style="display: none;">
+    <button class="lb-close" aria-label="Close">×</button>
+    <button class="lb-prev" aria-label="Previous">‹</button>
+    <button class="lb-next" aria-label="Next">›</button>
+    <img id="lb-img" src="" alt="" />
+    <div class="lb-counter" id="lb-counter"></div>
+  </div>
 </Layout>
 
 <style>
@@ -70,37 +141,136 @@ const topCats = getTopCategories();
 .section { padding: 56px 0; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-.cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
-.cat-card {
+.cat-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+.cat-tab {
   background: var(--white);
-  border-radius: 8px;
-  overflow: hidden;
+  border: 1px solid var(--cream-dark);
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  display: inline-block;
+}
+.cat-tab.active, .cat-tab:hover {
+  background: var(--green);
+  color: var(--white);
+  border-color: var(--green);
+}
+
+.filter-bar { max-width: 900px; margin: 0 auto 32px; }
+.search-wrap { margin-bottom: 16px; }
+.search-input {
+  width: 100%; padding: 12px 16px;
+  border: 1px solid var(--cream-dark); border-radius: 8px;
+  font-size: 14px; font-family: inherit; background: var(--white);
+  transition: border-color .2s;
+}
+.search-input:focus { outline: none; border-color: var(--green); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.chip {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  padding: 6px 14px;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+  font-family: inherit;
+  color: var(--text);
+}
+.chip:hover { border-color: var(--green); }
+.chip.active {
+  background: var(--green);
+  color: var(--white);
+  border-color: var(--green);
+}
+.chip-latin { font-style: italic; }
+.chip-zh { font-weight: 500; }
+.chip-count {
+  background: rgba(0,0,0,0.08);
+  color: inherit;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.chip.active .chip-count { background: rgba(255,255,255,0.25); }
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.count { color: var(--text-light); font-size: 14px; }
+.back-btn {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .2s;
+  font-family: inherit;
+}
+.back-btn:hover { background: var(--green); color: var(--white); }
+
+.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.product-card {
+  background: var(--white); border-radius: 8px; overflow: hidden;
   box-shadow: var(--shadow);
-  transition: box-shadow .3s, transform .3s;
+  transition: transform .2s, box-shadow .2s;
   display: block; color: inherit;
 }
-.cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-.cat-img {
-  width: 100%; height: 360px;
-  background-color: #c9d4c5;
-  background-size: cover; background-position: center;
-  transition: transform .4s;
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.product-img {
+  width: 100%; aspect-ratio: 1;
+  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; overflow: hidden;
 }
-.cat-card:hover .cat-img { transform: scale(1.04); }
-.cat-body { padding: 28px; }
-.cat-body h3 { font-size: 24px; margin-bottom: 8px; color: var(--green); }
-.cat-body p { font-size: 14px; color: var(--text-light); margin-bottom: 16px; line-height: 1.6; }
-.cat-meta {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: 12px; border-top: 1px solid var(--cream-dark);
-}
-.cat-info { font-size: 13px; color: var(--text-light); }
-.cat-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
+.product-info { padding: 18px; }
+.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; font-style: italic; }
+.product-zh { font-size: 13px; color: var(--text-light); }
 
-@media (max-width: 900px) {
-  .cat-grid { grid-template-columns: 1fr; gap: 20px; }
-  .cat-img { height: 240px; }
+@media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .product-grid { grid-template-columns: 1fr; } }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
+.gallery-grid .gallery-item {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--cream-dark);
+  cursor: zoom-in;
+}
+.gallery-grid .gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .4s, opacity .2s;
+}
+.gallery-grid .gallery-item:hover img { transform: scale(1.05); opacity: 0.9; }
+
+@media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .gallery-grid { grid-template-columns: 1fr; } }
 
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
@@ -112,4 +282,197 @@ const topCats = getTopCategories();
   transition: transform .2s; cursor: pointer;
 }
 .btn-white:hover { transform: scale(1.03); }
+
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.lb-close, .lb-prev, .lb-next {
+  position: absolute;
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .2s;
+}
+.lb-close:hover, .lb-prev:hover, .lb-next:hover { background: rgba(255,255,255,0.25); }
+.lb-close { top: 24px; right: 24px; font-size: 40px; }
+.lb-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 24px; top: 50%; transform: translateY(-50%); }
+.lb-counter {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  color: var(--white); font-size: 14px;
+  background: rgba(0,0,0,0.5);
+  padding: 6px 16px; border-radius: 14px;
+}
 </style>
+
+<script define:vars={{ speciesGallery, searchIndex, products, species }}>
+  const cards = document.getElementById('product-grid');
+  const gallery = document.getElementById('gallery-grid');
+  const backBtn = document.getElementById('back-btn');
+  const countEl = document.getElementById('result-count');
+  const emptyState = document.getElementById('empty-state');
+  const searchInput = document.getElementById('search-input');
+  const chipsContainer = document.getElementById('chips');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbCounter = document.getElementById('lb-counter');
+  const btnClose = lightbox && lightbox.querySelector('.lb-close');
+  const btnPrev = lightbox && lightbox.querySelector('.lb-prev');
+  const btnNext = lightbox && lightbox.querySelector('.lb-next');
+
+  let activeSpecies = '';
+  let searchTerm = '';
+  let currentImages = [];
+  let lbIndex = 0;
+
+  function isFiltering() {
+    return activeSpecies !== '' || (searchTerm && searchTerm.trim() !== '');
+  }
+
+  function render() {
+    if (!isFiltering()) {
+      cards.style.display = '';
+      gallery.style.display = 'none';
+      backBtn.style.display = 'none';
+      emptyState.style.display = 'none';
+      countEl.textContent = products.length + ' products';
+      return;
+    }
+    let matchedSpecies = [];
+    if (activeSpecies) {
+      matchedSpecies = [activeSpecies];
+    } else {
+      const term = searchTerm.trim().toLowerCase();
+      const matchedIds = new Set();
+      for (const item of searchIndex) {
+        if (item.haystack.indexOf(term) !== -1) matchedIds.add(item.id);
+      }
+      const matchedZh = new Set();
+      for (const item of searchIndex) {
+        if (matchedIds.has(item.id)) matchedZh.add(item.species);
+      }
+      matchedSpecies = Array.from(matchedZh);
+    }
+
+    const allImages = [];
+    const seen = new Set();
+    for (const sp of matchedSpecies) {
+      const imgs = speciesGallery[sp] || [];
+      for (const img of imgs) {
+        if (!seen.has(img)) { seen.add(img); allImages.push(img); }
+      }
+    }
+
+    if (allImages.length === 0) {
+      cards.style.display = 'none';
+      gallery.style.display = 'none';
+      backBtn.style.display = '';
+      emptyState.style.display = '';
+      countEl.textContent = '0 photos';
+      return;
+    }
+
+    currentImages = allImages;
+    cards.style.display = 'none';
+    gallery.style.display = '';
+    backBtn.style.display = '';
+    emptyState.style.display = 'none';
+
+    const spLabel = matchedSpecies.length === 1 ? matchedSpecies[0] : (matchedSpecies.length + ' species');
+    countEl.textContent = allImages.length + ' photos · ' + spLabel;
+
+    gallery.innerHTML = allImages.map(function(src, i){
+      return '<a href="' + src + '" class="gallery-item" data-index="' + i + '" data-src="' + src + '">' +
+        '<img src="' + src + '" alt="Photo ' + (i+1) + '" loading="lazy" />' +
+      '</a>';
+    }).join('');
+
+    gallery.querySelectorAll('.gallery-item').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.preventDefault();
+        const idx = parseInt(el.getAttribute('data-index') || '0', 10);
+        openLb(idx);
+      });
+    });
+  }
+
+  function openLb(i) {
+    if (!lightbox) return;
+    lbIndex = i;
+    updateLb();
+    lightbox.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLb() {
+    if (!lightbox) return;
+    lightbox.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function updateLb() {
+    if (!lbImg || !lbCounter) return;
+    lbImg.src = currentImages[lbIndex] || '';
+    lbCounter.textContent = (lbIndex + 1) + ' / ' + currentImages.length;
+  }
+  function nextLb() { lbIndex = (lbIndex + 1) % currentImages.length; updateLb(); }
+  function prevLb() { lbIndex = (lbIndex - 1 + currentImages.length) % currentImages.length; updateLb(); }
+
+  function reset() {
+    activeSpecies = '';
+    searchTerm = '';
+    searchInput.value = '';
+    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+    chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+    render();
+  }
+
+  chipsContainer.addEventListener('click', function(e) {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+    btn.classList.add('active');
+    activeSpecies = btn.getAttribute('data-species') || '';
+    searchInput.value = '';
+    searchTerm = '';
+    render();
+  });
+
+  searchInput.addEventListener('input', function() {
+    searchTerm = searchInput.value;
+    if (searchTerm.trim() !== '') {
+      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      activeSpecies = '';
+    } else {
+      chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+    }
+    render();
+  });
+
+  backBtn.addEventListener('click', reset);
+
+  if (btnClose) btnClose.addEventListener('click', closeLb);
+  if (btnNext) btnNext.addEventListener('click', nextLb);
+  if (btnPrev) btnPrev.addEventListener('click', prevLb);
+  if (lightbox) lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLb(); });
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox || lightbox.style.display !== 'flex') return;
+    if (e.key === 'Escape') closeLb();
+    else if (e.key === 'ArrowRight') nextLb();
+    else if (e.key === 'ArrowLeft') prevLb();
+  });
+</script>
+</Layout>

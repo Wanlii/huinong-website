@@ -1,18 +1,18 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import { getSubCategory, getSubCategories, getCategoryGallery } from '../../../../lib/products';
+import { getPottedSubCategory, getPottedSubCategories, getPottedGallery } from '../../../../lib/products';
 
 export function getStaticPaths() {
-  return getSubCategories('potted').map(sub => ({ params: { slug: sub.slug } }));
+  return getPottedSubCategories().map(sub => ({ params: { slug: sub.slug } }));
 }
 
 const { slug } = Astro.params;
-const info = getSubCategory(slug!);
+const info = getPottedSubCategory(slug!);
 if (!info) {
   throw new Error(`Unknown potted subcategory: ${slug}`);
 }
-const gallery = getCategoryGallery(slug!);
-const otherSubs = getSubCategories('potted').filter(s => s.slug !== slug);
+const gallery = getPottedGallery(slug!);
+const otherSubs = getPottedSubCategories().filter(s => s.slug !== slug);
 
 const titleZh = `${info.zh} - 盆栽图集 - 汇农天下`;
 const descZh = `${info.zhDesc}。${info.count} 张图片，源头工厂直供。`;

@@ -1,40 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getTopCategory, getSubCategories } from '../../lib/products';
+import { getPottedSubCategories } from '../../lib/products';
 
-const cat = getTopCategory('potted');
-if (!cat) throw new Error('potted category not found');
-const subs = getSubCategories('potted');
+const subs = getPottedSubCategories();
 const totalPhotos = subs.reduce((s, c) => s + c.count, 0);
 ---
-<Layout title={`${cat.en} - Huinong`} lang="en" description={cat.enDesc}>
-  <div class="breadcrumb">
-    <div class="container">
-      <a href="/">Home</a> › <a href="/products">Catalog</a> › <span>{cat.en}</span>
-    </div>
-  </div>
-
-  <section class="cat-hero" style={cat.cover ? `background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${cat.cover}');` : ''}>
-    <div class="container">
-      <h1>{cat.en}</h1>
-      <p class="cat-hero-sub">{cat.enDesc}</p>
-      <p class="cat-hero-count">{totalPhotos} photos across {subs.length} subcategories</p>
+<Layout title="Potted Plants (Bonsai) - Huinong" lang="en" description="Huinong potted plants - premium bonsai and small bonsai collections. Source factory direct.">
+  <section class="hero hero-short">
+    <div class="hero-content">
+      <h1>Potted Plants (Bonsai)</h1>
+      <p class="hero-sub">{subs.length} categories · {totalPhotos}+ photos · premium & small bonsai</p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" style="padding-top: 0;">
     <div class="container">
-      <div class="sub-grid">
+      <!-- Breadcrumb-back to list -->
+      <div class="back-row">
+        <a href="/products" class="back-link">← Back to Catalog</a>
+      </div>
+
+      <div class="cat-grid">
         {subs.map(sub => (
-          <a href={`/products/potted/${sub.slug}`} class="sub-card">
-            <div class="sub-img" style={sub.cover ? `background-image: url('${sub.cover}');` : ''}></div>
-            <div class="sub-body">
+          <a href={`/products/potted/${sub.slug}`} class="cat-card">
+            <div class="cat-img" style={sub.cover ? `background-image: url('${sub.cover}');` : ''}></div>
+            <div class="cat-body">
               <h3>{sub.en}</h3>
               <p>{sub.enDesc}</p>
-              <div class="sub-meta">
-                <span class="sub-count">{sub.count} photos</span>
-                <span class="sub-arrow">View Gallery →</span>
-              </div>
+              <span class="cat-cta">View Gallery →</span>
             </div>
           </a>
         ))}
@@ -52,39 +45,41 @@ const totalPhotos = subs.reduce((s, c) => s + c.count, 0);
 </Layout>
 
 <style>
-.breadcrumb {
-  background: var(--cream);
-  padding: 14px 0;
-  font-size: 13px;
-  color: var(--text-light);
-  border-bottom: 1px solid var(--cream-dark);
+.hero-short { height: 280px; }
+.hero {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3A5F3A 0%, #2A4A2A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.breadcrumb a { color: var(--green); }
-.breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb span { color: var(--text); }
-
-.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-.cat-hero {
-  background-color: #2A4A2A;
-  background-size: cover;
-  background-position: center;
-  color: var(--white);
-  padding: 80px 0;
-  text-align: center;
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  color: var(--white); max-width: 800px; padding: 0 24px;
 }
-.cat-hero h1 { font-size: 44px; margin-bottom: 12px; }
-.cat-hero-sub { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
-.cat-hero-count { font-size: 14px; opacity: 0.7; }
+.hero h1 { font-size: 40px; line-height: 1.2; margin-bottom: 12px; }
+.hero-sub { font-size: 16px; opacity: 0.9; }
 @media (max-width: 900px) {
-  .cat-hero { padding: 56px 0; }
-  .cat-hero h1 { font-size: 30px; }
+  .hero-short { height: 200px; }
+  .hero h1 { font-size: 28px; }
 }
 
 .section { padding: 56px 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-.sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
-.sub-card {
+.back-row { margin-bottom: 24px; }
+.back-link {
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.back-link:hover { text-decoration: underline; }
+
+.cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.cat-card {
   background: var(--white);
   border-radius: 8px;
   overflow: hidden;
@@ -92,27 +87,27 @@ const totalPhotos = subs.reduce((s, c) => s + c.count, 0);
   transition: box-shadow .3s, transform .3s;
   display: block; color: inherit;
 }
-.sub-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-.sub-img {
-  width: 100%; height: 320px;
+.cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.cat-img {
+  width: 100%; height: 360px;
   background-color: #c9d4c5;
   background-size: cover; background-position: center;
   transition: transform .4s;
 }
-.sub-card:hover .sub-img { transform: scale(1.04); }
-.sub-body { padding: 24px; }
-.sub-body h3 { font-size: 22px; margin-bottom: 6px; color: var(--green); }
-.sub-body p { font-size: 14px; color: var(--text-light); margin-bottom: 16px; line-height: 1.6; }
-.sub-meta {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: 12px; border-top: 1px solid var(--cream-dark);
+.cat-card:hover .cat-img { transform: scale(1.04); }
+.cat-body { padding: 28px; }
+.cat-body h3 { font-size: 24px; margin-bottom: 8px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); margin-bottom: 16px; line-height: 1.6; }
+.cat-cta {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
 }
-.sub-count { font-size: 13px; color: var(--text-light); }
-.sub-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
 
 @media (max-width: 900px) {
-  .sub-grid { grid-template-columns: 1fr; gap: 20px; }
-  .sub-img { height: 220px; }
+  .cat-grid { grid-template-columns: 1fr; gap: 20px; }
+  .cat-img { height: 240px; }
 }
 
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
