@@ -382,15 +382,18 @@ const allProductsCount = allProducts.length;
       if (b.getAttribute('data-cat') === tab) b.classList.add('active');
       else b.classList.remove('active');
     });
+    const pottedSection = document.getElementById('potted-subs');
     if (tab === 'all') {
       filterBar.style.display = 'none';
       gridAll.style.display = '';
       ornamentalSection.style.display = 'none';
+      if (pottedSection) pottedSection.style.display = '';
       countEl.textContent = ornamentalCount + ' 个观赏苗木 + 2 个盆栽分类';
       resetOrnamental();
     } else if (tab === 'ornamental') {
       filterBar.style.display = '';
       gridAll.style.display = 'none';
+      if (pottedSection) pottedSection.style.display = 'none';
       ornamentalSection.style.display = '';
       countEl.textContent = ornamentalCount + ' 个产品';
       renderOrnamental();
@@ -476,6 +479,7 @@ const allProductsCount = allProducts.length;
       chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
       chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
     }
+    renderOrnamental();
   }
 
   function openLb(i) {
