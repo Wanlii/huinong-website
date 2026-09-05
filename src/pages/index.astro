@@ -1,38 +1,29 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getFeaturedProducts, getAllProducts } from '../lib/products';
+import { getPottedCategories } from '../lib/products';
 import fs from 'fs';
 import path from 'path';
 
-const featured = getFeaturedProducts();
-// 用 CSV 统计（不依赖源文件夹，Cloudflare 构建时也能算）
-const allProducts = getAllProducts();
-const totalProducts = allProducts.length;
-const ornamentalCount = allProducts.filter(p => p.category === 'ornamental').length;
-const pottedCount = allProducts.filter(p => p.category === 'potted').length;
+const categories = getPottedCategories();
+const totalImages = categories.reduce((s, c) => s + c.count, 0);
 
 const trustItems = [
   { num: '20+', label: 'Years of Experience' },
   { num: '8.6+', label: 'km² of Farmland' },
-  { num: totalProducts + '+', label: 'Varieties Online' },
+  { num: totalImages + '+', label: 'Photos in Gallery' },
   { num: '100%', label: 'Compliant Export' },
 ];
 
 const heroJpg = '/assets/images/hero/main.jpg';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
-
-const categories = [
-  { name: 'Ornamental Plants', desc: `${ornamentalCount}+ varieties · bulk procurement`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
-  { name: 'Potted Plants (Bonsai)', desc: `Conifers · Hardwoods · Flowering · ${pottedCount}+ varieties · wholesale`, image: '/assets/images/category/potted.jpg', href: '/products?cat=potted' },
-];
 ---
-<Layout title="Huinong - Bonsai & Ornamental Plants Exporter" lang="en">
+<Layout title="Huinong - Bonsai Exporter" lang="en">
   <!-- 1. Hero -->
   <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>From Source to the World</h1>
-      <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 20 years of growing experience · source factory</p>
+      <p class="hero-sub">Premium bonsai from China · EU certified · 20 years of growing experience · source factory</p>
       <a href="/contact" class="btn-green hero-cta">Request a Quote →</a>
     </div>
   </section>
@@ -49,20 +40,21 @@ const categories = [
     </div>
   </section>
 
-  <!-- 3. 2 大类产品卡片 -->
+  <!-- 3. 盆栽 2 大分类卡 -->
   <section class="section">
     <div class="container">
       <div class="section-header">
-        <h2>Product Categories</h2>
-        <p>Two main categories for different procurement needs</p>
+        <h2>Bonsai Catalog</h2>
+        <p>Two curated categories. Click to view the full photo gallery.</p>
       </div>
       <div class="cat-grid">
         {categories.map(cat => (
-          <a href={cat.href} class="cat-card">
-            <div class="cat-img" style={`background-image: url('${cat.image}');`}></div>
+          <a href={`/products/${cat.slug}`} class="cat-card">
+            <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
-              <h3>{cat.name}</h3>
-              <p>{cat.desc}</p>
+              <h3>{cat.en}</h3>
+              <p>{cat.enDesc} · {cat.count}+ photos</p>
+              <span class="cat-cta">View Gallery →</span>
             </div>
           </a>
         ))}
@@ -70,37 +62,10 @@ const categories = [
     </div>
   </section>
 
-  <!-- 4. Featured Products (horizontal scroll) -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header">
-        <h2>Featured Products</h2>
-        <p>Main varieties, click for details</p>
-      </div>
-      <div class="featured-wrapper">
-        <button class="scroll-btn scroll-prev" aria-label="Previous">‹</button>
-        <div class="featured-track" id="featured-track">
-          {featured.map(item => (
-            <a href={`/products/${item.id}`} class="product-card">
-              <div class="product-img">
-                {item.mainImage ? <img src={item.mainImage} alt={item.enName} loading="lazy" /> : item.emoji}
-              </div>
-              <div class="product-info">
-                <div class="product-name">{item.enName}</div>
-                <div class="product-latin">{item.latin}</div>
-              </div>
-            </a>
-          ))}
-        </div>
-        <button class="scroll-btn scroll-next" aria-label="Next">›</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. CTA strip -->
+  <!-- 4. CTA strip -->
   <section class="cta-strip">
     <div class="container">
-      <h2>Looking to source plants?</h2>
+      <h2>Looking to source bonsai?</h2>
       <p>Tell us your requirements, we'll reply within 12 hours</p>
       <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
@@ -159,7 +124,6 @@ const categories = [
 .section-header { text-align: center; margin-bottom: 48px; }
 .section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
 .section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
-.products-bg { background: var(--cream-dark); }
 
 @media (max-width: 900px) {
   .section { padding: 48px 0; }
@@ -172,12 +136,14 @@ const categories = [
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  transition: box-shadow .3s;
+  transition: box-shadow .3s, transform .3s;
+  display: block;
+  color: inherit;
 }
-.cat-card:hover { box-shadow: var(--shadow-lg); }
+.cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
 .cat-img {
   width: 100%;
-  height: 240px;
+  height: 320px;
   background-color: #c9d4c5;
   background-size: cover;
   background-position: center;
@@ -186,55 +152,19 @@ const categories = [
 }
 .cat-card:hover .cat-img { transform: scale(1.04); }
 .cat-body { padding: 24px; }
-.cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
-.cat-body p { font-size: 14px; color: var(--text-light); }
+.cat-body h3 { font-size: 22px; margin-bottom: 6px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); margin-bottom: 12px; }
+.cat-cta {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+}
 
 @media (max-width: 900px) {
   .cat-grid { grid-template-columns: 1fr; }
+  .cat-img { height: 240px; }
 }
-
-.featured-wrapper { position: relative; margin: 0 -8px; }
-.featured-track {
-  display: flex; gap: 20px; overflow-x: auto;
-  scroll-behavior: smooth; padding: 8px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.featured-track::-webkit-scrollbar { display: none; }
-.product-card {
-  flex: 0 0 calc(25% - 15px); min-width: 240px;
-  background: var(--white); border-radius: 8px; overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: transform .2s, box-shadow .2s;
-  scroll-snap-align: start;
-}
-.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.product-img {
-  width: 100%; aspect-ratio: 1;
-  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 50px; overflow: hidden;
-}
-.product-img img { width: 100%; height: 100%; object-fit: cover; }
-.product-info { padding: 18px; }
-.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.product-latin {
-  font-size: 12px; color: var(--text-light);
-  font-style: italic;
-}
-.scroll-btn {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--white); border: 1px solid var(--cream-dark);
-  box-shadow: var(--shadow);
-  cursor: pointer; font-size: 24px; line-height: 1;
-  color: var(--green); z-index: 5;
-  transition: all .2s;
-}
-.scroll-btn:hover { background: var(--green); color: var(--white); border-color: var(--green); }
-.scroll-prev { left: -8px; }
-.scroll-next { right: -8px; }
 
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
@@ -246,25 +176,4 @@ const categories = [
   transition: transform .2s; cursor: pointer;
 }
 .btn-white:hover { transform: scale(1.03); }
-
-@media (max-width: 900px) {
-  .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
-  .scroll-btn { display: none; }
-  .cta-strip h2 { font-size: 22px; }
-}
 </style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const track = document.getElementById('featured-track');
-    const prev = document.querySelector('.scroll-prev');
-    const next = document.querySelector('.scroll-next');
-    if (!track || !prev || !next) return;
-    const step = () => {
-      const card = track.querySelector('.product-card');
-      return card ? card.offsetWidth + 20 : 260;
-    };
-    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
-  });
-</script>

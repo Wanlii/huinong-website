@@ -1,96 +1,41 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getAllProducts, getSpeciesByCategory } from '../../lib/products';
+import { getPottedCategories } from '../../lib/products';
 
-const products = getAllProducts();
-// 英文版: 用 enName 作 chip label，但 data-species 仍用中文 key 匹配
-const ornamentalSpeciesZh = getSpeciesByCategory('ornamental', 'zh');
-const ornamentalSpeciesEn = getSpeciesByCategory('ornamental', 'en');
-
-// 盆栽分组: 1=精品盆栽(非紫藤的premium), 2=紫藤(ziteng), 3=其他(mini)
-function pottedGroup(p: typeof products[number]): number {
-  if (p.id !== 'ziteng' && p.subcategory === 'premium') return 1;
-  if (p.id === 'ziteng') return 2;
-  return 3;  // mini + 其他
-}
-
-const sorted = [...products].sort((a, b) => {
-  if (a.category === 'ornamental' && b.category !== 'ornamental') return -1;
-  if (a.category !== 'ornamental' && b.category === 'ornamental') return 1;
-  // potted 按组排：精品 → 紫藤 → 其他；同组内按 order
-  if (a.category === 'potted' && b.category === 'potted') {
-    const ga = pottedGroup(a), gb = pottedGroup(b);
-    if (ga !== gb) return ga - gb;
-  }
-  return a.order - b.order;
-});
+const categories = getPottedCategories();
+const totalImages = categories.reduce((s, c) => s + c.count, 0);
 ---
-<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai, 500+ varieties in stock.">
+<Layout title="Bonsai Catalog - Huinong" lang="en" description="Huinong bonsai catalog - premium bonsai and small bonsai, source factory direct.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>Product Catalog</h1>
-      <p class="hero-sub">{products.length}+ varieties in stock · continuously updated · custom orders welcome</p>
+      <h1>Bonsai Catalog</h1>
+      <p class="hero-sub">{totalImages}+ photos across {categories.length} categories · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
-  <section class="section" style="padding-bottom: 0;">
+  <section class="section" style="padding-top: 0;">
     <div class="container">
-      <!-- Level 1 -->
-      <div class="cat-filter" id="cat-filter">
-        <button class="cat-filter-btn active" data-cat="all">All Products</button>
-        <button class="cat-filter-btn" data-cat="ornamental">Ornamental</button>
-        <button class="cat-filter-btn" data-cat="potted">Potted (Bonsai)</button>
-      </div>
-
-      <!-- Level 2: species for ornamental -->
-      <div class="sub-filter" id="species-filter" style="display: none;">
-        <span class="sub-label">By species:</span>
-        {ornamentalSpeciesZh.map((sp, i) => (
-          <button class="sub-btn" data-species={sp}>{ornamentalSpeciesEn[i]}</button>
-        ))}
-      </div>
-</div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="toolbar">
-        <div class="search-wrap">
-          <input type="search" id="search-input" class="search-input" placeholder="Search (English / Latin name)" autocomplete="off" />
-        </div>
-        <span class="count">Showing <span id="visible-count">{sorted.length}</span> / {products.length} products</span>
-      </div>
-
-      <div class="product-grid" id="product-grid">
-        {sorted.map(p => (
-          <a href={`/products/${p.id}`} class="product-card"
-             data-cat={p.category}
-             data-subcat={p.subcategory}
-             data-species={p.species}
-             data-zhname={p.zhName}
-             data-enname={p.enName}
-             data-latin={p.latin}>
-            <div class="product-img">
-              {p.mainImage ? <img src={p.mainImage} alt={p.enName} loading="lazy" /> : p.emoji}
-            </div>
-            <div class="product-info">
-              <div class="product-name">{p.enName}</div>
-              <div class="product-latin">{p.latin}</div>
+      <div class="cat-grid">
+        {categories.map(cat => (
+          <a href={`/products/${cat.slug}`} class="cat-card">
+            <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
+            <div class="cat-body">
+              <h3>{cat.en}</h3>
+              <p>{cat.enDesc}</p>
+              <div class="cat-meta">
+                <span class="cat-count">{cat.count} photos</span>
+                <span class="cat-arrow">View Gallery →</span>
+              </div>
             </div>
           </a>
         ))}
-      </div>
-
-      <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
-        <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
-        <p>No matching products. Try a different keyword or category.</p>
       </div>
     </div>
   </section>
 
   <section class="cta-strip">
     <div class="container">
-      <h2>Can't find what you need?</h2>
+      <h2>Need custom sourcing?</h2>
       <p>Tell us your requirements and we'll source it for you</p>
       <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
@@ -98,143 +43,70 @@ const sorted = [...products].sort((a, b) => {
 </Layout>
 
 <style>
-.cat-filter { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.cat-filter-btn {
-  background: var(--white); border: 1px solid var(--cream-dark);
-  padding: 8px 18px; border-radius: 20px;
-  cursor: pointer; font-size: 14px;
-  transition: all .2s;
+.hero-short { height: 280px; }
+.hero {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3A5F3A 0%, #2A4A2A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.cat-filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  color: var(--white); max-width: 800px; padding: 0 24px;
+}
+.hero h1 { font-size: 40px; line-height: 1.2; margin-bottom: 12px; }
+.hero-sub { font-size: 16px; opacity: 0.9; }
+@media (max-width: 900px) {
+  .hero-short { height: 200px; }
+  .hero h1 { font-size: 28px; }
+}
 
-.sub-filter {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  justify-content: center; margin-bottom: 24px; max-width: 900px; margin-left: auto; margin-right: auto;
-}
-.sub-label { font-size: 13px; color: var(--text-light); margin-right: 4px; }
-.sub-btn {
-  background: var(--white); border: 1px solid var(--cream-dark);
-  padding: 4px 12px; border-radius: 14px;
-  cursor: pointer; font-size: 13px;
-  transition: all .2s;
-}
-.sub-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+.section { padding: 56px 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
-.search-wrap { flex: 1; min-width: 240px; max-width: 400px; }
-.search-input {
-  width: 100%; padding: 10px 14px;
-  border: 1px solid var(--cream-dark); border-radius: 6px;
-  font-size: 14px; font-family: inherit; background: var(--white);
-  transition: border-color .2s;
-}
-.search-input:focus { outline: none; border-color: var(--green); }
-.toolbar .count { color: var(--text-light); font-size: 14px; white-space: nowrap; }
-
-.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-.product-card {
-  background: var(--white); border-radius: 8px; overflow: hidden;
+.cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.cat-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
   box-shadow: var(--shadow);
-  transition: transform .2s, box-shadow .2s;
+  transition: box-shadow .3s, transform .3s;
+  display: block; color: inherit;
 }
-.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.product-img {
-  width: 100%; aspect-ratio: 1;
-  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 50px; overflow: hidden;
+.cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.cat-img {
+  width: 100%; height: 360px;
+  background-color: #c9d4c5;
+  background-size: cover; background-position: center;
+  transition: transform .4s;
 }
-.product-img img { width: 100%; height: 100%; object-fit: cover; }
-.product-info { padding: 18px; }
-.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.product-latin { font-size: 12px; color: var(--text-light); font-style: italic; }
+.cat-card:hover .cat-img { transform: scale(1.04); }
+.cat-body { padding: 28px; }
+.cat-body h3 { font-size: 24px; margin-bottom: 8px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); margin-bottom: 16px; line-height: 1.6; }
+.cat-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 12px; border-top: 1px solid var(--cream-dark);
+}
+.cat-count { font-size: 13px; color: var(--text-light); }
+.cat-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
 
 @media (max-width: 900px) {
-  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid { grid-template-columns: 1fr; gap: 20px; }
+  .cat-img { height: 240px; }
 }
-@media (max-width: 600px) {
-  .product-grid { grid-template-columns: 1fr; }
+
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
 }
+.btn-white:hover { transform: scale(1.03); }
 </style>
-
-<script>
-  const catFilter = document.getElementById('cat-filter')!;
-  const speciesFilter = document.getElementById('species-filter')!;
-
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const grid = document.getElementById('product-grid')!;
-  const cards = Array.from(grid.querySelectorAll('.product-card')) as HTMLElement[];
-  const visibleCount = document.getElementById('visible-count')!;
-  const emptyState = document.getElementById('empty-state')!;
-
-  let activeCat = 'all';
-  let activeSpecies = '';
-
-  let searchTerm = '';
-
-  function applyFilters() {
-    let n = 0;
-    const term = searchTerm.trim().toLowerCase();
-    for (const c of cards) {
-      const cat = c.dataset.cat || '';
-      const sp = c.dataset.species || '';
-      const sub = c.dataset.subcat || '';
-      const zh = (c.dataset.zhname || '').toLowerCase();
-      const en = (c.dataset.enname || '').toLowerCase();
-      const latin = (c.dataset.latin || '').toLowerCase();
-
-      let ok = true;
-      if (activeCat !== 'all' && cat !== activeCat) ok = false;
-      if (ok && activeCat === 'ornamental' && activeSpecies && sp !== activeSpecies) ok = false;
-
-      if (ok && term && !zh.includes(term) && !en.includes(term) && !latin.includes(term)) ok = false;
-
-      c.style.display = ok ? '' : 'none';
-      if (ok) n++;
-    }
-    visibleCount.textContent = String(n);
-    emptyState.style.display = n === 0 ? 'block' : 'none';
-  }
-
-  catFilter.querySelectorAll('.cat-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      catFilter.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeCat = (btn as HTMLElement).dataset.cat || 'all';
-
-      activeSpecies = '';
-
-      speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-
-      speciesFilter.style.display = activeCat === 'ornamental' ? 'flex' : 'none';
-
-
-      applyFilters();
-    });
-  });
-
-  speciesFilter.querySelectorAll('.sub-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const isActive = btn.classList.contains('active');
-      speciesFilter.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-      if (isActive) {
-        activeSpecies = '';
-        applyFilters();
-      } else {
-        btn.classList.add('active');
-        activeSpecies = (btn as HTMLElement).dataset.species || '';
-        applyFilters();
-        // 滚动到该种类第一个匹配的产品（"直接展示"）
-        const firstMatch = document.querySelector(`.product-card[data-species="${CSS.escape(activeSpecies)}"]:not([style*="display: none"])`);
-        if (firstMatch) {
-          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
-    });
-  });
-
-  searchInput.addEventListener('input', () => {
-    searchTerm = searchInput.value;
-    applyFilters();
-  });
-</script>

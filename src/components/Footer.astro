@@ -5,12 +5,12 @@ const isZh = lang === 'zh';
 const t = isZh
   ? {
       brand: '汇农天下',
-      brandDesc: '优质盆栽与观赏苗木出口商，源头直供，欧盟认证。',
+      brandDesc: '优质盆栽出口商，源头直供，欧盟认证。',
       products: '产品',
       company: '公司',
       service: '服务',
-      productBonsai: '盆栽系列',
-      productOrnamental: '观赏苗木',
+      productJingpin: '精品盆栽',
+      productXiaopin: '小盆栽',
       about: '关于我们',
       certifications: '资质认证',
       contact: '联系我们',
@@ -19,12 +19,12 @@ const t = isZh
     }
   : {
       brand: 'Huinong',
-      brandDesc: 'Premium bonsai and ornamental plants exporter. Source factory, EU certified.',
+      brandDesc: 'Premium bonsai exporter. Source factory, EU certified.',
       products: 'Products',
       company: 'Company',
       service: 'Service',
-      productBonsai: 'Bonsai Series',
-      productOrnamental: 'Ornamental Plants',
+      productJingpin: 'Premium Bonsai',
+      productXiaopin: 'Small Bonsai',
       about: 'About Us',
       certifications: 'Certifications',
       contact: 'Contact',
@@ -32,7 +32,7 @@ const t = isZh
       compliance: 'EU 2016/2031 & EU 2019/2072 Compliant',
     };
 
-const basePath = isZh ? '' : '/en';
+const basePath = isZh ? '/zh' : '';
 ---
 <footer class="footer">
   <div class="container">
@@ -43,8 +43,8 @@ const basePath = isZh ? '' : '/en';
       </div>
       <div class="footer-col">
         <h4>{t.products}</h4>
-        <a href={`${basePath}/products`}>{t.productBonsai}</a>
-        <a href={`${basePath}/products`}>{t.productOrnamental}</a>
+        <a href={`${basePath}/products/jingpin`}>{t.productJingpin}</a>
+        <a href={`${basePath}/products/xiaopin`}>{t.productXiaopin}</a>
       </div>
       <div class="footer-col">
         <h4>{t.company}</h4>

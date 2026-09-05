@@ -1,338 +1,262 @@
 ﻿---
 import Layout from '../../../layouts/Layout.astro';
-import { getAllProducts } from '../../../lib/products';
+import { getCategoryInfo, getCategoryGallery } from '../../../lib/products';
 
 export function getStaticPaths() {
-  return getAllProducts().map(p => ({ params: { slug: p.id } }));
+  return ['jingpin', 'xiaopin'].map(slug => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
-const product = getAllProducts().find(p => p.id === slug)!;
-const hasImages = product.gallery.length > 0;
-const isComplete = hasImages;
+const info = getCategoryInfo(slug!);
+if (!info) {
+  throw new Error(`Unknown category: ${slug}`);
+}
+const gallery = getCategoryGallery(slug!);
+const otherCats = ['jingpin', 'xiaopin'].filter(s => s !== slug);
 
-const categoryName = product.category === 'ornamental' ? '观赏苗木' : '盆栽';
+const titleZh = `${info.zh} - 盆栽图集 - 汇农天下`;
+const descZh = `${info.zhDesc}。${info.count} 张图片，源头工厂直供。`;
 ---
-<Layout
-  title={isComplete ? `${product.zhName} - 产品详情 - 汇农天下` : `${product.zhName} - 汇农天下`}
-  lang="zh"
-  description={isComplete
-    ? `${product.zhName}（${product.latin}）- ${product.enName}，FOB 起价询盘，HS Code 0602.90。`
-    : `${product.zhName}（${product.latin}）- ${product.enName}，汇农天下优质产品。`}
->
+<Layout title={titleZh} lang="zh" description={descZh}>
   <div class="breadcrumb">
     <div class="container">
-      <a href="/zh/">首页</a> › <a href="/zh/products">产品目录</a> › <span>{product.zhName}</span>
+      <a href="/zh/">首页</a> › <a href="/zh/products">产品目录</a> › <span>{info.zh}</span>
     </div>
   </div>
 
-  {isComplete ? (
-    <>
-      <section class="section" style="padding-top: 32px;">
-        <div class="container">
-          <div class="pd-grid">
-            <!-- 左：图册 -->
-            <div class="pd-gallery">
-              <div class="pd-main" id="pd-main" data-gallery={JSON.stringify(product.gallery)}>
-                <img src={product.mainImage} alt={product.zhName} />
-              </div>
-              {product.gallery.length > 1 && (
-                <div class="pd-thumbs">
-                  {product.gallery.map((img, i) => (
-                    <div
-                      class={`pd-thumb ${i === 0 ? 'active' : ''}`}
-                      data-index={i}
-                      data-image={img}
-                    >
-                      <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+  <!-- Category header -->
+  <section class="cat-hero" style={info.cover ? `background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${info.cover}');` : ''}>
+    <div class="container">
+      <h1>{info.zh}</h1>
+      <p class="cat-hero-sub">{info.zhDesc}</p>
+      <p class="cat-hero-count">共 {info.count} 张图片</p>
+    </div>
+  </section>
 
-            <!-- 右：信息（sticky 跟随） -->
-            <div class="pd-info">
-              <h1 class="latin-main">{product.latin}</h1>
-              <p class="zh-sub">{product.zhName}</p>
-
-              <div class="short-desc">{product.shortDesc}</div>
-
-              <div class="pd-actions">
-                <a href={`/zh/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-green" style="flex: 1; text-align: center;">📩 询盘此产品</a>
-                <a href="#" class="btn-outline" title="WhatsApp">💬</a>
-              </div>
-            </div>
-          </div>
+  <!-- Gallery grid -->
+  <section class="section">
+    <div class="container">
+      {gallery.length === 0 ? (
+        <p style="text-align: center; color: var(--text-light); padding: 60px 0;">暂无图片。</p>
+      ) : (
+        <div class="gallery-grid">
+          {gallery.map((src, i) => (
+            <a href={src} class="gallery-item" data-index={i} data-src={src}>
+              <img src={src} alt={`${info.zh} 图 ${i+1}`} loading="lazy" />
+            </a>
+          ))}
         </div>
-      </section>
+      )}
+    </div>
+  </section>
 
-      <!-- 产品介绍：全宽 -->
-      <section class="section" style="padding-top: 0;">
-        <div class="container">
-          <div class="pd-content">
-            <h3 class="pd-h3">产品介绍</h3>
-            <div class="long-desc">{product.longDesc}</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="cta-strip">
-        <div class="container">
-          <h2>想采购 {product.zhName}？</h2>
-          <p>告诉我们您的规格、数量、目的港</p>
-          <a href={`/zh/contact?product=${encodeURIComponent(product.zhName)}`} class="btn-white">📩 Inquire {product.zhName}</a>
-        </div>
-      </section>
-
-      <!-- Lightbox -->
-      <div class="lightbox" id="lightbox" aria-hidden="true">
-        <button class="lightbox-close" aria-label="关闭">×</button>
-        <button class="lightbox-prev" aria-label="上一张">‹</button>
-        <button class="lightbox-next" aria-label="下一张">›</button>
-        <div class="lightbox-content" id="lb-content"></div>
-        <div class="lightbox-counter" id="lb-counter"></div>
+  <!-- Other categories -->
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+        <h2 style="font-size: 22px; margin-bottom: 0;">查看其他分类</h2>
       </div>
-    </>
-  ) : (
-    <section class="section">
-      <div class="container">
-        <div class="placeholder-product">
-          <div class="placeholder-emoji">{product.emoji}</div>
-          <h1 class="latin-main">{product.latin}</h1>
-          <p class="zh-sub">{product.zhName}</p>
-          <span class="placeholder-cat">分类：{categoryName}</span>
-          <div class="short-desc" style="margin: 20px 0;">{product.shortDesc}</div>
-          <div class="placeholder-msg">
-            <p>{product.longDesc}</p>
-            <p style="margin-top: 24px;">实物图片与详细规格资料正在完善中。</p>
-            <p style="margin-top: 24px;">如果您对该产品有采购意向，欢迎 <a href="/zh/contact" class="btn-green">立即询盘</a> 或浏览 <a href="/zh/products">产品目录</a>。</p>
-          </div>
-        </div>
+      <div class="other-grid">
+        {otherCats.map(s => {
+          const other = getCategoryInfo(s)!;
+          return (
+            <a href={`/zh/products/${s}`} class="other-card">
+              <div class="other-img" style={other.cover ? `background-image: url('${other.cover}');` : ''}></div>
+              <div class="other-body">
+                <h3>{other.zh}</h3>
+                <span>{other.count} 张图 →</span>
+              </div>
+            </a>
+          );
+        })}
       </div>
-    </section>
-  )}
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>对 {info.zh} 有兴趣？</h2>
+      <p>告诉我们数量、规格和目的地，12 小时内回复</p>
+      <a href={`/zh/contact?category=${info.slug}`} class="btn-white">📩 立即询盘</a>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" style="display: none;">
+    <button class="lb-close" aria-label="关闭">×</button>
+    <button class="lb-prev" aria-label="上一张">‹</button>
+    <button class="lb-next" aria-label="下一张">›</button>
+    <img id="lb-img" src="" alt="" />
+    <div class="lb-counter" id="lb-counter"></div>
+  </div>
 </Layout>
 
 <style>
-.breadcrumb { padding: 16px 0; font-size: 13px; color: var(--text-light); background: var(--cream-dark); }
-.breadcrumb a { color: var(--text-light); }
-.breadcrumb a:hover { color: var(--green); }
+.breadcrumb {
+  background: var(--cream);
+  padding: 14px 0;
+  font-size: 13px;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--cream-dark);
+}
+.breadcrumb a { color: var(--green); }
+.breadcrumb a:hover { text-decoration: underline; }
 .breadcrumb span { color: var(--text); }
 
-/* === 主布局：左 60% 图册 / 右 40% 信息（sticky） === */
-.pd-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 36px;
-  align-items: start;
-}
-.pd-gallery { display: flex; flex-direction: column; gap: 12px; }
-.pd-main {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--cream-dark);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: zoom-in;
-  overflow: hidden;
-  user-select: none;
-}
-.pd-main img { width: 100%; height: 100%; object-fit: cover; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-/* 缩略图自动换行，缩略图自动填充，min 80px */
-.pd-thumbs {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 8px;
+.cat-hero {
+  background-color: #2A4A2A;
+  background-size: cover;
+  background-position: center;
+  color: var(--white);
+  padding: 80px 0;
+  text-align: center;
 }
-.pd-thumb {
+.cat-hero h1 { font-size: 44px; margin-bottom: 12px; }
+.cat-hero-sub { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
+.cat-hero-count { font-size: 14px; opacity: 0.7; }
+
+@media (max-width: 900px) {
+  .cat-hero { padding: 56px 0; }
+  .cat-hero h1 { font-size: 30px; }
+}
+
+.section { padding: 56px 0; }
+.section-header h2 { font-size: 22px; color: var(--text); }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.gallery-item {
+  display: block;
   aspect-ratio: 1;
-  background: var(--cream-dark);
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
   overflow: hidden;
-  transition: border-color .2s, transform .15s;
-  border: 2px solid transparent;
+  border-radius: 6px;
+  background: var(--cream-dark);
+  cursor: zoom-in;
 }
-.pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.pd-thumb:hover { transform: translateY(-2px); }
-.pd-thumb.active { border-color: var(--green); }
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .4s, opacity .2s;
+}
+.gallery-item:hover img { transform: scale(1.05); opacity: 0.9; }
 
-/* === 右侧信息（sticky 跟随） === */
-.pd-info {
-  position: sticky;
-  top: 100px;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.pd-info h1 { font-size: 30px; margin-bottom: 0; line-height: 1.25; }
-.pd-info .latin-main { font-family: 'Playfair Display', 'Georgia', serif; font-style: italic; }
-.pd-info .zh-sub { font-size: 16px; color: var(--text-light); margin: 0; }
-.short-desc {
-  font-size: 14px; color: var(--text); line-height: 1.7;
-  padding: 14px 16px; background: var(--cream-dark);
-  border-radius: 8px;
-}
-.pd-meta {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
-.meta-item {
-  padding: 10px 14px;
-  background: var(--cream);
-  border-radius: 8px;
-}
-.meta-item .k { font-size: 11px; color: var(--text-light); }
-.meta-item .v { font-size: 14px; font-weight: 600; margin-top: 4px; }
-.pd-actions { display: flex; gap: 10px; margin-top: 6px; }
-.pd-actions .btn-outline { padding: 12px 18px; min-width: 50px; text-align: center; font-size: 18px; }
+@media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .gallery-grid { grid-template-columns: 1fr; } }
 
-/* === 产品介绍 === */
-.pd-content { max-width: 920px; margin: 0 auto; }
-.pd-h3 { font-size: 18px; margin: 0 0 12px; color: var(--green); }
-.long-desc { font-size: 15px; color: var(--text-light); line-height: 1.85; }
+.other-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.other-card {
+  display: flex; background: var(--white);
+  border-radius: 8px; overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow .3s, transform .3s;
+  color: inherit;
+}
+.other-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.other-img { width: 120px; height: 100px; background-size: cover; background-position: center; flex-shrink: 0; }
+.other-body { padding: 12px 16px; display: flex; flex-direction: column; justify-content: center; }
+.other-body h3 { font-size: 16px; color: var(--green); margin-bottom: 4px; }
+.other-body span { font-size: 13px; color: var(--text-light); }
+@media (max-width: 600px) {
+  .other-grid { grid-template-columns: 1fr; }
+  .other-card { max-width: 320px; }
+}
 
-/* === Lightbox === */
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+
 .lightbox {
-  display: none;
   position: fixed; inset: 0;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0,0,0,0.92);
   z-index: 9999;
-  align-items: center; justify-content: center;
-  padding: 40px;
-}
-.lightbox.open { display: flex; }
-.lightbox-content {
-  max-width: 90%; max-height: 85vh;
   display: flex; align-items: center; justify-content: center;
-  user-select: none;
+  flex-direction: column;
 }
-.lightbox-content img { max-width: 100%; max-height: 85vh; object-fit: contain; }
-.lightbox-close, .lightbox-prev, .lightbox-next {
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.lb-close, .lb-prev, .lb-next {
   position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  color: white; border: none;
-  font-size: 32px; line-height: 1;
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  width: 56px; height: 56px;
+  border-radius: 50%;
   cursor: pointer;
-  width: 56px; height: 56px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
   transition: background .2s;
 }
-.lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-.lightbox-close { top: 20px; right: 20px; }
-.lightbox-prev { left: 20px; top: 50%; transform: translateY(-50%); }
-.lightbox-next { right: 20px; top: 50%; transform: translateY(-50%); }
-.lightbox-counter {
-  position: absolute; bottom: 20px; left: 50%;
+.lb-close:hover, .lb-prev:hover, .lb-next:hover { background: rgba(255,255,255,0.25); }
+.lb-close { top: 24px; right: 24px; font-size: 40px; }
+.lb-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 24px; top: 50%; transform: translateY(-50%); }
+.lb-counter {
+  position: absolute; bottom: 24px; left: 50%;
   transform: translateX(-50%);
-  color: white; font-size: 14px; opacity: 0.7;
-}
-
-/* === Placeholder（无图产品的占位） === */
-.placeholder-product { text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0; }
-.placeholder-emoji {
-  font-size: 100px; margin: 0 auto 20px;
-  width: 200px; height: 200px;
-  background: linear-gradient(135deg, #c9d4c5 0%, #a3b89e 100%);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-}
-.placeholder-product h1 { font-size: 36px; margin-bottom: 8px; color: var(--green); }
-.placeholder-cat {
-  display: inline-block; background: var(--green);
-  color: var(--white); padding: 4px 12px;
-  border-radius: 12px; font-size: 13px;
-  margin: 12px 0 24px;
-}
-.placeholder-msg { font-size: 15px; color: var(--text-light); line-height: 1.8; }
-.placeholder-msg p { margin-bottom: 8px; }
-
-/* === 响应式：< 900px 切单列 === */
-@media (max-width: 900px) {
-  .pd-grid { grid-template-columns: 1fr; gap: 24px; }
-  .pd-info { position: static; }
-  .pd-thumbs { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
-  .lightbox-close, .lightbox-prev, .lightbox-next { width: 44px; height: 44px; font-size: 24px; }
+  color: var(--white); font-size: 14px;
+  background: rgba(0,0,0,0.5);
+  padding: 6px 16px; border-radius: 14px;
 }
 </style>
 
-{isComplete && (
-  <script>
-    // 缩略图切换 + Lightbox（所有图片都直接展示）
-    (() => {
-      const thumbs = Array.from(document.querySelectorAll('.pd-thumb'));
-      const main = document.getElementById('pd-main');
-      const lightbox = document.getElementById('lightbox');
-      const lbContent = document.getElementById('lb-content');
-      const lbCounter = document.getElementById('lb-counter');
-      if (!main || !lightbox || !lbContent) return;
+<script>
+  const gallery = Array.from(document.querySelectorAll('.gallery-item')) as HTMLAnchorElement[];
+  const lightbox = document.getElementById('lightbox') as HTMLDivElement;
+  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
+  const lbCounter = document.getElementById('lb-counter') as HTMLDivElement;
+  const btnClose = lightbox.querySelector('.lb-close') as HTMLButtonElement;
+  const btnPrev = lightbox.querySelector('.lb-prev') as HTMLButtonElement;
+  const btnNext = lightbox.querySelector('.lb-next') as HTMLButtonElement;
 
-      // 全部图（从主图 data-gallery 读，lightbox 翻全部）
-      const allImages = JSON.parse(main.getAttribute('data-gallery') || '[]');
-      // 可见缩略图（用于切换主图）
-      const thumbItems = thumbs.map(t => ({ img: t.getAttribute('data-image'), el: t }));
-      let currentIndex = 0;
+  let currentIndex = 0;
+  const total = gallery.length;
 
-      function renderIn(container, img) {
-        if (img) container.innerHTML = '<img src="' + img + '" alt="" />';
-      }
+  function open(i: number) {
+    currentIndex = i;
+    update();
+    lightbox.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    lightbox.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function update() {
+    const item = gallery[currentIndex];
+    if (!item) return;
+    lbImg.src = item.dataset.src || '';
+    lbImg.alt = item.querySelector('img')?.alt || '';
+    lbCounter.textContent = `${currentIndex + 1} / ${total}`;
+  }
+  function next() { currentIndex = (currentIndex + 1) % total; update(); }
+  function prev() { currentIndex = (currentIndex - 1 + total) % total; update(); }
 
-      function openLightbox(idx) {
-        if (typeof idx === 'number') currentIndex = idx;
-        renderIn(lbContent, allImages[currentIndex]);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
-        lightbox.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeLightbox() {
-        lightbox.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-
-      function navigate(dir) {
-        currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
-        renderIn(lbContent, allImages[currentIndex]);
-        if (lbCounter) lbCounter.textContent = (currentIndex + 1) + ' / ' + allImages.length;
-        // 同步高亮下方缩略图
-        const thumbIdx = thumbItems.findIndex(t => t.img === allImages[currentIndex]);
-        thumbs.forEach(t => t.classList.remove('active'));
-        if (thumbIdx >= 0) thumbItems[thumbIdx].el.classList.add('active');
-        // 同步更新主图
-        renderIn(main, allImages[currentIndex]);
-      }
-
-      // 缩略图点击 → 切换主图
-      thumbs.forEach((thumb, i) => {
-        thumb.addEventListener('click', () => {
-          thumbs.forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-          currentIndex = i;
-          renderIn(main, allImages[currentIndex]);
-        });
-      });
-
-      // 主图点击 → 打开 Lightbox（从当前图开始）
-      main.addEventListener('click', () => openLightbox(currentIndex));
-
-      // Lightbox 控件
-      const lbClose = lightbox.querySelector('.lightbox-close');
-      const lbPrev = lightbox.querySelector('.lightbox-prev');
-      const lbNext = lightbox.querySelector('.lightbox-next');
-      if (lbClose) lbClose.addEventListener('click', closeLightbox);
-      if (lbPrev) lbPrev.addEventListener('click', () => navigate(-1));
-      if (lbNext) lbNext.addEventListener('click', () => navigate(1));
-      lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-
-      // 键盘控制
-      document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('open')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowLeft') navigate(-1);
-        if (e.key === 'ArrowRight') navigate(1);
-      });
-    })();
-  </script>
-)}
+  gallery.forEach((item, i) => {
+    item.addEventListener('click', (e) => { e.preventDefault(); open(i); });
+  });
+  btnClose.addEventListener('click', close);
+  btnNext.addEventListener('click', next);
+  btnPrev.addEventListener('click', prev);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.style.display !== 'flex') return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') next();
+    else if (e.key === 'ArrowLeft') prev();
+  });
+</script>

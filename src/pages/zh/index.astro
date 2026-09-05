@@ -1,40 +1,29 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getFeaturedProducts, getAllProducts } from '../../lib/products';
+import { getPottedCategories } from '../../lib/products';
 import fs from 'fs';
 import path from 'path';
 
-const featured = getFeaturedProducts();
-// 用 CSV 统计（不依赖源文件夹，Cloudflare 构建时也能算）
-const allProducts = getAllProducts();
-const totalProducts = allProducts.length;
-const ornamentalCount = allProducts.filter(p => p.category === 'ornamental').length;
-const pottedCount = allProducts.filter(p => p.category === 'potted').length;
+const categories = getPottedCategories();
+const totalImages = categories.reduce((s, c) => s + c.count, 0);
 
 const trustItems = [
   { num: '20+', label: '种植经验' },
   { num: '8.6+', label: '平方公里基地' },
-  { num: totalProducts + '+', label: '在线品种' },
+  { num: totalImages + '+', label: '图集图片' },
   { num: '100%', label: '合规出口' },
 ];
 
-// 检测 hero 图是否存在
 const heroJpg = '/assets/images/hero/main.jpg';
-const heroWebp = '/assets/images/hero/main.webp';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
-
-const categories = [
-  { name: '观赏苗木', desc: `${ornamentalCount}+ 品种 · 适合大宗采购`, image: '/assets/images/category/ornamental.jpg', href: '/products?cat=ornamental' },
-  { name: '盆栽', desc: `松柏 · 杂木 · 观花 · ${pottedCount}+ 品种 · 适合精品批发`, image: '/assets/images/category/potted.jpg', href: '/products?cat=potted' },
-];
 ---
-<Layout title="汇农天下 - 盆栽与观赏苗木出口商" lang="zh">
+<Layout title="汇农天下 - 盆栽出口商" lang="zh">
   <!-- 1. Hero -->
   <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>从源头到世界</h1>
-      <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 20 年种植经验 · 源头直供</p>
+      <p class="hero-sub">优质中国盆栽 · 欧盟认证 · 20 年种植经验 · 源头直供</p>
       <a href="/zh/contact" class="btn-green hero-cta">立即询盘 →</a>
     </div>
   </section>
@@ -51,20 +40,21 @@ const categories = [
     </div>
   </section>
 
-  <!-- 3. 2 大类产品卡片 -->
+  <!-- 3. 盆栽 2 大分类卡 -->
   <section class="section">
     <div class="container">
       <div class="section-header">
-        <h2>产品分类</h2>
-        <p>两大主营品类，满足不同采购需求</p>
+        <h2>盆栽图集</h2>
+        <p>两大精选分类，点击查看完整图集</p>
       </div>
       <div class="cat-grid">
         {categories.map(cat => (
-          <a href={cat.href} class="cat-card">
-            <div class="cat-img" style={`background-image: url('${cat.image}');`}></div>
+          <a href={`/zh/products/${cat.slug}`} class="cat-card">
+            <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
-              <h3>{cat.name}</h3>
-              <p>{cat.desc}</p>
+              <h3>{cat.zh}</h3>
+              <p>{cat.zhDesc} · {cat.count}+ 张图</p>
+              <span class="cat-cta">查看图集 →</span>
             </div>
           </a>
         ))}
@@ -72,39 +62,12 @@ const categories = [
     </div>
   </section>
 
-  <!-- 4. 精选产品（横向滚动 B1） -->
-  <section class="section products-bg">
-    <div class="container">
-      <div class="section-header">
-        <h2>精选产品</h2>
-        <p>主打品种展示，点击查看详情</p>
-      </div>
-      <div class="featured-wrapper">
-        <button class="scroll-btn scroll-prev" aria-label="上一个">‹</button>
-        <div class="featured-track" id="featured-track">
-          {featured.map(item => (
-            <a href={`/products/${item.id}`} class="product-card">
-              <div class="product-img">
-                {item.mainImage ? <img src={item.mainImage} alt={item.zhName} loading="lazy" /> : item.emoji}
-              </div>
-              <div class="product-info">
-                <div class="product-name">{item.zhName}</div>
-                <div class="product-latin">{item.latin}</div>
-              </div>
-            </a>
-          ))}
-        </div>
-        <button class="scroll-btn scroll-next" aria-label="下一个">›</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. CTA strip -->
+  <!-- 4. CTA strip -->
   <section class="cta-strip">
     <div class="container">
       <h2>需要采购？立即询盘</h2>
       <p>告诉我们您的需求，我们将在 12 小时内回复</p>
-      <a href="/zh/contact" class="btn-white">📩 Request a Quote</a>
+      <a href="/zh/contact" class="btn-white">📩 立即询盘</a>
     </div>
   </section>
 </Layout>
@@ -161,7 +124,6 @@ const categories = [
 .section-header { text-align: center; margin-bottom: 48px; }
 .section-header h2 { font-size: 32px; color: var(--text); margin-bottom: 12px; }
 .section-header p { font-size: 15px; color: var(--text-light); max-width: 600px; margin: 0 auto; }
-.products-bg { background: var(--cream-dark); }
 
 @media (max-width: 900px) {
   .section { padding: 48px 0; }
@@ -174,12 +136,14 @@ const categories = [
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  transition: box-shadow .3s;
+  transition: box-shadow .3s, transform .3s;
+  display: block;
+  color: inherit;
 }
-.cat-card:hover { box-shadow: var(--shadow-lg); }
+.cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
 .cat-img {
   width: 100%;
-  height: 240px;
+  height: 320px;
   background-color: #c9d4c5;
   background-size: cover;
   background-position: center;
@@ -188,55 +152,19 @@ const categories = [
 }
 .cat-card:hover .cat-img { transform: scale(1.04); }
 .cat-body { padding: 24px; }
-.cat-body h3 { font-size: 20px; margin-bottom: 6px; color: var(--green); }
-.cat-body p { font-size: 14px; color: var(--text-light); }
+.cat-body h3 { font-size: 22px; margin-bottom: 6px; color: var(--green); }
+.cat-body p { font-size: 14px; color: var(--text-light); margin-bottom: 12px; }
+.cat-cta {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+}
 
 @media (max-width: 900px) {
   .cat-grid { grid-template-columns: 1fr; }
+  .cat-img { height: 240px; }
 }
-
-.featured-wrapper { position: relative; margin: 0 -8px; }
-.featured-track {
-  display: flex; gap: 20px; overflow-x: auto;
-  scroll-behavior: smooth; padding: 8px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.featured-track::-webkit-scrollbar { display: none; }
-.product-card {
-  flex: 0 0 calc(25% - 15px); min-width: 240px;
-  background: var(--white); border-radius: 8px; overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: transform .2s, box-shadow .2s;
-  scroll-snap-align: start;
-}
-.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.product-img {
-  width: 100%; aspect-ratio: 1;
-  background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 50px; overflow: hidden;
-}
-.product-img img { width: 100%; height: 100%; object-fit: cover; }
-.product-info { padding: 18px; }
-.product-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.product-latin {
-  font-size: 12px; color: var(--text-light);
-  font-style: italic;
-}
-.scroll-btn {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--white); border: 1px solid var(--cream-dark);
-  box-shadow: var(--shadow);
-  cursor: pointer; font-size: 24px; line-height: 1;
-  color: var(--green); z-index: 5;
-  transition: all .2s;
-}
-.scroll-btn:hover { background: var(--green); color: var(--white); border-color: var(--green); }
-.scroll-prev { left: -8px; }
-.scroll-next { right: -8px; }
 
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
@@ -248,26 +176,4 @@ const categories = [
   transition: transform .2s; cursor: pointer;
 }
 .btn-white:hover { transform: scale(1.03); }
-
-@media (max-width: 900px) {
-  .product-card { flex: 0 0 calc(50% - 10px); min-width: 200px; }
-  .scroll-btn { display: none; }
-  .cta-strip h2 { font-size: 22px; }
-}
 </style>
-
-<script>
-  // 横向滚动按钮 (B1)
-  document.addEventListener('DOMContentLoaded', () => {
-    const track = document.getElementById('featured-track');
-    const prev = document.querySelector('.scroll-prev');
-    const next = document.querySelector('.scroll-next');
-    if (!track || !prev || !next) return;
-    const step = () => {
-      const card = track.querySelector('.product-card');
-      return card ? card.offsetWidth + 20 : 260;
-    };
-    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
-  });
-</script>
