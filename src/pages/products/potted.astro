@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getTopCategory, getSubCategories } from '../../lib/products';
+
+const cat = getTopCategory('potted');
+if (!cat) throw new Error('potted category not found');
+const subs = getSubCategories('potted');
+const totalPhotos = subs.reduce((s, c) => s + c.count, 0);
+---
+<Layout title={`${cat.en} - Huinong`} lang="en" description={cat.enDesc}>
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/">Home</a> › <a href="/products">Catalog</a> › <span>{cat.en}</span>
+    </div>
+  </div>
+
+  <section class="cat-hero" style={cat.cover ? `background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${cat.cover}');` : ''}>
+    <div class="container">
+      <h1>{cat.en}</h1>
+      <p class="cat-hero-sub">{cat.enDesc}</p>
+      <p class="cat-hero-count">{totalPhotos} photos across {subs.length} subcategories</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sub-grid">
+        {subs.map(sub => (
+          <a href={`/products/potted/${sub.slug}`} class="sub-card">
+            <div class="sub-img" style={sub.cover ? `background-image: url('${sub.cover}');` : ''}></div>
+            <div class="sub-body">
+              <h3>{sub.en}</h3>
+              <p>{sub.enDesc}</p>
+              <div class="sub-meta">
+                <span class="sub-count">{sub.count} photos</span>
+                <span class="sub-arrow">View Gallery →</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>Sourcing bonsai in bulk?</h2>
+      <p>Tell us quantity, size and destination. We'll reply within 12 hours.</p>
+      <a href="/contact?category=potted" class="btn-white">📩 Request a Quote</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.breadcrumb {
+  background: var(--cream);
+  padding: 14px 0;
+  font-size: 13px;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--cream-dark);
+}
+.breadcrumb a { color: var(--green); }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { color: var(--text); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+.cat-hero {
+  background-color: #2A4A2A;
+  background-size: cover;
+  background-position: center;
+  color: var(--white);
+  padding: 80px 0;
+  text-align: center;
+}
+.cat-hero h1 { font-size: 44px; margin-bottom: 12px; }
+.cat-hero-sub { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
+.cat-hero-count { font-size: 14px; opacity: 0.7; }
+@media (max-width: 900px) {
+  .cat-hero { padding: 56px 0; }
+  .cat-hero h1 { font-size: 30px; }
+}
+
+.section { padding: 56px 0; }
+
+.sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.sub-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow .3s, transform .3s;
+  display: block; color: inherit;
+}
+.sub-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.sub-img {
+  width: 100%; height: 320px;
+  background-color: #c9d4c5;
+  background-size: cover; background-position: center;
+  transition: transform .4s;
+}
+.sub-card:hover .sub-img { transform: scale(1.04); }
+.sub-body { padding: 24px; }
+.sub-body h3 { font-size: 22px; margin-bottom: 6px; color: var(--green); }
+.sub-body p { font-size: 14px; color: var(--text-light); margin-bottom: 16px; line-height: 1.6; }
+.sub-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 12px; border-top: 1px solid var(--cream-dark);
+}
+.sub-count { font-size: 13px; color: var(--text-light); }
+.sub-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
+
+@media (max-width: 900px) {
+  .sub-grid { grid-template-columns: 1fr; gap: 20px; }
+  .sub-img { height: 220px; }
+}
+
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+</style>

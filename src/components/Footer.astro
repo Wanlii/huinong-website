@@ -5,12 +5,12 @@ const isZh = lang === 'zh';
 const t = isZh
   ? {
       brand: '汇农天下',
-      brandDesc: '优质盆栽出口商，源头直供，欧盟认证。',
+      brandDesc: '优质盆栽与观赏苗木出口商，源头直供，欧盟认证。',
       products: '产品',
       company: '公司',
       service: '服务',
-      productJingpin: '精品盆栽',
-      productXiaopin: '小盆栽',
+      productOrnamental: '观赏苗木',
+      productPotted: '盆栽',
       about: '关于我们',
       certifications: '资质认证',
       contact: '联系我们',
@@ -19,12 +19,12 @@ const t = isZh
     }
   : {
       brand: 'Huinong',
-      brandDesc: 'Premium bonsai exporter. Source factory, EU certified.',
+      brandDesc: 'Premium bonsai and ornamental plants exporter. Source factory, EU certified.',
       products: 'Products',
       company: 'Company',
       service: 'Service',
-      productJingpin: 'Premium Bonsai',
-      productXiaopin: 'Small Bonsai',
+      productOrnamental: 'Ornamental Plants',
+      productPotted: 'Potted Plants (Bonsai)',
       about: 'About Us',
       certifications: 'Certifications',
       contact: 'Contact',
@@ -43,8 +43,8 @@ const basePath = isZh ? '/zh' : '';
       </div>
       <div class="footer-col">
         <h4>{t.products}</h4>
-        <a href={`${basePath}/products/jingpin`}>{t.productJingpin}</a>
-        <a href={`${basePath}/products/xiaopin`}>{t.productXiaopin}</a>
+        <a href={`${basePath}/products/ornamental`}>{t.productOrnamental}</a>
+        <a href={`${basePath}/products/potted`}>{t.productPotted}</a>
       </div>
       <div class="footer-col">
         <h4>{t.company}</h4>

@@ -1,29 +1,29 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getPottedCategories } from '../lib/products';
+import { getTopCategories, getActualSpeciesCounts } from '../lib/products';
 import fs from 'fs';
 import path from 'path';
 
-const categories = getPottedCategories();
-const totalImages = categories.reduce((s, c) => s + c.count, 0);
+const topCats = getTopCategories();
+const counts = getActualSpeciesCounts();
 
 const trustItems = [
   { num: '20+', label: 'Years of Experience' },
   { num: '8.6+', label: 'km² of Farmland' },
-  { num: totalImages + '+', label: 'Photos in Gallery' },
+  { num: counts.potted + '+', label: 'Bonsai Varieties' },
   { num: '100%', label: 'Compliant Export' },
 ];
 
 const heroJpg = '/assets/images/hero/main.jpg';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 ---
-<Layout title="Huinong - Bonsai Exporter" lang="en">
+<Layout title="Huinong - Bonsai & Ornamental Plants Exporter" lang="en">
   <!-- 1. Hero -->
   <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>From Source to the World</h1>
-      <p class="hero-sub">Premium bonsai from China · EU certified · 20 years of growing experience · source factory</p>
+      <p class="hero-sub">Premium bonsai and ornamental plants · EU certified · 20 years of growing experience · source factory</p>
       <a href="/contact" class="btn-green hero-cta">Request a Quote →</a>
     </div>
   </section>
@@ -40,21 +40,25 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
     </div>
   </section>
 
-  <!-- 3. 盆栽 2 大分类卡 -->
+  <!-- 3. 2 大类卡 -->
   <section class="section">
     <div class="container">
       <div class="section-header">
-        <h2>Bonsai Catalog</h2>
-        <p>Two curated categories. Click to view the full photo gallery.</p>
+        <h2>Product Categories</h2>
+        <p>Two main categories for different procurement needs</p>
       </div>
       <div class="cat-grid">
-        {categories.map(cat => (
+        {topCats.map(cat => (
           <a href={`/products/${cat.slug}`} class="cat-card">
             <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
               <h3>{cat.en}</h3>
-              <p>{cat.enDesc} · {cat.count}+ photos</p>
-              <span class="cat-cta">View Gallery →</span>
+              <p>{cat.enDesc}</p>
+              {cat.hasSub ? (
+                <span class="cat-cta">Explore Subcategories →</span>
+              ) : (
+                <span class="cat-cta">View Details →</span>
+              )}
             </div>
           </a>
         ))}
@@ -65,7 +69,7 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
   <!-- 4. CTA strip -->
   <section class="cta-strip">
     <div class="container">
-      <h2>Looking to source bonsai?</h2>
+      <h2>Looking to source plants?</h2>
       <p>Tell us your requirements, we'll reply within 12 hours</p>
       <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
@@ -137,8 +141,7 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: box-shadow .3s, transform .3s;
-  display: block;
-  color: inherit;
+  display: block; color: inherit;
 }
 .cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
 .cat-img {

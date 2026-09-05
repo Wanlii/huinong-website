@@ -1,50 +1,46 @@
-﻿---
-import Layout from '../../layouts/Layout.astro';
-import { getCategoryInfo, getCategoryGallery } from '../../lib/products';
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { getSubCategory, getSubCategories, getCategoryGallery } from '../../../../lib/products';
 
 export function getStaticPaths() {
-  // 旧：产品详情（已废弃）
-  // 新：盆栽图集（jingpin / xiaopin）
-  return ['jingpin', 'xiaopin'].map(slug => ({ params: { slug } }));
+  return getSubCategories('potted').map(sub => ({ params: { slug: sub.slug } }));
 }
 
 const { slug } = Astro.params;
-const info = getCategoryInfo(slug!);
+const info = getSubCategory(slug!);
 if (!info) {
-  throw new Error(`Unknown category: ${slug}`);
+  throw new Error(`Unknown potted subcategory: ${slug}`);
 }
 const gallery = getCategoryGallery(slug!);
-const otherCats = ['jingpin', 'xiaopin'].filter(s => s !== slug);
+const otherSubs = getSubCategories('potted').filter(s => s.slug !== slug);
 
-const titleEn = `${info.en} - Bonsai Gallery - Huinong`;
-const descEn = `${info.enDesc}. ${info.count} photos. Source factory direct.`;
+const titleZh = `${info.zh} - 盆栽图集 - 汇农天下`;
+const descZh = `${info.zhDesc}。${info.count} 张图片，源头工厂直供。`;
 ---
-<Layout title={titleEn} lang="en" description={descEn}>
+<Layout title={titleZh} lang="zh" description={descZh}>
   <div class="breadcrumb">
     <div class="container">
-      <a href="/">Home</a> › <a href="/products">Catalog</a> › <span>{info.en}</span>
+      <a href="/zh/">首页</a> › <a href="/zh/products">产品目录</a> › <a href="/zh/products/potted">盆栽</a> › <span>{info.zh}</span>
     </div>
   </div>
 
-  <!-- Category header -->
   <section class="cat-hero" style={info.cover ? `background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${info.cover}');` : ''}>
     <div class="container">
-      <h1>{info.en}</h1>
-      <p class="cat-hero-sub">{info.enDesc}</p>
-      <p class="cat-hero-count">{info.count} photos in gallery</p>
+      <h1>{info.zh}</h1>
+      <p class="cat-hero-sub">{info.zhDesc}</p>
+      <p class="cat-hero-count">共 {info.count} 张图片</p>
     </div>
   </section>
 
-  <!-- Gallery grid -->
   <section class="section">
     <div class="container">
       {gallery.length === 0 ? (
-        <p style="text-align: center; color: var(--text-light); padding: 60px 0;">No photos available yet.</p>
+        <p style="text-align: center; color: var(--text-light); padding: 60px 0;">暂无图片。</p>
       ) : (
         <div class="gallery-grid">
           {gallery.map((src, i) => (
             <a href={src} class="gallery-item" data-index={i} data-src={src}>
-              <img src={src} alt={`${info.en} photo ${i+1}`} loading="lazy" />
+              <img src={src} alt={`${info.zh} 图 ${i+1}`} loading="lazy" />
             </a>
           ))}
         </div>
@@ -52,42 +48,39 @@ const descEn = `${info.enDesc}. ${info.count} photos. Source factory direct.`;
     </div>
   </section>
 
-  <!-- Other categories -->
-  <section class="section" style="padding-top: 0;">
-    <div class="container">
-      <div class="section-header" style="text-align: left; margin-bottom: 24px;">
-        <h2 style="font-size: 22px; margin-bottom: 0;">Explore Other Categories</h2>
-      </div>
-      <div class="other-grid">
-        {otherCats.map(s => {
-          const other = getCategoryInfo(s)!;
-          return (
-            <a href={`/products/${s}`} class="other-card">
-              <div class="other-img" style={other.cover ? `background-image: url('${other.cover}');` : ''}></div>
+  {otherSubs.length > 0 && (
+    <section class="section" style="padding-top: 0;">
+      <div class="container">
+        <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+          <h2 style="font-size: 22px; margin-bottom: 0;">其他子分类</h2>
+        </div>
+        <div class="other-grid">
+          {otherSubs.map(s => (
+            <a href={`/zh/products/potted/${s.slug}`} class="other-card">
+              <div class="other-img" style={s.cover ? `background-image: url('${s.cover}');` : ''}></div>
               <div class="other-body">
-                <h3>{other.en}</h3>
-                <span>{other.count} photos →</span>
+                <h3>{s.zh}</h3>
+                <span>{s.count} 张图 →</span>
               </div>
             </a>
-          );
-        })}
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <section class="cta-strip">
     <div class="container">
-      <h2>Interested in {info.en}?</h2>
-      <p>Tell us quantity, size and destination. We'll reply within 12 hours.</p>
-      <a href={`/contact?category=${info.slug}`} class="btn-white">📩 Request a Quote</a>
+      <h2>对 {info.zh} 有兴趣？</h2>
+      <p>告诉我们数量、规格和目的地，12 小时内回复</p>
+      <a href={`/zh/contact?category=potted-${info.slug}`} class="btn-white">📩 立即询盘</a>
     </div>
   </section>
 
-  <!-- Lightbox -->
   <div id="lightbox" class="lightbox" style="display: none;">
-    <button class="lb-close" aria-label="Close">×</button>
-    <button class="lb-prev" aria-label="Previous">‹</button>
-    <button class="lb-next" aria-label="Next">›</button>
+    <button class="lb-close" aria-label="关闭">×</button>
+    <button class="lb-prev" aria-label="上一张">‹</button>
+    <button class="lb-next" aria-label="下一张">›</button>
     <img id="lb-img" src="" alt="" />
     <div class="lb-counter" id="lb-counter"></div>
   </div>
@@ -118,7 +111,6 @@ const descEn = `${info.enDesc}. ${info.count} photos. Source factory direct.`;
 .cat-hero h1 { font-size: 44px; margin-bottom: 12px; }
 .cat-hero-sub { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
 .cat-hero-count { font-size: 14px; opacity: 0.7; }
-
 @media (max-width: 900px) {
   .cat-hero { padding: 56px 0; }
   .cat-hero h1 { font-size: 30px; }
@@ -179,7 +171,6 @@ const descEn = `${info.enDesc}. ${info.count} photos. Source factory direct.`;
 }
 .btn-white:hover { transform: scale(1.03); }
 
-/* Lightbox */
 .lightbox {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.92);

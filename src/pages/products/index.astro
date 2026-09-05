@@ -1,30 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getPottedCategories } from '../../lib/products';
+import { getTopCategories } from '../../lib/products';
 
-const categories = getPottedCategories();
-const totalImages = categories.reduce((s, c) => s + c.count, 0);
+const topCats = getTopCategories();
 ---
-<Layout title="Bonsai Catalog - Huinong" lang="en" description="Huinong bonsai catalog - premium bonsai and small bonsai, source factory direct.">
+<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai, source factory direct.">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>Bonsai Catalog</h1>
-      <p class="hero-sub">{totalImages}+ photos across {categories.length} categories · continuously updated · custom orders welcome</p>
+      <h1>Product Catalog</h1>
+      <p class="hero-sub">Two main categories · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
   <section class="section" style="padding-top: 0;">
     <div class="container">
       <div class="cat-grid">
-        {categories.map(cat => (
+        {topCats.map(cat => (
           <a href={`/products/${cat.slug}`} class="cat-card">
             <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
               <h3>{cat.en}</h3>
               <p>{cat.enDesc}</p>
               <div class="cat-meta">
-                <span class="cat-count">{cat.count} photos</span>
-                <span class="cat-arrow">View Gallery →</span>
+                {cat.hasSub ? (
+                  <span class="cat-info">{cat.subCount} subcategories</span>
+                ) : (
+                  <span class="cat-info">Coming soon</span>
+                )}
+                <span class="cat-arrow">View →</span>
               </div>
             </div>
           </a>
@@ -35,7 +38,7 @@ const totalImages = categories.reduce((s, c) => s + c.count, 0);
 
   <section class="cta-strip">
     <div class="container">
-      <h2>Need custom sourcing?</h2>
+      <h2>Can't find what you need?</h2>
       <p>Tell us your requirements and we'll source it for you</p>
       <a href="/contact" class="btn-white">📩 Request a Quote</a>
     </div>
@@ -91,7 +94,7 @@ const totalImages = categories.reduce((s, c) => s + c.count, 0);
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 12px; border-top: 1px solid var(--cream-dark);
 }
-.cat-count { font-size: 13px; color: var(--text-light); }
+.cat-info { font-size: 13px; color: var(--text-light); }
 .cat-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
 
 @media (max-width: 900px) {

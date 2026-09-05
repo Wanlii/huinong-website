@@ -1,95 +1,170 @@
-// 产品数据层 - 盆栽图集（v2）
+// 产品数据层 - 2 级分类（v2.1）
 // Build-time only (Astro frontmatter)
 //
-// 结构说明（2026-09 改造后）：
-//   1. products.csv 保留为 header-only（旧数据已清空）
-//   2. 全部产品详情下架
-//   3. 盆栽模块：仅 2 个分类（精品盆栽 / 小盆栽）
-//      - 封面图：public/assets/images/potted/{slug}-cover.jpg
-//      - 图集：public/assets/images/potted/{slug}/*.jpg
-//   4. 旧函数（getAllProducts 等）保留空实现，避免引用方崩
+// 2026-09 改造后结构：
+//   2 大分类（首页 + 列表页）：
+//     1) 观赏苗木 (ornamental) — 当前空（无源图）
+//     2) 盆栽 (potted)
+//          └─ 精品盆栽 (jingpin)  52 张图
+//          └─ 小微盆景 (xiaowei)  22 张图
+//
+//   封面：public/assets/images/category/{slug}.jpg
+//   子封面：public/assets/images/potted/{subSlug}-cover.jpg
+//   图集：public/assets/images/potted/{subSlug}/*.jpg
+//
+// 旧 CSV-based 接口保留为安全空实现，避免引用方崩
 
 import fs from 'fs';
 import path from 'path';
 
-const PUBLIC_POTTED = path.join(process.cwd(), 'public/assets/images/potted');
+const PUBLIC_CATEGORY = path.join(process.cwd(), 'public/assets/images/category');
+const PUBLIC_POTTED   = path.join(process.cwd(), 'public/assets/images/potted');
 
-// 盆栽分类配置（硬编码，不走 CSV）
-export interface PottedCategory {
-  slug: 'jingpin' | 'xiaopin';
-  zh: string;       // 中文名
-  en: string;       // 英文名
+// ============================================
+// 2 级分类接口
+// ============================================
+
+export interface TopCategory {
+  slug: 'ornamental' | 'potted';
+  zh: string;
+  en: string;
   zhDesc: string;
   enDesc: string;
-  cover: string;    // 封面 URL
-  galleryDir: string; // 物理路径
-  count: number;    // 图集图片数
+  cover: string;          // /assets/images/category/{slug}.jpg
+  hasSub: boolean;        // 是否有子分类
+  subCount: number;       // 直接子分类数（图集页用）
+  totalPhotos: number;    // 该分类下总图片数（用于 trust bar）
 }
 
-const CATEGORY_META: Record<string, { zh: string; en: string; zhDesc: string; enDesc: string }> = {
-  jingpin: {
-    zh: '精品盆栽',
-    en: 'Premium Bonsai',
-    zhDesc: '松柏 · 杂木 · 崖柏 · 传统造型精品',
-    enDesc: 'Conifers · Hardwoods · Cliff-style · Classic Designs',
-  },
-  xiaopin: {
-    zh: '小盆栽',
-    en: 'Small Bonsai',
-    zhDesc: '迷你盆景 · 桌面摆件 · 馈赠佳品',
-    enDesc: 'Mini Bonsai · Desktop Decor · Gift Choice',
-  },
-};
+export interface SubCategory {
+  slug: 'jingpin' | 'xiaowei';
+  parent: 'potted';
+  zh: string;
+  en: string;
+  zhDesc: string;
+  enDesc: string;
+  cover: string;          // /assets/images/potted/{slug}-cover.jpg
+  galleryDir: string;     // 物理路径
+  count: number;          // 图集图片数
+}
 
-function getCategoryMeta(slug: string) {
-  return CATEGORY_META[slug] || { zh: slug, en: slug, zhDesc: '', enDesc: '' };
+function fileExists(p: string): boolean {
+  try { return fs.existsSync(p); } catch { return false; }
+}
+
+function coverUrl(fp: string, url: string): string {
+  return fileExists(fp) ? url : '';
 }
 
 function listGalleryImages(dir: string): string[] {
-  if (!fs.existsSync(dir)) return [];
+  if (!fileExists(dir)) return [];
   return fs.readdirSync(dir)
     .filter(f => /\.(jpg|jpeg|png)$/i.test(f))
     .filter(f => !f.startsWith('.'))
     .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
 }
 
-/** 取得所有盆栽分类（精品盆栽 / 小盆栽） */
-export function getPottedCategories(): PottedCategory[] {
-  const slugs: Array<'jingpin' | 'xiaopin'> = ['jingpin', 'xiaopin'];
+const TOP_META: Record<string, { zh: string; en: string; zhDesc: string; enDesc: string }> = {
+  ornamental: {
+    zh: '观赏苗木',
+    en: 'Ornamental Plants',
+    zhDesc: '造型树 · 观赏树 · 庭院与行道',
+    enDesc: 'Specimen trees · Landscape trees · Garden & street',
+  },
+  potted: {
+    zh: '盆栽',
+    en: 'Potted Plants (Bonsai)',
+    zhDesc: '精品盆景 · 小微盆景 · 造型与桌面摆件',
+    enDesc: 'Premium bonsai · Small bonsai · Designer & desktop',
+  },
+};
+
+const SUB_META: Record<string, { zh: string; en: string; zhDesc: string; enDesc: string }> = {
+  jingpin: {
+    zh: '精品盆栽',
+    en: 'Premium Bonsai',
+    zhDesc: '松柏 · 杂木 · 崖柏 · 传统造型精品',
+    enDesc: 'Conifers · Hardwoods · Cliff-style · Classic Designs',
+  },
+  xiaowei: {
+    zh: '小微盆景',
+    en: 'Small Bonsai',
+    zhDesc: '迷你盆景 · 桌面摆件 · 馈赠佳品',
+    enDesc: 'Mini bonsai · Desktop decor · Gift choice',
+  },
+};
+
+/** 2 大分类 */
+export function getTopCategories(): TopCategory[] {
+  const slugs: Array<'ornamental' | 'potted'> = ['ornamental', 'potted'];
+
+  const pottedSub = getSubCategories('potted');
+
   return slugs.map(slug => {
-    const galleryDir = path.join(PUBLIC_POTTED, slug);
-    const coverFile = path.join(PUBLIC_POTTED, `${slug}-cover.jpg`);
-    const cover = fs.existsSync(coverFile)
-      ? `/assets/images/potted/${slug}-cover.jpg`
-      : '';
-    const meta = getCategoryMeta(slug);
-    const images = listGalleryImages(galleryDir);
+    const meta = TOP_META[slug];
+    const coverFp = path.join(PUBLIC_CATEGORY, `${slug}.jpg`);
+    let totalPhotos = 0;
+    if (slug === 'potted') {
+      totalPhotos = pottedSub.reduce((s, c) => s + c.count, 0);
+    }
     return {
       slug,
       zh: meta.zh,
       en: meta.en,
       zhDesc: meta.zhDesc,
       enDesc: meta.enDesc,
-      cover,
+      cover: coverUrl(coverFp, `/assets/images/category/${slug}.jpg`),
+      hasSub: slug === 'potted',
+      subCount: slug === 'potted' ? pottedSub.length : 0,
+      totalPhotos,
+    };
+  });
+}
+
+/** 单个 top category */
+export function getTopCategory(slug: string): TopCategory | undefined {
+  return getTopCategories().find(c => c.slug === slug);
+}
+
+/** 某 top 下的子分类（目前只有 potted 有） */
+export function getSubCategories(parent: 'ornamental' | 'potted'): SubCategory[] {
+  if (parent !== 'potted') return [];
+  const slugs: Array<'jingpin' | 'xiaowei'> = ['jingpin', 'xiaowei'];
+  return slugs.map(slug => {
+    const meta = SUB_META[slug];
+    const galleryDir = path.join(PUBLIC_POTTED, slug);
+    const coverFp = path.join(PUBLIC_POTTED, `${slug}-cover.jpg`);
+    const images = listGalleryImages(galleryDir);
+    return {
+      slug,
+      parent: 'potted',
+      zh: meta.zh,
+      en: meta.en,
+      zhDesc: meta.zhDesc,
+      enDesc: meta.enDesc,
+      cover: coverUrl(coverFp, `/assets/images/potted/${slug}-cover.jpg`),
       galleryDir,
       count: images.length,
     };
   });
 }
 
-/** 取得单个分类的图集图片 URL 列表 */
+/** 单个子分类 */
+export function getSubCategory(slug: string): SubCategory | undefined {
+  for (const sub of getSubCategories('potted')) {
+    if (sub.slug === slug) return sub;
+  }
+  return undefined;
+}
+
+/** 图集图片 URL 列表（仅 jingpin/xiaowei 有图） */
 export function getCategoryGallery(slug: string): string[] {
   const dir = path.join(PUBLIC_POTTED, slug);
   return listGalleryImages(dir).map(f => `/assets/images/potted/${slug}/${f}`);
 }
 
-/** 单分类元信息 */
-export function getCategoryInfo(slug: string): PottedCategory | undefined {
-  return getPottedCategories().find(c => c.slug === slug);
-}
-
 // ============================================
-// 旧接口（保持空实现，避免引用方崩）
+// 旧接口（安全空实现，避免引用方崩）
 // ============================================
 
 export interface ProductCSVRow {
@@ -119,18 +194,12 @@ export interface Product extends ProductCSVRow {
 let _cache: ProductCSVRow[] | null = null;
 function getRows(): ProductCSVRow[] {
   if (_cache) return _cache;
-  // products.csv 现在是 header-only，没有数据行
   _cache = [];
   return _cache;
 }
 
 export function getAllProducts(): Product[] {
-  return getRows().map(r => ({
-    ...r,
-    mainImage: '',
-    gallery: [],
-    emoji: '',
-  })).sort((a, b) => a.order - b.order);
+  return [];
 }
 
 export function getProduct(_id: string): Product | undefined {
@@ -150,5 +219,10 @@ export function getSpeciesByCategory(_cat: 'ornamental' | 'potted', _lang: 'zh' 
 }
 
 export function getActualSpeciesCounts(): { ornamental: number; potted: number; total: number } {
-  return { ornamental: 0, potted: getPottedCategories().length, total: getPottedCategories().length };
+  const subs = getSubCategories('potted');
+  return {
+    ornamental: 0,
+    potted: subs.length,
+    total: 2 + subs.length,
+  };
 }

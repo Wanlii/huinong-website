@@ -1,0 +1,103 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getTopCategory } from '../../../lib/products';
+
+const cat = getTopCategory('ornamental');
+if (!cat) throw new Error('ornamental category not found');
+---
+<Layout title={`${cat.zh} - 汇农天下`} lang="zh" description={cat.zhDesc}>
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/zh/">首页</a> › <a href="/zh/products">产品目录</a> › <span>{cat.zh}</span>
+    </div>
+  </div>
+
+  <section class="cat-hero" style={cat.cover ? `background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${cat.cover}');` : ''}>
+    <div class="container">
+      <h1>{cat.zh}</h1>
+      <p class="cat-hero-sub">{cat.zhDesc}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="empty">
+        <div class="empty-icon">🌳</div>
+        <h2>图集整理中</h2>
+        <p>观赏苗木图集正在整理。如需了解现货和批发价格，请直接联系我们。</p>
+        <a href="/zh/contact?category=ornamental" class="btn-green">📩 立即询盘</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container">
+      <h2>需要大宗采购观赏苗木？</h2>
+      <p>告诉我们品种、规格和数量，12 小时内回复</p>
+      <a href="/zh/contact?category=ornamental" class="btn-white">📩 联系我们</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.breadcrumb {
+  background: var(--cream);
+  padding: 14px 0;
+  font-size: 13px;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--cream-dark);
+}
+.breadcrumb a { color: var(--green); }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { color: var(--text); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+.cat-hero {
+  background-color: #2A4A2A;
+  background-size: cover;
+  background-position: center;
+  color: var(--white);
+  padding: 80px 0;
+  text-align: center;
+}
+.cat-hero h1 { font-size: 44px; margin-bottom: 12px; }
+.cat-hero-sub { font-size: 16px; opacity: 0.9; }
+@media (max-width: 900px) {
+  .cat-hero { padding: 56px 0; }
+  .cat-hero h1 { font-size: 30px; }
+}
+
+.section { padding: 56px 0; }
+
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.empty-icon { font-size: 64px; margin-bottom: 20px; }
+.empty h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+.empty p { font-size: 15px; color: var(--text-light); margin-bottom: 24px; line-height: 1.6; }
+.btn-green {
+  display: inline-block;
+  background: var(--green);
+  color: var(--white) !important;
+  padding: 12px 32px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background .2s;
+}
+.btn-green:hover { background: var(--green-dark); }
+
+.cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
+.cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
+.cta-strip p { font-size: 15px; opacity: 0.9; margin-bottom: 28px; }
+.btn-white {
+  display: inline-block; background: var(--white);
+  color: var(--wood) !important; padding: 14px 36px;
+  border-radius: 4px; font-weight: 700; font-size: 16px;
+  transition: transform .2s; cursor: pointer;
+}
+.btn-white:hover { transform: scale(1.03); }
+</style>

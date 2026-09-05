@@ -1,29 +1,29 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getPottedCategories } from '../../lib/products';
+import { getTopCategories, getActualSpeciesCounts } from '../../lib/products';
 import fs from 'fs';
 import path from 'path';
 
-const categories = getPottedCategories();
-const totalImages = categories.reduce((s, c) => s + c.count, 0);
+const topCats = getTopCategories();
+const counts = getActualSpeciesCounts();
 
 const trustItems = [
   { num: '20+', label: '种植经验' },
   { num: '8.6+', label: '平方公里基地' },
-  { num: totalImages + '+', label: '图集图片' },
+  { num: counts.potted + '+', label: '盆栽品种' },
   { num: '100%', label: '合规出口' },
 ];
 
 const heroJpg = '/assets/images/hero/main.jpg';
 const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/hero/main.jpg'));
 ---
-<Layout title="汇农天下 - 盆栽出口商" lang="zh">
+<Layout title="汇农天下 - 盆栽与观赏苗木出口商" lang="zh">
   <!-- 1. Hero -->
   <section class="hero" style={hasHero ? 'background: #2A4A2A;' : ''}>
     {hasHero && <img class="hero-bg" src={heroJpg} alt="" loading="eager" />}
     <div class="hero-content">
       <h1>从源头到世界</h1>
-      <p class="hero-sub">优质中国盆栽 · 欧盟认证 · 20 年种植经验 · 源头直供</p>
+      <p class="hero-sub">优质盆栽与观赏苗木 · 欧盟认证 · 20 年种植经验 · 源头直供</p>
       <a href="/zh/contact" class="btn-green hero-cta">立即询盘 →</a>
     </div>
   </section>
@@ -40,21 +40,25 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
     </div>
   </section>
 
-  <!-- 3. 盆栽 2 大分类卡 -->
+  <!-- 3. 2 大类卡 -->
   <section class="section">
     <div class="container">
       <div class="section-header">
-        <h2>盆栽图集</h2>
-        <p>两大精选分类，点击查看完整图集</p>
+        <h2>产品分类</h2>
+        <p>两大主营品类，满足不同采购需求</p>
       </div>
       <div class="cat-grid">
-        {categories.map(cat => (
+        {topCats.map(cat => (
           <a href={`/zh/products/${cat.slug}`} class="cat-card">
             <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
               <h3>{cat.zh}</h3>
-              <p>{cat.zhDesc} · {cat.count}+ 张图</p>
-              <span class="cat-cta">查看图集 →</span>
+              <p>{cat.zhDesc}</p>
+              {cat.hasSub ? (
+                <span class="cat-cta">查看子分类 →</span>
+              ) : (
+                <span class="cat-cta">查看详情 →</span>
+              )}
             </div>
           </a>
         ))}
@@ -137,8 +141,7 @@ const hasHero = fs.existsSync(path.join(process.cwd(), 'public/assets/images/her
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: box-shadow .3s, transform .3s;
-  display: block;
-  color: inherit;
+  display: block; color: inherit;
 }
 .cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
 .cat-img {

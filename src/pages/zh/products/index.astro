@@ -1,30 +1,33 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import { getPottedCategories } from '../../../lib/products';
+import { getTopCategories } from '../../../lib/products';
 
-const categories = getPottedCategories();
-const totalImages = categories.reduce((s, c) => s + c.count, 0);
+const topCats = getTopCategories();
 ---
-<Layout title="盆栽图集 - 汇农天下" lang="zh" description="汇农天下盆栽图集 - 精品盆栽与小盆栽，源头工厂直供。">
+<Layout title="产品目录 - 汇农天下" lang="zh" description="汇农天下产品目录 - 观赏苗木、盆栽两大类，源头工厂直供。">
   <section class="hero hero-short">
     <div class="hero-content">
-      <h1>盆栽图集</h1>
-      <p class="hero-sub">{categories.length} 大分类 · {totalImages}+ 张图片 · 持续更新 · 支持定制</p>
+      <h1>产品目录</h1>
+      <p class="hero-sub">两大主营品类 · 持续更新 · 支持定制</p>
     </div>
   </section>
 
   <section class="section" style="padding-top: 0;">
     <div class="container">
       <div class="cat-grid">
-        {categories.map(cat => (
+        {topCats.map(cat => (
           <a href={`/zh/products/${cat.slug}`} class="cat-card">
             <div class="cat-img" style={cat.cover ? `background-image: url('${cat.cover}');` : ''}></div>
             <div class="cat-body">
               <h3>{cat.zh}</h3>
               <p>{cat.zhDesc}</p>
               <div class="cat-meta">
-                <span class="cat-count">{cat.count} 张图</span>
-                <span class="cat-arrow">查看图集 →</span>
+                {cat.hasSub ? (
+                  <span class="cat-info">{cat.subCount} 个子分类</span>
+                ) : (
+                  <span class="cat-info">敬请期待</span>
+                )}
+                <span class="cat-arrow">查看 →</span>
               </div>
             </div>
           </a>
@@ -91,7 +94,7 @@ const totalImages = categories.reduce((s, c) => s + c.count, 0);
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 12px; border-top: 1px solid var(--cream-dark);
 }
-.cat-count { font-size: 13px; color: var(--text-light); }
+.cat-info { font-size: 13px; color: var(--text-light); }
 .cat-arrow { font-size: 14px; font-weight: 600; color: var(--green); }
 
 @media (max-width: 900px) {
