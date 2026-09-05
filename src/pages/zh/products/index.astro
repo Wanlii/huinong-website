@@ -5,11 +5,13 @@ import {
   getSpeciesByCategory,
   getSpeciesImages,
   getAllProducts,
+  getPottedSubCategories,
 } from '../../../lib/products';
 
 const allProducts = getAllProducts();
 const ornamental = getProductsByCategory('ornamental');
 const species = getSpeciesByCategory('ornamental');
+const pottedSubs = getPottedSubCategories();
 const allForSearch = allProducts.map(p => ({
   id: p.id, latin: p.latin, zh: p.zhName, en: p.enName, species: p.species,
   category: p.category, gallery: p.gallery,
@@ -39,8 +41,8 @@ const allProductsCount = allProducts.length;
   <section class="section" style="padding-bottom: 0;">
     <div class="container">
       <div class="cat-tabs" id="cat-tabs">
-        <button class="cat-tab active" data-cat="all">全部（{allProducts.length}）</button>
-        <button class="cat-tab" data-cat="ornamental">观赏苗木（{ornamental.length}）</button>
+        <button class="cat-tab active" data-cat="all">全部</button>
+        <button class="cat-tab" data-cat="ornamental">观赏苗木</button>
         <a class="cat-tab" href="/zh/products/potted">盆栽</a>
       </div>
 
@@ -69,11 +71,10 @@ const allProductsCount = allProducts.length;
       </div>
 
       <div class="product-grid" id="grid-all">
-        {allProducts.map(p => (
-          <a href={p.category === 'ornamental' ? `/zh/products/ornamental/${p.id}` : `/zh/products/potted`} class="product-card"
+        {ornamental.map(p => (
+          <a href={`/zh/products/ornamental/${p.id}`} class="product-card"
              data-id={p.id}
-             data-species={p.species}
-             data-category={p.category}>
+             data-species={p.species}>
             <div class="product-img">
               {p.mainImage ? <img src={p.mainImage} alt={`${p.latin}（${p.zhName}）`} loading="lazy" /> : p.emoji}
             </div>
@@ -83,6 +84,25 @@ const allProductsCount = allProducts.length;
             </div>
           </a>
         ))}
+      </div>
+
+      <!-- 盆栽子分类用 2 张卡代替 21 个产品 -->
+      <div class="potted-section" id="potted-subs">
+        <div class="section-header" style="text-align: left; margin-bottom: 16px; margin-top: 40px;">
+          <h2 style="font-size: 22px; margin-bottom: 4px;">盆栽</h2>
+          <p style="font-size: 14px; color: var(--text-light); margin: 0;">两大精选分类</p>
+        </div>
+        <div class="potted-grid">
+          {pottedSubs.map(sub => (
+            <a href={`/zh/products/potted/${sub.slug}`} class="product-card subcat-card">
+              <div class="product-img" style={sub.cover ? `background-image: url('${sub.cover}');` : ''}></div>
+              <div class="product-info">
+                <div class="product-name">{sub.zh}</div>
+                <div class="product-zh">{sub.en} · {sub.count} 张图</div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
       <div id="ornamental-section" style="display: none;">
@@ -252,6 +272,15 @@ const allProductsCount = allProducts.length;
 @media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 500px) { .product-grid { grid-template-columns: 1fr; } }
 
+.potted-section { margin-top: 24px; padding-top: 32px; border-top: 1px solid var(--cream-dark); }
+.potted-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.subcat-card .product-img {
+  background-color: var(--cream-dark);
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 600px) { .potted-grid { grid-template-columns: 1fr; } }
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -357,7 +386,7 @@ const allProductsCount = allProducts.length;
       filterBar.style.display = 'none';
       gridAll.style.display = '';
       ornamentalSection.style.display = 'none';
-      countEl.textContent = allProductsCount + ' 个产品';
+      countEl.textContent = ornamentalCount + ' 个观赏苗木 + 2 个盆栽分类';
       resetOrnamental();
     } else if (tab === 'ornamental') {
       filterBar.style.display = '';

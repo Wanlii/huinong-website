@@ -5,6 +5,7 @@ import {
   getSpeciesByCategory,
   getSpeciesImages,
   getAllProducts,
+  getPottedSubCategories,
   type Product,
   type SpeciesInfo,
 } from '../../lib/products';
@@ -12,6 +13,7 @@ import {
 const allProducts = getAllProducts();
 const ornamental = getProductsByCategory('ornamental');
 const species = getSpeciesByCategory('ornamental');
+const pottedSubs = getPottedSubCategories();
 const allForSearch = allProducts.map(p => ({
   id: p.id, latin: p.latin, zh: p.zhName, en: p.enName, species: p.species,
   category: p.category, gallery: p.gallery,
@@ -45,8 +47,8 @@ const allProductsCount = allProducts.length;
     <div class="container">
       <!-- Category tabs -->
       <div class="cat-tabs" id="cat-tabs">
-        <button class="cat-tab active" data-cat="all">All ({allProducts.length})</button>
-        <button class="cat-tab" data-cat="ornamental">Ornamental ({ornamental.length})</button>
+        <button class="cat-tab active" data-cat="all">All</button>
+        <button class="cat-tab" data-cat="ornamental">Ornamental</button>
         <a class="cat-tab" href="/products/potted">Potted</a>
       </div>
 
@@ -78,11 +80,10 @@ const allProductsCount = allProducts.length;
 
       <!-- All tab: 全部产品卡片（默认） -->
       <div class="product-grid" id="grid-all">
-        {allProducts.map(p => (
-          <a href={p.category === 'ornamental' ? `/products/ornamental/${p.id}` : `/products/potted`} class="product-card"
+        {ornamental.map(p => (
+          <a href={`/products/ornamental/${p.id}`} class="product-card"
              data-id={p.id}
-             data-species={p.species}
-             data-category={p.category}>
+             data-species={p.species}>
             <div class="product-img">
               {p.mainImage ? <img src={p.mainImage} alt={`${p.latin} (${p.zhName})`} loading="lazy" /> : p.emoji}
             </div>
@@ -92,6 +93,25 @@ const allProductsCount = allProducts.length;
             </div>
           </a>
         ))}
+      </div>
+
+      <!-- Potted sub-categories as 2 cards (instead of 21 individual products) -->
+      <div class="potted-section" id="potted-subs">
+        <div class="section-header" style="text-align: left; margin-bottom: 16px; margin-top: 40px;">
+          <h2 style="font-size: 22px; margin-bottom: 4px;">Potted (Bonsai)</h2>
+          <p style="font-size: 14px; color: var(--text-light); margin: 0;">Two curated categories</p>
+        </div>
+        <div class="potted-grid">
+          {pottedSubs.map(sub => (
+            <a href={`/products/potted/${sub.slug}`} class="product-card subcat-card">
+              <div class="product-img" style={sub.cover ? `background-image: url('${sub.cover}');` : ''}></div>
+              <div class="product-info">
+                <div class="product-name">{sub.en}</div>
+                <div class="product-zh">{sub.zh} · {sub.count} photos</div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
       <!-- Ornamental tab: 观赏苗木卡片 + chips筛选 -->
@@ -263,6 +283,15 @@ const allProductsCount = allProducts.length;
 @media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 500px) { .product-grid { grid-template-columns: 1fr; } }
 
+.potted-section { margin-top: 24px; padding-top: 32px; border-top: 1px solid var(--cream-dark); }
+.potted-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.subcat-card .product-img {
+  background-color: var(--cream-dark);
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 600px) { .potted-grid { grid-template-columns: 1fr; } }
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -368,7 +397,7 @@ const allProductsCount = allProducts.length;
       filterBar.style.display = 'none';
       gridAll.style.display = '';
       ornamentalSection.style.display = 'none';
-      countEl.textContent = allProductsCount + ' products';
+      countEl.textContent = ornamentalCount + ' ornamental + 2 potted categories';
       resetOrnamental();
     } else if (tab === 'ornamental') {
       filterBar.style.display = '';
