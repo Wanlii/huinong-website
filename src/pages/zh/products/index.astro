@@ -235,7 +235,7 @@ const searchIndex = allForSearch.map(p => ({
   gap: 8px;
   align-items: start;
 }
-.gallery-grid .gallery-item {
+.gallery-grid :global(.gallery-item) {
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
@@ -243,13 +243,13 @@ const searchIndex = allForSearch.map(p => ({
   background: var(--cream-dark);
   cursor: zoom-in;
 }
-.gallery-grid .gallery-item img {
+.gallery-grid :global(.gallery-item img) {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
   transition: transform .3s, opacity .2s;
 }
-.gallery-grid .gallery-item:hover img { transform: scale(1.05); opacity: 0.9; }
+.gallery-grid :global(.gallery-item:hover img) { transform: scale(1.05); opacity: 0.9; }
 
 .cta-strip { background: var(--wood); padding: 56px 0; text-align: center; color: var(--white); }
 .cta-strip h2 { font-size: 28px; margin-bottom: 12px; }
