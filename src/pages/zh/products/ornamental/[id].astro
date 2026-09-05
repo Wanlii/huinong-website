@@ -17,6 +17,9 @@ if (!product) {
 const otherSpeciesImages = getSpeciesImages(product.species)
   .filter(src => !product.gallery.includes(src));
 
+// 缩略图排除主图（主图已在 pd-main 大图显示）
+const thumbnails = product.gallery.filter(img => img !== product.mainImage);
+
 const titleZh = `${product.zhName}（${product.latin}）- 汇农天下`;
 const descZh = `${product.shortDesc || product.zhName} - 源头工厂直供，欧盟认证。`;
 ---
@@ -36,9 +39,9 @@ const descZh = `${product.shortDesc || product.zhName} - 源头工厂直供，�
               <div class="pd-main">
                 <img id="pd-main-img" src={product.mainImage} alt={`${product.latin}（${product.zhName}）`} />
               </div>
-              {product.gallery.length > 1 && (
+              {thumbnails.length > 0 && (
                 <div class="pd-thumbs">
-                  {product.gallery.map((img, i) => (
+                  {thumbnails.map((img, i) => (
                     <div class={`pd-thumb ${i === 0 ? 'active' : ''}`} data-image={img}>
                       <img src={img} alt={`${product.zhName} ${i+1}`} loading="lazy" />
                     </div>

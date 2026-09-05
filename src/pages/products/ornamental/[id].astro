@@ -18,6 +18,9 @@ if (!product) {
 const otherSpeciesImages = getSpeciesImages(product.species)
   .filter(src => !product.gallery.includes(src));
 
+// 缩略图列表：排除主图（主图已在 pd-main 大图显示）
+const thumbnails = product.gallery.filter(img => img !== product.mainImage);
+
 const titleEn = `${product.latin} (${product.zhName}) - Huinong`;
 const descEn = `${product.shortDesc || product.latin} - Source factory direct. EU certified.`;
 ---
@@ -37,9 +40,9 @@ const descEn = `${product.shortDesc || product.latin} - Source factory direct. E
               <div class="pd-main" id="pd-main">
                 <img id="pd-main-img" src={product.mainImage} alt={`${product.latin} (${product.zhName})`} />
               </div>
-              {product.gallery.length > 1 && (
+              {thumbnails.length > 0 && (
                 <div class="pd-thumbs">
-                  {product.gallery.map((img, i) => (
+                  {thumbnails.map((img, i) => (
                     <div class={`pd-thumb ${i === 0 ? 'active' : ''}`} data-image={img}>
                       <img src={img} alt={`${product.latin} ${i+1}`} loading="lazy" />
                     </div>
