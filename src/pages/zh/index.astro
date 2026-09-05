@@ -1,16 +1,16 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getTopCategories, getActualSpeciesCounts } from '../../lib/products';
+import { getTopCategories, getAllProducts } from '../../lib/products';
 import fs from 'fs';
 import path from 'path';
 
 const topCats = getTopCategories();
-const counts = getActualSpeciesCounts();
+const totalProducts = getAllProducts().length;
 
 const trustItems = [
   { num: '20+', label: '种植经验' },
   { num: '8.6+', label: '平方公里基地' },
-  { num: counts.potted + '+', label: '盆栽品种' },
+  { num: '100+', label: '植物品种' },
   { num: '100%', label: '合规出口' },
 ];
 

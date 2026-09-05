@@ -9,11 +9,12 @@ import {
   type SpeciesInfo,
 } from '../../lib/products';
 
-const products = getProductsByCategory('ornamental');
+const allProducts = getAllProducts();
+const ornamental = getProductsByCategory('ornamental');
 const species = getSpeciesByCategory('ornamental');
-const allForSearch = getAllProducts().map(p => ({
+const allForSearch = allProducts.map(p => ({
   id: p.id, latin: p.latin, zh: p.zhName, en: p.enName, species: p.species,
-  gallery: p.gallery,
+  category: p.category, gallery: p.gallery,
 }));
 
 // 把所有图片按种属分组（用于筛选时的图集）
@@ -27,12 +28,16 @@ const searchIndex = allForSearch.map(p => ({
   ...p,
   haystack: `${p.latin} ${p.zh} ${p.en} ${p.species}`.toLowerCase(),
 }));
+
+// 传给 JS 用的简单值
+const ornamentalCount = ornamental.length;
+const allProductsCount = allProducts.length;
 ---
-<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai. Browse by species, search by Latin or Chinese name.">
+<Layout title="Product Catalog - Huinong" lang="en" description="Huinong product catalog - ornamental plants and bonsai. Browse 100+ varieties, search by Latin or Chinese name.">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>Product Catalog</h1>
-      <p class="hero-sub">{products.length}+ ornamental varieties · continuously updated · custom orders welcome</p>
+      <p class="hero-sub">{allProducts.length}+ varieties across ornamental &amp; bonsai · continuously updated · custom orders welcome</p>
     </div>
   </section>
 
@@ -40,12 +45,13 @@ const searchIndex = allForSearch.map(p => ({
     <div class="container">
       <!-- Category tabs -->
       <div class="cat-tabs" id="cat-tabs">
-        <button class="cat-tab active" data-cat="ornamental">Ornamental Plants</button>
-        <a class="cat-tab" href="/products/potted">Potted Plants (Bonsai)</a>
+        <button class="cat-tab active" data-cat="all">All ({allProducts.length})</button>
+        <button class="cat-tab" data-cat="ornamental">Ornamental ({ornamental.length})</button>
+        <a class="cat-tab" href="/products/potted">Potted</a>
       </div>
 
-      <!-- Search + chips -->
-      <div class="filter-bar" id="filter-bar">
+      <!-- Search + chips (chips only shown for ornamental tab) -->
+      <div class="filter-bar" id="filter-bar" style="display: none;">
         <div class="search-wrap">
           <input type="search" id="search-input" class="search-input" placeholder="Search (Latin / English / 中文)" autocomplete="off" />
         </div>
@@ -67,15 +73,16 @@ const searchIndex = allForSearch.map(p => ({
       <!-- Results header (back button shown in gallery mode) -->
       <div class="results-header" id="results-header">
         <button id="back-btn" class="back-btn" style="display: none;">← Back to list</button>
-        <span class="count" id="result-count">{products.length} products</span>
+        <span class="count" id="result-count">{allProducts.length} products</span>
       </div>
 
-      <!-- Card grid (default) -->
-      <div class="product-grid" id="product-grid" data-mode="cards">
-        {products.map(p => (
-          <a href={`/products/ornamental/${p.id}`} class="product-card"
+      <!-- All tab: 全部产品卡片（默认） -->
+      <div class="product-grid" id="grid-all">
+        {allProducts.map(p => (
+          <a href={p.category === 'ornamental' ? `/products/ornamental/${p.id}` : `/products/potted`} class="product-card"
              data-id={p.id}
-             data-species={p.species}>
+             data-species={p.species}
+             data-category={p.category}>
             <div class="product-img">
               {p.mainImage ? <img src={p.mainImage} alt={`${p.latin} (${p.zhName})`} loading="lazy" /> : p.emoji}
             </div>
@@ -87,8 +94,25 @@ const searchIndex = allForSearch.map(p => ({
         ))}
       </div>
 
-      <!-- Image gallery (shown when filter active) -->
-      <div class="gallery-grid" id="gallery-grid" style="display: none;"></div>
+      <!-- Ornamental tab: 观赏苗木卡片 + chips筛选 -->
+      <div id="ornamental-section" style="display: none;">
+        <div class="product-grid" id="product-grid" data-mode="cards">
+          {ornamental.map(p => (
+            <a href={`/products/ornamental/${p.id}`} class="product-card"
+               data-id={p.id}
+               data-species={p.species}>
+              <div class="product-img">
+                {p.mainImage ? <img src={p.mainImage} alt={`${p.latin} (${p.zhName})`} loading="lazy" /> : p.emoji}
+              </div>
+              <div class="product-info">
+                <div class="product-name">{p.latin}</div>
+                <div class="product-zh">{p.zhName}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div class="gallery-grid" id="gallery-grid" style="display: none;"></div>
+      </div>
 
       <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
         <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
@@ -309,7 +333,11 @@ const searchIndex = allForSearch.map(p => ({
 }
 </style>
 
-<script define:vars={{ speciesGallery, searchIndex, products, species }}>
+<script define:vars={{ speciesGallery, searchIndex, ornamentalCount, allProductsCount }}>
+  const tabs = document.querySelectorAll('#cat-tabs .cat-tab[data-cat]');
+  const filterBar = document.getElementById('filter-bar');
+  const gridAll = document.getElementById('grid-all');
+  const ornamentalSection = document.getElementById('ornamental-section');
   const cards = document.getElementById('product-grid');
   const gallery = document.getElementById('gallery-grid');
   const backBtn = document.getElementById('back-btn');
@@ -324,22 +352,44 @@ const searchIndex = allForSearch.map(p => ({
   const btnPrev = lightbox && lightbox.querySelector('.lb-prev');
   const btnNext = lightbox && lightbox.querySelector('.lb-next');
 
+  let activeTab = 'all';
   let activeSpecies = '';
   let searchTerm = '';
   let currentImages = [];
   let lbIndex = 0;
 
+  function switchTab(tab) {
+    activeTab = tab;
+    tabs.forEach(function(b){
+      if (b.getAttribute('data-cat') === tab) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+    if (tab === 'all') {
+      filterBar.style.display = 'none';
+      gridAll.style.display = '';
+      ornamentalSection.style.display = 'none';
+      countEl.textContent = allProductsCount + ' products';
+      resetOrnamental();
+    } else if (tab === 'ornamental') {
+      filterBar.style.display = '';
+      gridAll.style.display = 'none';
+      ornamentalSection.style.display = '';
+      countEl.textContent = ornamentalCount + ' products';
+      renderOrnamental();
+    }
+  }
+
   function isFiltering() {
     return activeSpecies !== '' || (searchTerm && searchTerm.trim() !== '');
   }
 
-  function render() {
+  function renderOrnamental() {
     if (!isFiltering()) {
       cards.style.display = '';
       gallery.style.display = 'none';
       backBtn.style.display = 'none';
       emptyState.style.display = 'none';
-      countEl.textContent = products.length + ' products';
+      countEl.textContent = ornamentalCount + ' products';
       return;
     }
     let matchedSpecies = [];
@@ -349,7 +399,7 @@ const searchIndex = allForSearch.map(p => ({
       const term = searchTerm.trim().toLowerCase();
       const matchedIds = new Set();
       for (const item of searchIndex) {
-        if (item.haystack.indexOf(term) !== -1) matchedIds.add(item.id);
+        if (item.category === 'ornamental' && item.haystack.indexOf(term) !== -1) matchedIds.add(item.id);
       }
       const matchedZh = new Set();
       for (const item of searchIndex) {
@@ -400,6 +450,16 @@ const searchIndex = allForSearch.map(p => ({
     });
   }
 
+  function resetOrnamental() {
+    activeSpecies = '';
+    searchTerm = '';
+    if (searchInput) searchInput.value = '';
+    if (chipsContainer) {
+      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+    }
+  }
+
   function openLb(i) {
     if (!lightbox) return;
     lbIndex = i;
@@ -420,38 +480,40 @@ const searchIndex = allForSearch.map(p => ({
   function nextLb() { lbIndex = (lbIndex + 1) % currentImages.length; updateLb(); }
   function prevLb() { lbIndex = (lbIndex - 1 + currentImages.length) % currentImages.length; updateLb(); }
 
-  function reset() {
-    activeSpecies = '';
-    searchTerm = '';
-    searchInput.value = '';
-    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-    chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
-    render();
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      const cat = t.getAttribute('data-cat');
+      if (cat) switchTab(cat);
+    });
+  });
+
+  if (chipsContainer) {
+    chipsContainer.addEventListener('click', function(e) {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      btn.classList.add('active');
+      activeSpecies = btn.getAttribute('data-species') || '';
+      searchInput.value = '';
+      searchTerm = '';
+      renderOrnamental();
+    });
   }
 
-  chipsContainer.addEventListener('click', function(e) {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-    btn.classList.add('active');
-    activeSpecies = btn.getAttribute('data-species') || '';
-    searchInput.value = '';
-    searchTerm = '';
-    render();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      searchTerm = searchInput.value;
+      if (searchTerm.trim() !== '') {
+        chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+        activeSpecies = '';
+      } else {
+        chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+      }
+      renderOrnamental();
+    });
+  }
 
-  searchInput.addEventListener('input', function() {
-    searchTerm = searchInput.value;
-    if (searchTerm.trim() !== '') {
-      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-      activeSpecies = '';
-    } else {
-      chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
-    }
-    render();
-  });
-
-  backBtn.addEventListener('click', reset);
+  if (backBtn) backBtn.addEventListener('click', resetOrnamental);
 
   if (btnClose) btnClose.addEventListener('click', closeLb);
   if (btnNext) btnNext.addEventListener('click', nextLb);

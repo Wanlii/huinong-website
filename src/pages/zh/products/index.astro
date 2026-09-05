@@ -7,11 +7,12 @@ import {
   getAllProducts,
 } from '../../../lib/products';
 
-const products = getProductsByCategory('ornamental');
+const allProducts = getAllProducts();
+const ornamental = getProductsByCategory('ornamental');
 const species = getSpeciesByCategory('ornamental');
-const allForSearch = getAllProducts().map(p => ({
+const allForSearch = allProducts.map(p => ({
   id: p.id, latin: p.latin, zh: p.zhName, en: p.enName, species: p.species,
-  gallery: p.gallery,
+  category: p.category, gallery: p.gallery,
 }));
 
 const speciesGallery: Record<string, string[]> = {};
@@ -23,23 +24,27 @@ const searchIndex = allForSearch.map(p => ({
   ...p,
   haystack: `${p.latin} ${p.zh} ${p.en} ${p.species}`.toLowerCase(),
 }));
+
+const ornamentalCount = ornamental.length;
+const allProductsCount = allProducts.length;
 ---
-<Layout title="产品目录 - 汇农天下" lang="zh" description="汇农天下产品目录 - 观赏苗木、盆栽两大类。按种属筛选或搜索拉丁/中文名。">
+<Layout title="产品目录 - 汇农天下" lang="zh" description="汇农天下产品目录 - 100+ 品种，观赏苗木与盆栽。按种属筛选或搜索拉丁/中文名。">
   <section class="hero hero-short">
     <div class="hero-content">
       <h1>产品目录</h1>
-      <p class="hero-sub">{products.length}+ 个观赏苗木品种 · 持续更新 · 支持定制</p>
+      <p class="hero-sub">{allProducts.length}+ 个品种 · 观赏苗木与盆栽 · 持续更新 · 支持定制</p>
     </div>
   </section>
 
   <section class="section" style="padding-bottom: 0;">
     <div class="container">
       <div class="cat-tabs" id="cat-tabs">
-        <button class="cat-tab active" data-cat="ornamental">观赏苗木</button>
+        <button class="cat-tab active" data-cat="all">全部（{allProducts.length}）</button>
+        <button class="cat-tab" data-cat="ornamental">观赏苗木（{ornamental.length}）</button>
         <a class="cat-tab" href="/zh/products/potted">盆栽</a>
       </div>
 
-      <div class="filter-bar" id="filter-bar">
+      <div class="filter-bar" id="filter-bar" style="display: none;">
         <div class="search-wrap">
           <input type="search" id="search-input" class="search-input" placeholder="搜索（拉丁 / 英文 / 中文）" autocomplete="off" />
         </div>
@@ -60,16 +65,17 @@ const searchIndex = allForSearch.map(p => ({
     <div class="container">
       <div class="results-header" id="results-header">
         <button id="back-btn" class="back-btn" style="display: none;">← 返回列表</button>
-        <span class="count" id="result-count">{products.length} 个产品</span>
+        <span class="count" id="result-count">{allProducts.length} 个产品</span>
       </div>
 
-      <div class="product-grid" id="product-grid" data-mode="cards">
-        {products.map(p => (
-          <a href={`/zh/products/ornamental/${p.id}`} class="product-card"
+      <div class="product-grid" id="grid-all">
+        {allProducts.map(p => (
+          <a href={p.category === 'ornamental' ? `/zh/products/ornamental/${p.id}` : `/zh/products/potted`} class="product-card"
              data-id={p.id}
-             data-species={p.species}>
+             data-species={p.species}
+             data-category={p.category}>
             <div class="product-img">
-              {p.mainImage ? <img src={p.mainImage} alt={`${p.latin} (${p.zhName})`} loading="lazy" /> : p.emoji}
+              {p.mainImage ? <img src={p.mainImage} alt={`${p.latin}（${p.zhName}）`} loading="lazy" /> : p.emoji}
             </div>
             <div class="product-info">
               <div class="product-name">{p.latin}</div>
@@ -79,7 +85,24 @@ const searchIndex = allForSearch.map(p => ({
         ))}
       </div>
 
-      <div class="gallery-grid" id="gallery-grid" style="display: none;"></div>
+      <div id="ornamental-section" style="display: none;">
+        <div class="product-grid" id="product-grid" data-mode="cards">
+          {ornamental.map(p => (
+            <a href={`/zh/products/ornamental/${p.id}`} class="product-card"
+               data-id={p.id}
+               data-species={p.species}>
+              <div class="product-img">
+                {p.mainImage ? <img src={p.mainImage} alt={`${p.latin}（${p.zhName}）`} loading="lazy" /> : p.emoji}
+              </div>
+              <div class="product-info">
+                <div class="product-name">{p.latin}</div>
+                <div class="product-zh">{p.zhName}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div class="gallery-grid" id="gallery-grid" style="display: none;"></div>
+      </div>
 
       <div id="empty-state" style="display: none; text-align: center; padding: 60px 0; color: var(--text-light);">
         <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
@@ -299,7 +322,11 @@ const searchIndex = allForSearch.map(p => ({
 }
 </style>
 
-<script define:vars={{ speciesGallery, searchIndex, products, species }}>
+<script define:vars={{ speciesGallery, searchIndex, ornamentalCount, allProductsCount }}>
+  const tabs = document.querySelectorAll('#cat-tabs .cat-tab[data-cat]');
+  const filterBar = document.getElementById('filter-bar');
+  const gridAll = document.getElementById('grid-all');
+  const ornamentalSection = document.getElementById('ornamental-section');
   const cards = document.getElementById('product-grid');
   const gallery = document.getElementById('gallery-grid');
   const backBtn = document.getElementById('back-btn');
@@ -314,22 +341,44 @@ const searchIndex = allForSearch.map(p => ({
   const btnPrev = lightbox && lightbox.querySelector('.lb-prev');
   const btnNext = lightbox && lightbox.querySelector('.lb-next');
 
+  let activeTab = 'all';
   let activeSpecies = '';
   let searchTerm = '';
   let currentImages = [];
   let lbIndex = 0;
 
+  function switchTab(tab) {
+    activeTab = tab;
+    tabs.forEach(function(b){
+      if (b.getAttribute('data-cat') === tab) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+    if (tab === 'all') {
+      filterBar.style.display = 'none';
+      gridAll.style.display = '';
+      ornamentalSection.style.display = 'none';
+      countEl.textContent = allProductsCount + ' 个产品';
+      resetOrnamental();
+    } else if (tab === 'ornamental') {
+      filterBar.style.display = '';
+      gridAll.style.display = 'none';
+      ornamentalSection.style.display = '';
+      countEl.textContent = ornamentalCount + ' 个产品';
+      renderOrnamental();
+    }
+  }
+
   function isFiltering() {
     return activeSpecies !== '' || (searchTerm && searchTerm.trim() !== '');
   }
 
-  function render() {
+  function renderOrnamental() {
     if (!isFiltering()) {
       cards.style.display = '';
       gallery.style.display = 'none';
       backBtn.style.display = 'none';
       emptyState.style.display = 'none';
-      countEl.textContent = products.length + ' 个产品';
+      countEl.textContent = ornamentalCount + ' 个产品';
       return;
     }
     let matchedSpecies = [];
@@ -339,7 +388,7 @@ const searchIndex = allForSearch.map(p => ({
       const term = searchTerm.trim().toLowerCase();
       const matchedIds = new Set();
       for (const item of searchIndex) {
-        if (item.haystack.indexOf(term) !== -1) matchedIds.add(item.id);
+        if (item.category === 'ornamental' && item.haystack.indexOf(term) !== -1) matchedIds.add(item.id);
       }
       const matchedZh = new Set();
       for (const item of searchIndex) {
@@ -390,6 +439,16 @@ const searchIndex = allForSearch.map(p => ({
     });
   }
 
+  function resetOrnamental() {
+    activeSpecies = '';
+    searchTerm = '';
+    if (searchInput) searchInput.value = '';
+    if (chipsContainer) {
+      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+    }
+  }
+
   function openLb(i) {
     if (!lightbox) return;
     lbIndex = i;
@@ -410,38 +469,40 @@ const searchIndex = allForSearch.map(p => ({
   function nextLb() { lbIndex = (lbIndex + 1) % currentImages.length; updateLb(); }
   function prevLb() { lbIndex = (lbIndex - 1 + currentImages.length) % currentImages.length; updateLb(); }
 
-  function reset() {
-    activeSpecies = '';
-    searchTerm = '';
-    searchInput.value = '';
-    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-    chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
-    render();
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      const cat = t.getAttribute('data-cat');
+      if (cat) switchTab(cat);
+    });
+  });
+
+  if (chipsContainer) {
+    chipsContainer.addEventListener('click', function(e) {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      btn.classList.add('active');
+      activeSpecies = btn.getAttribute('data-species') || '';
+      searchInput.value = '';
+      searchTerm = '';
+      renderOrnamental();
+    });
   }
 
-  chipsContainer.addEventListener('click', function(e) {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-    btn.classList.add('active');
-    activeSpecies = btn.getAttribute('data-species') || '';
-    searchInput.value = '';
-    searchTerm = '';
-    render();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      searchTerm = searchInput.value;
+      if (searchTerm.trim() !== '') {
+        chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+        activeSpecies = '';
+      } else {
+        chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
+      }
+      renderOrnamental();
+    });
+  }
 
-  searchInput.addEventListener('input', function() {
-    searchTerm = searchInput.value;
-    if (searchTerm.trim() !== '') {
-      chipsContainer.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-      activeSpecies = '';
-    } else {
-      chipsContainer.querySelector('.chip[data-species=""]').classList.add('active');
-    }
-    render();
-  });
-
-  backBtn.addEventListener('click', reset);
+  if (backBtn) backBtn.addEventListener('click', resetOrnamental);
 
   if (btnClose) btnClose.addEventListener('click', closeLb);
   if (btnNext) btnNext.addEventListener('click', nextLb);

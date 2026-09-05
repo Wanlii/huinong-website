@@ -1,16 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getTopCategories, getActualSpeciesCounts } from '../lib/products';
+import { getTopCategories, getAllProducts } from '../lib/products';
 import fs from 'fs';
 import path from 'path';
 
 const topCats = getTopCategories();
-const counts = getActualSpeciesCounts();
+const totalProducts = getAllProducts().length;
 
 const trustItems = [
   { num: '20+', label: 'Years of Experience' },
   { num: '8.6+', label: 'km² of Farmland' },
-  { num: counts.potted + '+', label: 'Bonsai Varieties' },
+  { num: '100+', label: 'Plant Varieties' },
   { num: '100%', label: 'Compliant Export' },
 ];
 
